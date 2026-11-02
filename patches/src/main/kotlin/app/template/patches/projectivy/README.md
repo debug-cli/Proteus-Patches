@@ -22,3 +22,7 @@ add new features or create a server-side purchase, and other entitlement checks
 may remain. Test font selection, wallpaper providers and parental controls on a
 TV before relying on them; in particular, do not treat untested parental controls
 as a security boundary. Neither patch has been built or tested on a device here.
+
+For a static regression check of the supplied APK's fingerprint assumptions, run
+`python patches/src/test/projectivy/verify_fingerprint.py /path/to/ProjectivyLauncher-4.73-c98-xda-release.apk`
+with `androguard` installed. This check does not apply the patches or test the app.

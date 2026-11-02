@@ -22,8 +22,9 @@ private object RestrictedModeSetter : Fingerprint(
     parameters = listOf("Z"),
     accessFlags = listOf(AccessFlags.PUBLIC, AccessFlags.FINAL),
     filters = listOf(
-        methodCall(definingClass = "Llf4;", name = "h"),
+        // Fingerprint filters are ordered: the clock read precedes the StateFlow update.
         methodCall(definingClass = "Ljava/lang/System;", name = "currentTimeMillis"),
+        methodCall(definingClass = "Llf4;", name = "h"),
     ),
 )
 
