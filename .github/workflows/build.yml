@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - arena/1e6e5ae7-halo-patches
 
 permissions:
   contents: read
