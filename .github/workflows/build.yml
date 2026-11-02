@@ -5,10 +5,9 @@ on:
   push:
     branches:
       - main
-      - arena/1e6e5ae7-halo-patches
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
@@ -48,16 +47,6 @@ jobs:
           name: patches-mpp
           path: patches/build/libs/*.mpp
           if-no-files-found: error
-
-      - name: Publish Projectivy prerelease
-        if: success() && github.ref == 'refs/heads/arena/1e6e5ae7-halo-patches'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release create v1.17.1-projectivy.1 patches/build/libs/*.mpp \
-            --target "$GITHUB_SHA" --prerelease \
-            --title "Projectivy patches v1.17.1-projectivy.1" \
-            --notes "Experimental Projectivy Launcher 4.73 (build 98) support. Includes a limited Google telemetry patch and an opt-in local premium feature patch. These patches have not been tested on a device; telemetry is not completely removed, and parental controls must not be relied upon as a security boundary until verified. Other existing Halo patches are also included."
 
       - name: Upload full gradle log
         if: failure()
