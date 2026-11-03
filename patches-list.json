@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "2.0.0",
+  "version": "1.19.0",
   "patches": [
     {
       "name": "AMOLED dark theme",
@@ -1127,7 +1127,7 @@
           "title": "Package name",
           "description": "Package name for the cloned Google Photos app.",
           "required": true,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": "app.morphe.android.apps.photos",
           "values": null
         },
@@ -1136,7 +1136,7 @@
           "title": "App name",
           "description": "Launcher name for the cloned Google Photos app.",
           "required": true,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": "Photos Morphe",
           "values": null
         }
@@ -1179,7 +1179,7 @@
           "title": "Package name",
           "description": "Package name for the cloned Meesho app.",
           "required": true,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": "app.morphe.meesho",
           "values": null
         },
@@ -1188,7 +1188,7 @@
           "title": "App name",
           "description": "Launcher name for the cloned Meesho app.",
           "required": true,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": "Meesho Proteus",
           "values": null
         }
@@ -1241,7 +1241,7 @@
           "title": "Package name",
           "description": "Package name for the cloned MUBI app.",
           "required": true,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": "app.morphe.mubi",
           "values": null
         },
@@ -1250,7 +1250,7 @@
           "title": "App name",
           "description": "Launcher name for the cloned MUBI app.",
           "required": true,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": "MUBI Proteus",
           "values": null
         }
@@ -1268,7 +1268,7 @@
           "title": "Package name",
           "description": "Package name for the cloned app. Leave empty for the default (app.morphe.<app name>).",
           "required": false,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": "",
           "values": null
         },
@@ -1277,7 +1277,7 @@
           "title": "App name",
           "description": "Launcher name for the cloned app. Leave empty to append \"(Proteus)\" to the current label.",
           "required": false,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": "",
           "values": null
         }
@@ -1318,7 +1318,7 @@
           "title": "Custom icon",
           "description": "Folder containing a Morphe adaptive icon set.\n\nSupported density folders:\n- mipmap-mdpi\n- mipmap-hdpi\n- mipmap-xhdpi\n- mipmap-xxhdpi\n- mipmap-xxxhdpi\n\nEach included density folder must contain:\n- morphe_adaptive_background_custom.png\n- morphe_adaptive_foreground_custom.png\n\nOptional themed icon:\n- drawable/morphe_adaptive_monochrome_custom.xml",
           "required": true,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": null,
           "values": null
         }
@@ -1395,7 +1395,7 @@
           "title": "Dark mode",
           "description": "Off / Follow system / Always on.",
           "required": false,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": "follow_system",
           "values": {
             "Off": "off",
@@ -2485,7 +2485,7 @@
           "title": "MicroG package name",
           "description": "Which MicroG / GmsCore app is installed on your device. Check your device's app list for \"MicroG\" or \"GmsCore\" if unsure — most users should leave this as the default.",
           "required": true,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": "app.revanced.android.gms",
           "values": {
             "app.revanced.android.gms (default)": "app.revanced.android.gms",
@@ -2502,7 +2502,7 @@
           "title": "Main activity class (optional)",
           "description": "The app's main Activity class name ending with a semicolon, e.g. /MainActivity; Used to inject the MicroG check at startup. Leave blank for auto-detection.",
           "required": false,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": null,
           "values": null
         },
@@ -2511,7 +2511,7 @@
           "title": "Custom package name (optional)",
           "description": "Rename the app to this package name. Leave blank to keep the original. Must be a valid package name (e.g. com.example.myapp).",
           "required": false,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": null,
           "values": null
         }
@@ -3105,7 +3105,7 @@
           "title": "Chart period",
           "description": "Default time range for the price history charts.",
           "required": false,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": "1y",
           "values": {
             "1 month": "1m",
@@ -3121,7 +3121,7 @@
           "title": "Show period toggle",
           "description": "Add period buttons under each chart to switch views.",
           "required": false,
-          "type": "boolean (Kotlin reflection is not available)",
+          "type": "kotlin.Boolean",
           "default": true,
           "values": null
         },
@@ -3130,7 +3130,7 @@
           "title": "Toggle periods",
           "description": "Which periods appear in the toggle buttons.",
           "required": false,
-          "type": "java.util.List<java.lang.String> (Kotlin reflection is not available)",
+          "type": "kotlin.collections.List<kotlin.String>",
           "default": [
             "1m",
             "6m",
@@ -3165,7 +3165,7 @@
           "title": "Keepa price lines",
           "description": "Which price series the Keepa chart shows.",
           "required": false,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": "all",
           "values": {
             "New only": "new",
@@ -3178,7 +3178,7 @@
           "title": "CamelCamelCamel chart",
           "description": "Which price lines the CCC chart shows.",
           "required": false,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": "new_used",
           "values": {
             "New + Used": "new_used",
@@ -3191,7 +3191,7 @@
           "title": "Hide zero-price gaps",
           "description": "Omit flat zero-price segments on the CCC chart.",
           "required": false,
-          "type": "boolean (Kotlin reflection is not available)",
+          "type": "kotlin.Boolean",
           "default": false,
           "values": null
         },
@@ -3200,7 +3200,7 @@
           "title": "Chart size",
           "description": "Width of the CCC chart image (Keepa renders at a fixed size).",
           "required": false,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": "625",
           "values": {
             "Compact": "500",
@@ -3213,7 +3213,7 @@
           "title": "Start collapsed",
           "description": "Render the charts inside a collapsed section; tap to expand.",
           "required": false,
-          "type": "boolean (Kotlin reflection is not available)",
+          "type": "kotlin.Boolean",
           "default": true,
           "values": null
         }
@@ -3326,7 +3326,7 @@
           "title": "Path to original APK (if uninstalled)",
           "description": "Full path to the original APK or .apks bundle. Example: /sdcard/Download/Waze.apks",
           "required": false,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": null,
           "values": null
         },
@@ -3335,7 +3335,7 @@
           "title": "Certificate SHA-1 (manual)",
           "description": "40-char hex. Found on APKMirror under app signature info.",
           "required": false,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": null,
           "values": null
         },
@@ -3344,7 +3344,7 @@
           "title": "Certificate SHA-256 (manual)",
           "description": "64-char hex. Optional companion to SHA-1.",
           "required": false,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": null,
           "values": null
         },
@@ -3353,7 +3353,7 @@
           "title": "Certificate Base64 DER (manual)",
           "description": "Needed only for Signature spoof patch. Get it with: apksigner verify --print-certs original.apk",
           "required": false,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": null,
           "values": null
         }
@@ -3576,7 +3576,7 @@
           "title": "Permissions to remove",
           "description": "Comma-separated list of permission names to strip from the manifest.",
           "required": false,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": "android.permission.QUERY_ALL_PACKAGES,android.permission.READ_PHONE_STATE,android.permission.READ_BASIC_PHONE_STATE,android.permission.READ_PHONE_NUMBERS,android.permission.GET_ACCOUNTS,android.permission.ACCESS_FINE_LOCATION,android.permission.ACCESS_COARSE_LOCATION,android.permission.ACCESS_BACKGROUND_LOCATION,android.permission.READ_CONTACTS,android.permission.WRITE_CONTACTS,android.permission.RECORD_AUDIO,android.permission.DETECT_SCREEN_CAPTURE,com.google.android.gms.permission.AD_ID",
           "values": null
         }
@@ -3814,7 +3814,7 @@
           "title": "Widevine security level to report",
           "description": "L1 = hardware DRM (highest quality). L3 = software only. Default L1.",
           "required": true,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": "L1",
           "values": {
             "L1 (highest — hardware)": "L1",
@@ -3827,7 +3827,7 @@
           "title": "HDCP level to report",
           "description": "HDCP_V2_2 is required for 4K content on most streaming apps.",
           "required": false,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": "HDCP_V2_2",
           "values": {
             "HDCP 2.2": "HDCP_V2_2",
@@ -3899,7 +3899,7 @@
           "title": "Package name override (optional)",
           "description": "Leave blank — read automatically from the app. Only set this if you changed the app's package name and the patch is using the wrong one.",
           "required": false,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": null,
           "values": null
         }
@@ -3940,7 +3940,7 @@
           "title": "Pixel profile",
           "description": "Device profile used for Build fields and Pixel feature levels.",
           "required": true,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": "pixel_xl",
           "values": {
             "Pixel XL - unlimited original quality": "pixel_xl",
@@ -3972,7 +3972,7 @@
           "title": "Android version",
           "description": "Optionally spoof Build.VERSION fields. Follow profile uses the selected Pixel's matching Android version.",
           "required": false,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": "none",
           "values": {
             "Do not spoof Android version": "none",
@@ -3995,7 +3995,7 @@
           "title": "Override ROM feature levels",
           "description": "Force newer Pixel feature flags off when the selected profile should not have them.",
           "required": false,
-          "type": "boolean (Kotlin reflection is not available)",
+          "type": "kotlin.Boolean",
           "default": true,
           "values": null
         }
@@ -4013,7 +4013,7 @@
           "title": "Store to impersonate",
           "description": "Most apps only check for the Google Play Store, so the default is usually correct. Pick from the list, or type any package name directly if your app checks for a different store.",
           "required": true,
-          "type": "java.lang.String (Kotlin reflection is not available)",
+          "type": "kotlin.String",
           "default": "com.android.vending",
           "values": {
             "Google Play Store": "com.android.vending",
