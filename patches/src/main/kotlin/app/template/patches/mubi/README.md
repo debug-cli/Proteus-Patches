@@ -15,24 +15,24 @@ frequent releases.
 
 ## Patch list
 
-| Patch | Default | What it changes |
-|---|---|---|
-| Allow screenshots & screen recording | off | Clears `FLAG_SECURE` from `Window.addFlags`/`setFlags` and `SurfaceView.setSecure(true)` call sites. |
-| Block analytics & tracking | **on** | No-ops void logging calls into Braze/Appboy, Firebase Analytics, GMS AppMeasurement, AppsFlyer, Adjust, Facebook App Events and Segment. |
-| Block upgrade & sale deep links | **on** | Makes `UpgradeSubscriptionsActivity` non-exported; points `upgrade-yearly` / `blackfriday` hosts and flash-sale paths at a sentinel. |
-| Enable picture-in-picture | **on** | Marks the phone player/trailer as PiP-capable, adds the required `configChanges`, and enters PiP from `onUserLeaveHint`. |
-| Force highest video quality | off | Reports 1 Gbps from ExoPlayer/Media3 `DefaultBandwidthMeter.getBitrateEstimate()`. Server caps still apply; can increase buffering. |
-| Bypass forced update | off | Rewrites Play Core `AppUpdateInfo.updateAvailability()` / `isUpdateTypeAllowed()` results so the blocking update dialog never triggers. |
-| Change package name | off | Clones the app: rewrites manifest package, permission ids, provider authorities, task affinity and launcher label. Play Billing/Cast/sign-in may fail on the clone. |
-| Force TV (leanback) UI | off | Rewrites `UiModeManager.getCurrentModeType()` to `UI_MODE_TYPE_TELEVISION`. Do not enable on phones. |
-| Remove promo cards & upsell banners | **on** | Disables Braze Content Cards/feed activities and no-ops card refreshes. Push notifications stay intact. |
-| Suppress subscription paywall | off | Closes `UpgradeSubscriptionsActivity` right after its `onCreate` super call. Hides the screen; does not unlock anything. |
-| Skip pre-roll promos | **on** | Forces app-side boolean pre-roll gates to `false` when MUBI names the concept. Server-injected pre-roll is unaffected. |
-| Disable autoplay previews | **on** | Turns `setPlayWhenReady(true)` into `false` in home/browse/feed/discover classes only. Opening a title still plays. |
-| Prefer external browser over Custom Tabs | **on** | Removes the Custom Tabs service `<queries>` entry so provider probing can fall back to a normal `ACTION_VIEW` browser. Best-effort. |
-| Packaging toolkit (signature, install source, MicroG) | off | Applies the shared `Spoof app signature`, `Spoof install source` and `GmsCore support (MicroG)` patches. |
-| Spoof Widevine level for MUBI | off | Applies the shared DRM-level patch. Local checks only; licence server still decides resolution. |
-| Skip TV confirmation dialog | off | Closes `TvConfirmationDialogActivity` before it draws. Only useful on Android TV. |
+| Patch | Default | Mechanism | Limitations |
+|---|---|---|---|
+| Allow screenshots & screen recording | off | Clears bit `0x2000` (`FLAG_SECURE`) from the literals feeding `Window.addFlags`/`setFlags`, and flips literal `SurfaceView.setSecure(true)` to `false`. | DRM video may still render black in a capture on some devices; non-literal flags are left stock. |
+| Block analytics & tracking | **on** | Replaces void-returning call sites into Braze/Appboy, Firebase Analytics, GMS AppMeasurement, AppsFlyer, Adjust, Facebook App Events and Segment with `nop`. | Push (FCM/Braze push) and account APIs untouched; only outbound event logging is silenced. |
+| Block upgrade & sale deep links | **on** | Manifest: sets `UpgradeSubscriptionsActivity` `android:exported="false"`; rewrites `upgrade-yearly`/`blackfriday` hosts and `/app_flash_sale2024`, `/summer_sale_2024` paths to a sentinel (never deletes the only host/path of a filter). | In-app upgrade navigation still works; entitlements and purchases unchanged. |
+| Enable picture-in-picture | **on** | Manifest: `supportsPictureInPicture` + required `configChanges` on `PlayerActivity`/`TrailerActivity`; bytecode: prepends `enterPictureInPictureMode()` to `onUserLeaveHint`. | Needs Android 8+; TV activities intentionally not marked PiP. |
+| Force highest video quality | off | `clearBody()` + `const-wide v0, 0x3B9ACA00L; return-wide v0` on ExoPlayer2/Media3 `DefaultBandwidthMeter.getBitrateEstimate()`. | More buffering/data on slow links; server- and licence-side caps still apply. |
+| Bypass forced update | off | At `AppUpdateInfo` call sites: `nop` the invoke and set the `move-result` to `UPDATE_NOT_AVAILABLE` (1) / `isUpdateTypeAllowed` → `false`. | Running an outdated build can break playback when the API changes. |
+| Change package name | off | Manifest resource patch: package, `com.mubi.*` permission ids, provider authorities, `taskAffinity`, launcher label (via a new string resource). Component class names are never renamed. | Re-signed clone: Play Billing, Cast and Google sign-in may fail. |
+| Force TV (leanback) UI | off | `nop`s `UiModeManager.getCurrentModeType()` and sets its `move-result` to `2` (`UI_MODE_TYPE_TELEVISION`). | Global within the app — forces leanback even on phones. Heuristic: no effect if TV is detected another way. |
+| Remove promo cards & upsell banners | **on** | Manifest: `android:enabled="false"` on Braze content-cards/feed activities; bytecode: `nop` void `requestContentCardsRefresh`/`launchContentCards` call sites. | Push notifications untouched; only Braze-driven promo surfaces are disabled. |
+| Suppress subscription paywall | off | Inserts `finish(); return-void` right after `onCreate`'s super call in `UpgradeSubscriptionsActivity`. | **Does not unlock playback or grant a subscription** — entitlement is server-side; can leave a dead-end on a hard account wall. |
+| Skip pre-roll promos | **on** | Clears boolean pre-roll gate methods (`Z`-returning, named like pre-roll, in classes referencing "preroll") to `return false`. | Server-injected or stream-embedded pre-roll is out of scope and unaffected. |
+| Disable autoplay previews | **on** | In classes whose names match home/browse/feed/discover/explore/landing only: rewrites the literal `true` feeding `Player.setPlayWhenReady(Z)` to `false`. | Opening a title still plays; non-literal arguments are left stock. |
+| Prefer external browser over Custom Tabs | **on** | Removes the `android.support.customtabs.action.CustomTabsService` `<intent>` from the manifest `<queries>` block. | Best-effort: no effect if MUBI calls `CustomTabsIntent.launchUrl` directly without probing. |
+| Packaging toolkit (signature, install source, MicroG) | off | `dependsOn` the shared `Spoof app signature`, `Spoof install source` and `GmsCore support (MicroG)` patches. | Does not bypass Play Integrity; cannot fix Play Billing on a re-signed build; MicroG needs GmsCore installed. |
+| Spoof Widevine level for MUBI | off | `dependsOn` the shared `Spoof Widevine / DRM level` patch (`MediaDrm.getPropertyString`/`getPropertyByteArray` call sites). | Licence servers still decide resolution; L3-attesting flows unaffected. |
+| Skip TV confirmation dialog | off | Inserts `finish(); return-void` right after `onCreate`'s super call in `TvConfirmationDialogActivity`. | TV-only usefulness; a flow waiting on a specific dialog result may stall. |
 
 ## Design rules
 
