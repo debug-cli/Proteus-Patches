@@ -1,7 +1,9 @@
 # MUBI patch plan
 
-_Research note — 3 November 2026. Nothing in this document is implemented yet; no MUBI
-patch code has been added to the bundle._
+_Research note + implementation record — 3 November 2026. **Implemented:** 16 patches
+under `patches/src/main/kotlin/app/template/patches/mubi/`; see
+[mubi/README.md](patches/src/main/kotlin/app/template/patches/mubi/README.md) for the
+per-patch table and caveats. Sections below keep the original research and rationale._
 
 Target: **MUBI: Curated Cinema** (`com.mubi`), latest observed build **100.0
 (29145546)**, uploaded 29 Oct 2026.
@@ -24,8 +26,10 @@ Target: **MUBI: Curated Cinema** (`com.mubi`), latest observed build **100.0
    (6 targets) or Yatri (5 targets), with fingerprints anchored on stable artefacts
    (activity names, deep-link hosts, SDK class names, resource strings), never on
    obfuscated `Ll2/d;`-style classes.
-4. **Ship 3 patches first:** `Remove pre-roll promo`, `Allow screenshots / screen
-   recording`, `Enable picture-in-picture`. Then port the universal privacy/compat set.
+4. **Shipped:** the full set — privacy (screenshots, analytics, Widevine), promo/upsell
+   removal, PiP, quality, forced-update bypass, TV UI/dialog, pre-roll/autoplay,
+   Custom Tabs preference, package rename and the packaging toolkit. See
+   [mubi/README.md](patches/src/main/kotlin/app/template/patches/mubi/README.md).
 5. The repo rename is a separate, low-risk operation — see
    [REBRAND_OPTIONS.md](REBRAND_OPTIONS.md).
 

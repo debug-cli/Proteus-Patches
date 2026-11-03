@@ -1,6 +1,9 @@
 # Rename options for `Halo-patches`
 
-_Research note — 3 November 2026. Nothing has been renamed yet._
+_Research note — 3 November 2026. **Decision:** `Proteus Patches` (`proteus-patches`).
+Local identity files are renamed; the GitHub repository rename is still pending because
+the current token receives HTTP 403 from the rename API. Use GitHub → Settings → Repository
+name, then update the local remote (`git remote set-url origin ...`). See §7._
 
 The repo is `ineednotitle/Halo-patches`: 236 packages, 304 patch entries, 1 star, and
 currently **no description and no topics** on GitHub. A rename is a good moment to fix
