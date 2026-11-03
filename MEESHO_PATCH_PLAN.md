@@ -94,3 +94,40 @@ server-side or anti-fraud protected.
 7. DEX: Play Core `AppUpdateInfo` usage + `AppUpdateReceiver` logic.
 8. Manifest of 29.7 vs the Mar-2025 one above: exported list may have changed.
 9. Whether `InAppPopupActivity` hosts only marketing popups.
+
+---
+
+## 4. Implementation record — 2026-11-03
+
+**Implemented:** 12 patches under `patches/src/main/kotlin/app/template/patches/meesho/`
+(see `meesho/README.md` for the per-patch table) + `MEESHO_COMPATIBILITY` in
+`shared/Constants.kt` (APKM, targets 29.7 / 29.6 version-only until versionCode
+is read from a real APKM).
+
+Files:
+- `privacy/BlockAnalyticsPatch.kt` (on) — AppsFlyer/Mixpanel/FB/Firebase/AppMeasurement/Crashlytics void call sites → `nop`; FCM push, Shield, JusPay, Truecaller, Otpless, Verloop untouched.
+- `privacy/RemoveDangerousPermissionsPatch.kt` (on) — removes contacts R/W, phone state/numbers/basic, RECORD_AUDIO/AUDIO_CAPTURE, fine+coarse location, DETECT_SCREEN_CAPTURE, AD_ID, ACCESS_ADSERVICES_*; **keeps READ/WRITE_EXTERNAL_STORAGE and READ_SMS/SEND_SMS** per request.
+- `privacy/AllowScreenCapturePatch.kt` (off) — clears FLAG_SECURE 0x2000 literals at `Window.addFlags/setFlags`, flips literal `SurfaceView.setSecure(true)`.
+- `ads/HideSponsoredListingsPatch.kt` (off, heuristic) — ad-gate booleans → false in classes referencing "sponsored"/"adslot" strings.
+- `ads/DisableInAppPopupsPatch.kt` (off) — `InAppPopupActivity` enabled=false.
+- `misc/StopPullNotificationAlarmsPatch.kt` (off) — three `pullnotifications.br.*` receivers enabled=false; FCM kept.
+- `misc/BypassForcedUpdatePatch.kt` (off) — Play Core `AppUpdateInfo` call-site rewrite.
+- `misc/ChangePackageNamePatch.kt` (off) — manifest package/permissions/authorities/affinity/label; never component class names.
+- `misc/MeeshoToolkitPatch.kt` (off) — `dependsOn` shared signature/installer/GmsCore patches.
+- `ui/BypassCustomTabsPatch.kt` (on) — removes CustomTabsService `<queries>` intent.
+- `ui/NonExportExternalEntryActivitiesPatch.kt` (off) — `SharedTextRedirectionActivity`, `MyBankActivity` → exported=false.
+- `player/DisableReelsAutoplayPatch.kt` (off, heuristic) — `setPlayWhenReady(true)`→`false` in `*reel*` classes only.
+
+**Build status:** local `./gradlew buildAndroid` still cannot resolve
+`app.morphe.patches:1.3.3` — maven.pkg.github.com/MorpheApp/registry answers
+401 without a GitHub PAT (read:packages); toolchain (Gradle 9.7 + Temurin 17
+at `/home/user/jdk17`) is ready and waiting for `GITHUB_ACTOR`/`GITHUB_TOKEN`.
+All sources mirror the CI-verified MUBI patch patterns (same helpers/imports).
+**`patches-list.json` is intentionally not hand-edited** (file header: generated
+by semantic-release); the 12 `com.meesho.supply` entries appear when the next
+`feat:` release runs `generatePatchesList` in CI.
+
+**Still to verify against a real 29.7 APKM (jadx/apktool):** versionCode,
+deep-link scheme/host string values, ad-model anchors ("sponsored"/"adslot"/
+"isAd"), ExoPlayer in reel classes, FLAG_SECURE sites, Play Core usage,
+InAppPopupActivity routing, manifest drift since the Mar-2025 snapshot.
