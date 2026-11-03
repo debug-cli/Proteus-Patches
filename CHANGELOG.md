@@ -1,3 +1,17 @@
+## [1.19.0](https://github.com/ineednotitle/Proteus-Patches/compare/v1.18.0...v1.19.0) (2026-11-03)
+
+### ⚠ BREAKING CHANGES
+
+* prune to curated app set (23 apps + shared/universal) — release 2.0.0
+
+### chore
+
+* prune to curated app set (23 apps + shared/universal) — release 2.0.0 ([5cb8c5b](https://github.com/ineednotitle/Proteus-Patches/commit/5cb8c5b9164ffd0b0b4ca01ef607cd4e7de6f7f5))
+
+### ✨ New Features
+
+* **meesho:** add 12 patches for com.meesho.supply (analytics, permissions, ads, popups, updates, deep links, reels, capture, rename, toolkit) ([fa17123](https://github.com/ineednotitle/Proteus-Patches/commit/fa17123cc293bec1d9b9f07cf7c0fa9fb4318ff4))
+
 ## [1.18.0](https://github.com/ineednotitle/Proteus-Patches/compare/v1.17.0...v1.18.0) (2026-11-03)
 
 ### 🐛 Bug Fixes
