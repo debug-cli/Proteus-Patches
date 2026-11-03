@@ -1,46 +1,32 @@
-# 👋🧩 Proteus Patches
+# Proteus Patches
 
-> *One bundle, patches everywhere. A Morphe patch suite spanning 230+ apps.*
+> *One bundle, patches everywhere. A curated [Morphe](https://github.com/MorpheApp/Morphe) patch suite for Android.*
 
-A **Morphe patch bundle** spanning 230+ apps (grown from a `com.reddit.frontpage`
-recipe), built by cloning the exact recipe from [rushiranpise/morphe-patches](https://github.com/rushiranpise/morphe-patches)
-("Doom's Morphe Patches") — which itself is generated from the official
-[morphe-patches-template](https://github.com/MorpheApp/morphe-patches-template).
-See [ANALYSIS.md](ANALYSIS.md) for the full teardown of Doom's method.
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](#license)
+[![Patches](https://img.shields.io/badge/patches-118-blue.svg)](#whats-inside)
+[![Universal patches](https://img.shields.io/badge/universal-24-purple.svg)](#universal-patches)
+[![Apps](https://img.shields.io/badge/apps-23-orange.svg)](#supported-apps)
 
-## 🛡️ Security notes
+**Proteus Patches** is a Morphe patch bundle (`.mpp`) that removes tracking,
+ads, annoyances and risky defaults from popular Android apps — plus a set of
+**universal patches** that apply to any app.
 
-This bundle was audited (full report: [SECURITY_AUDIT.md](SECURITY_AUDIT.md)). Nothing in it phones home: the only runtime payload injected
-into apps is ~120 lines of defensive Java — no network, no exec, no dynamic
-code loading, and it fails open on any model drift rather than crashing the
-feed. Still, **understand three risk classes before enabling patches per-app**:
+- **v2.0.0** — curated release: **118 patches**, **24 universal**, across **27 app packages** (23 apps)
+- Built and verified with the Morphe Manager v2.3.0 patcher (`patches-list.json` regenerated, zip integrity checked)
 
-- 🔐 **Signature / installer spoofs** — let an app claim a different
-  signing-certificate identity to the system (microG-style hooks). Enable only
-  for apps you already trust; sideloaded malware could abuse the same hooks.
-- 🧨 **Anti-tamper / Play-integrity (pairip) / frida / xposed bypasses** —
-  defeat the app's own tamper detection. Fine on official APKs; on *repacked*
-  APKs the same bypass hides genuine malware tampering. Only patch APKs whose
-  signature you verified (Reddit entries here pin the official signing SHA-256).
-- 🔓 **Billing / premium unlocks & cert-pinning/firebase-cert-hash bypasses** —
-  mostly client-side cosmetic gates (server-validated flows still fail
-  server-side). Cert-verification bypasses can weaken TLS guarantees inside
-  that app — keep them off unless specifically needed.
+---
 
-Supply chain: every `.mpp` ships with a **build-provenance attestation** (see
-the repo's **Attestations** section), the Gradle wrapper jar is byte-identical
-to gradle/gradle@v9.7.0's own wrapper
-(`7a9ce74c…625d`), the Gradle *distribution* is pinned by
-`distributionSha256Sum`, and all GitHub Actions are pinned to commit SHAs.
+## 📦 Install
 
+1. Install **[Morphe Manager](https://github.com/MorpheApp/Morphe)**.
+2. Download the latest bundle from **[Releases](https://github.com/ineednotitle/Proteus-Patches/releases)** (e.g. `patches-2.0.0.mpp`).
+3. In the Manager: **Settings → Patches → Import patches** → select the `.mpp` file
+   (or add the release URL as a patch source).
+4. Pick the apps you patch, choose your patches, and patch.
 
-## 🧩 Patches
-
-<!-- PATCHES_START -->
-> **[v1.19.0](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v1.19.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;154 patches total
-<details>
-<summary>📦 Google Photos&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
-<br>
+> ⚠️ v2.0.0 is a **breaking, curated** release — patches for apps outside the
+> list below were removed from this bundle. Use `patches-1.19.0.mpp` (or earlier)
+> if you need the full app set.
 
 **🎯 Supported versions:**
 
@@ -581,65 +567,53 @@ to gradle/gradle@v9.7.0's own wrapper
 
 <!-- PATCHES_END -->
 
-## 🔨 Build (the Doom pipeline)
+## 🛡️ Security & safety
 
-Prerequisite: a GitHub **Personal Access Token** with `read:packages`
-(the Morphe patcher engine resolves from the GitHub Packages `MorpheApp/registry`).
+Every patch in this bundle follows strict safety rules (full report:
+**[SECURITY_AUDIT.md](SECURITY_AUDIT.md)**:
+
+- Fail-safe by default; heuristic patches default to **off**
+- Bytecode edits only NOP void-returning calls (never corrupt string results),
+  never rename component classes, never delete the only intent-filter entry point
+- No entitlement/DRM/payment/login/anti-fraud bypasses; no network calls, no
+  exec, no secrets in the bundle (scanned; dex 038, integrity-verified)
+- Meesho's patch set deliberately **keeps storage and SMS permissions**
+
+Understand the risk classes before enabling signature/integrity-related
+patches on apps you don't trust — see the audit for details.
+
+## 🧾 Provenance
+
+**Thanks For Doom's Morphe Patches to inspire this Project
+([rushiranpise/morphe-patches](https://github.com/rushiranpise/morphe-patches))
+And Thanks to the Morphe Team for creating App and
+The bundle *format* for creating patches
+[morphe-patches-template](https://github.com/MorpheApp/morphe-patches-template).
+
+## 🔨 Build from source
 
 ```bash
-# 1. Put your credentials in gradle.properties
-echo "gpr.user=YOUR_USERNAME"   >> gradle.properties
-echo "gpr.key=ghp_YOUR_TOKEN"   >> gradle.properties
-
-# 2. Build the bundle
-./gradlew buildAndroid
-# → patches/build/libs/patches-1.0.0.mpp
+git clone https://github.com/ineednotitle/Proteus-Patches.git
+cd Proteus-Patches
+./gradlew buildAndroid        # produces patches/build/libs/patches-<version>.mpp
 ```
 
-## 📱 Test it
+Releases are versioned by semantic-release (conventional commits); CI builds the
+`.mpp` and publishes the GitHub Release automatically on pushes to `main`.
 
-**Morphe Desktop** (drag-drop GUI): open the tool, select your Reddit APK/APKM,
-pick `patches-*.mpp` as the patch bundle, select patches, Patch.
+## 📄 Docs
 
-**Morphe Manager (Android)**: Settings → enable **Expert mode** → Patch bundles →
-`+` → load the local `.mpp` file → select the Reddit app.
+- [SECURITY_AUDIT.md](SECURITY_AUDIT.md) — full security audit
+- [ANALYSIS.md](ANALYSIS.md) — bundle analysis
+- [MEESHO_PATCH_PLAN.md](MEESHO_PATCH_PLAN.md) / [MUBI_PATCH_PLAN.md](MUBI_PATCH_PLAN.md) — per-app plans
+- [MUBI_ACCEPTANCE.md](MUBI_ACCEPTANCE.md) — MUBI acceptance report
+- [CI_BUILD_GUIDE.md](CI_BUILD_GUIDE.md) — CI/build notes
 
-Get the Reddit APK as a **APKM/APKS bundle** (Play Store serves app bundles);
-Morphe merges splits automatically.
+## Warning:
+I have no intentions of stealing any of your data. So, Be chill about getting Hacked. You can Even check the code or give it to AI to check.
+The Project created becoz I am a big fan of Morphe Project & I Love my Privacy as it a right! for everyone.  
 
-## 🚀 Release (semantic-release, like Doom)
+## ⚖️ License
 
-1. Push this repo to GitHub. Enable **Settings → Actions → General →
-   "Allow GitHub Actions to create and approve pull requests"**.
-2. Work on the `dev` branch. Conventional commits drive versions:
-   `feat:` → minor, `fix:`/`bump:`/`perf:` → patch.
-3. Every push to `dev` → pre-release (`1.1.0-dev.1`) + auto-PR to `main`.
-   Merge the PR → stable release with:
-   - `patches-<version>.mpp` (+ attestation)
-   - `patches-bundle.json` ← the **remote patch source** for Morphe Manager
-   - `patches-list.json`, `SHA256SUMS.txt`
-4. Users then add `https://github.com/YOU/proteus-patches` as a patch
-   source in Morphe Manager.
-
-## 🛠 When Reddit updates and a patch breaks (fingerprint maintenance)
-
-Doom's workflow, from his comments/docs:
-
-1. `apktool d reddit.apkm` (or JADX) on the new APK.
-2. Re-check each anchor — the exact commands are documented in each
-   `Fingerprints.kt` header:
-   - `smali*/com/reddit/domain/model/listing/Listing.smali` field writes
-   - `smali*/com/reddit/comments/presentation/CommentsViewModel.smali` ad loader
-   - `grep -rl '"CommentsAdState(conversationAdViewState="' smali*/`
-   - `grep -rln '"is_gold"' smali*/ | grep -i adapter`
-3. Fix filters → `./gradlew buildAndroid` → test → commit `fix: reddit 2026.xx.0`.
-4. Version bump of supported targets goes in
-   `patches/src/main/kotlin/app/template/patches/shared/Constants.kt` (single source of truth).
-
-## ⚠️ Disclaimer
-
-User-side modification of an app for personal use; nothing from the original
-APK is distributed (the `.mpp` contains patch *instructions* only). Reddit's
-ToS may prohibit modified clients — you are responsible for how you use this.
-GPLv3. Anchoring strategy adapted with attribution from
-[MorpheApp/morphe-patches](https://github.com/MorpheApp/morphe-patches) (GPLv3).
+[MIT](LICENSE). Patches modify third-party apps at your own risk — use only on
+APKs whose signature you trust.
