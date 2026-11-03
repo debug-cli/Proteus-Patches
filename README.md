@@ -37,7 +37,7 @@ to gradle/gradle@v9.7.0's own wrapper
 ## 🧩 Patches
 
 <!-- PATCHES_START -->
-> **[v1.17.0](https://github.com/ineednotitle/proteus-patches/releases/tag/v1.17.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;343 patches total
+> **[v1.18.0](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v1.18.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;359 patches total
 <details>
 <summary>📦 AAAD&nbsp;&nbsp;•&nbsp;&nbsp;2 patches</summary>
 <br>
@@ -134,6 +134,36 @@ to gradle/gradle@v9.7.0's own wrapper
 | [Open links externally](#open-links-externally) | Opens links in the external browser instead of the in-app browser. |  |
 | [Remove Meta AI](#remove-meta-ai) | Removes the Meta AI floating button, drawer items, and search suggestions. |  |
 | [Spoof package version](#spoof-package-version) | Sets a very high version code so the Play Store treats the app as already up to date and never offers an update. | • Version code |
+
+</details>
+
+<details>
+<summary>📦 MUBI&nbsp;&nbsp;•&nbsp;&nbsp;16 patches</summary>
+<br>
+
+**🎯 Supported versions:**
+
+| 100.0 | 99.1 |
+| :---: | :---: |
+
+| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
+|----------|----------------|-----------|
+| [Allow screenshots & screen recording](#allow-screenshots-screen-recording) | Removes FLAG_SECURE and secure-surface flags from MUBI's players, so screenshots, screen recording and screen mirroring work. DRM-protected video may still render black on some devices. |  |
+| [Block analytics & tracking](#block-analytics-tracking) | No-ops Braze, Firebase Analytics, AppsFlyer, Adjust, Facebook App Events and Segment logging in MUBI. Push notifications and account features keep working. |  |
+| [Block upgrade & sale deep links](#block-upgrade-sale-deep-links) | Makes MUBI's upgrade screen non-exported and disables the upgrade-yearly / blackfriday / flash-sale deep links. Playback and entitlements are unchanged. |  |
+| [Bypass forced update](#bypass-forced-update) | Neutralizes Play Core's update-availability checks so MUBI does not block startup on a newer version. Running an outdated build may break playback. |  |
+| [Change package name](#change-package-name) | Installs MUBI beside the official app by changing the package, permission names, provider authorities and launcher label. Play Billing, Cast and Google sign-in may not work on the clone. | • Package name<br>• App name |
+| [Disable autoplay previews](#disable-autoplay-previews) | Stops MUBI's home/browse screens from autoplaying muted trailers and previews. Opening a title still plays normally. |  |
+| [Enable picture-in-picture](#enable-picture-in-picture) | Adds PiP support to MUBI's phone/tablet player: playback continues in a floating window when you press Home. |  |
+| [Force TV (leanback) UI](#force-tv-leanback-ui) | Makes MUBI believe the device is a television, so Android TV boxes that misreport their form factor open the leanback UI. Do not enable on phones. |  |
+| [Force highest video quality](#force-highest-video-quality) | Reports a 1 Gbps connection to ExoPlayer/Media3 so MUBI picks the highest available rendition instead of downshifting. May increase data use and buffering on slow connections; server-side caps still apply. |  |
+| [Packaging toolkit (signature, install source, MicroG)](#packaging-toolkit-signature-install-source-microg) | Applies the shared signature, install-source and GmsCore/MicroG patches to MUBI in one step. Does not bypass Play Integrity or fix Play Billing. |  |
+| [Prefer external browser over Custom Tabs](#prefer-external-browser-over-custom-tabs) | Removes MUBI's Custom Tabs service query so browser links can fall back to the normal external browser. No effect if MUBI launches Custom Tabs directly. |  |
+| [Remove promo cards & upsell banners](#remove-promo-cards-upsell-banners) | Disables Braze Content Cards, the Braze feed and card refreshes in MUBI. Push notifications and the app's own screens are untouched. |  |
+| [Skip TV confirmation dialog](#skip-tv-confirmation-dialog) | Closes MUBI's Android TV confirmation screen before it draws. Only useful on TV devices; a flow waiting on a dialog result may stall. |  |
+| [Skip pre-roll promos](#skip-pre-roll-promos) | Disables MUBI's app-side pre-roll gate when it is a boolean check. Pre-roll injected by the server or embedded in the stream is unaffected. |  |
+| [Spoof Widevine level for MUBI](#spoof-widevine-level-for-mubi) | Reports L1 / HDCP 2.2 to MUBI's local DRM checks. Server-side licensing still decides the resolution, so HD may remain unavailable. |  |
+| [Suppress subscription paywall](#suppress-subscription-paywall) | Closes MUBI's upgrade screen immediately instead of showing it. Does not unlock playback or grant a subscription; only hides the upsell screen. |  |
 
 </details>
 

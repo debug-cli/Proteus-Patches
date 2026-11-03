@@ -1,3 +1,13 @@
+## [1.18.0](https://github.com/ineednotitle/Proteus-Patches/compare/v1.17.0...v1.18.0) (2026-11-03)
+
+### 🐛 Bug Fixes
+
+* **mubi:** use narrowLiteral on NarrowLiteralInstruction ([693f2b8](https://github.com/ineednotitle/Proteus-Patches/commit/693f2b88fae904309c857008d914e60ccb4f3f01))
+
+### ✨ New Features
+
+* **mubi:** add 16 MUBI patches; rename identity to Proteus Patches ([e9117b8](https://github.com/ineednotitle/Proteus-Patches/commit/e9117b84fcaa1912ecf0c5e013e5e22185f929d1))
+
 ## [1.17.0](https://github.com/ineednotitle/Halo-patches/compare/v1.16.0...v1.17.0) (2026-10-29)
 
 ### ✨ New Features

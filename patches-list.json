@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "1.17.0",
+  "version": "1.18.0",
   "patches": [
     {
       "name": "AAAD Premium",
@@ -178,6 +178,49 @@
               "versionCodes": {
                 "ARMEABI_V7A": 345212666,
                 "ARM64_V8A": 345212670
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Allow screenshots & screen recording",
+      "description": "Removes FLAG_SECURE and secure-surface flags from MUBI's players, so screenshots, screen recording and screen mirroring work. DRM-protected video may still render black on some devices.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.mubi",
+          "name": "MUBI",
+          "description": null,
+          "apkFileType": "APKM",
+          "appIconColor": "#0F0F0F",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "100.0",
+              "versionCodes": {
+                "ARM64_V8A": 29145546,
+                "ARMEABI_V7A": 29145546,
+                "X86_64": 29145546,
+                "X86": 29145546
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "99.1",
+              "versionCodes": {
+                "ARM64_V8A": 29145545,
+                "ARMEABI_V7A": 29145545,
+                "X86_64": 29145545,
+                "X86": 29145545
               },
               "isExperimental": false,
               "minSdk": null,
@@ -510,6 +553,49 @@
       "options": []
     },
     {
+      "name": "Block analytics & tracking",
+      "description": "No-ops Braze, Firebase Analytics, AppsFlyer, Adjust, Facebook App Events and Segment logging in MUBI. Push notifications and account features keep working.",
+      "default": true,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.mubi",
+          "name": "MUBI",
+          "description": null,
+          "apkFileType": "APKM",
+          "appIconColor": "#0F0F0F",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "100.0",
+              "versionCodes": {
+                "ARM64_V8A": 29145546,
+                "ARMEABI_V7A": 29145546,
+                "X86_64": 29145546,
+                "X86": 29145546
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "99.1",
+              "versionCodes": {
+                "ARM64_V8A": 29145545,
+                "ARMEABI_V7A": 29145545,
+                "X86_64": 29145545,
+                "X86": 29145545
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
       "name": "Block analytics and data collection",
       "description": "No-ops Firebase screen/event tracking and AppsFlyer attribution + event logging (concrete SDK entry points, verified in 14.41.0). Push notifications keep working; Pinterest features are untouched.",
       "default": true,
@@ -632,6 +718,49 @@
               "versionCodes": {
                 "ARMEABI_V7A": 345212666,
                 "ARM64_V8A": 345212670
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Block upgrade & sale deep links",
+      "description": "Makes MUBI's upgrade screen non-exported and disables the upgrade-yearly / blackfriday / flash-sale deep links. Playback and entitlements are unchanged.",
+      "default": true,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.mubi",
+          "name": "MUBI",
+          "description": null,
+          "apkFileType": "APKM",
+          "appIconColor": "#0F0F0F",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "100.0",
+              "versionCodes": {
+                "ARM64_V8A": 29145546,
+                "ARMEABI_V7A": 29145546,
+                "X86_64": 29145546,
+                "X86": 29145546
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "99.1",
+              "versionCodes": {
+                "ARM64_V8A": 29145545,
+                "ARMEABI_V7A": 29145545,
+                "X86_64": 29145545,
+                "X86": 29145545
               },
               "isExperimental": false,
               "minSdk": null,
@@ -812,6 +941,49 @@
                 "ARMEABI_V7A": 22510,
                 "X86_64": 22510,
                 "X86": 22510
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Bypass forced update",
+      "description": "Neutralizes Play Core's update-availability checks so MUBI does not block startup on a newer version. Running an outdated build may break playback.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.mubi",
+          "name": "MUBI",
+          "description": null,
+          "apkFileType": "APKM",
+          "appIconColor": "#0F0F0F",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "100.0",
+              "versionCodes": {
+                "ARM64_V8A": 29145546,
+                "ARMEABI_V7A": 29145546,
+                "X86_64": 29145546,
+                "X86": 29145546
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "99.1",
+              "versionCodes": {
+                "ARM64_V8A": 29145545,
+                "ARMEABI_V7A": 29145545,
+                "X86_64": 29145545,
+                "X86": 29145545
               },
               "isExperimental": false,
               "minSdk": null,
@@ -1028,6 +1200,68 @@
           "required": true,
           "type": "kotlin.String",
           "default": "Messenger Morphe",
+          "values": null
+        }
+      ]
+    },
+    {
+      "name": "Change package name",
+      "description": "Installs MUBI beside the official app by changing the package, permission names, provider authorities and launcher label. Play Billing, Cast and Google sign-in may not work on the clone.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.mubi",
+          "name": "MUBI",
+          "description": null,
+          "apkFileType": "APKM",
+          "appIconColor": "#0F0F0F",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "100.0",
+              "versionCodes": {
+                "ARM64_V8A": 29145546,
+                "ARMEABI_V7A": 29145546,
+                "X86_64": 29145546,
+                "X86": 29145546
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "99.1",
+              "versionCodes": {
+                "ARM64_V8A": 29145545,
+                "ARMEABI_V7A": 29145545,
+                "X86_64": 29145545,
+                "X86": 29145545
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": [
+        {
+          "key": "mubiPackageName",
+          "title": "Package name",
+          "description": "Package name for the cloned MUBI app.",
+          "required": true,
+          "type": "kotlin.String",
+          "default": "app.morphe.mubi",
+          "values": null
+        },
+        {
+          "key": "mubiAppName",
+          "title": "App name",
+          "description": "Launcher name for the cloned MUBI app.",
+          "required": true,
+          "type": "kotlin.String",
+          "default": "MUBI Proteus",
           "values": null
         }
       ]
@@ -1447,6 +1681,49 @@
                 "ARMEABI_V7A": 22510,
                 "X86_64": 22510,
                 "X86": 22510
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Disable autoplay previews",
+      "description": "Stops MUBI's home/browse screens from autoplaying muted trailers and previews. Opening a title still plays normally.",
+      "default": true,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.mubi",
+          "name": "MUBI",
+          "description": null,
+          "apkFileType": "APKM",
+          "appIconColor": "#0F0F0F",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "100.0",
+              "versionCodes": {
+                "ARM64_V8A": 29145546,
+                "ARMEABI_V7A": 29145546,
+                "X86_64": 29145546,
+                "X86": 29145546
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "99.1",
+              "versionCodes": {
+                "ARM64_V8A": 29145545,
+                "ARMEABI_V7A": 29145545,
+                "X86_64": 29145545,
+                "X86": 29145545
               },
               "isExperimental": false,
               "minSdk": null,
@@ -1991,6 +2268,51 @@
       "options": []
     },
     {
+      "name": "Enable picture-in-picture",
+      "description": "Adds PiP support to MUBI's phone/tablet player: playback continues in a floating window when you press Home.",
+      "default": true,
+      "dependencies": [
+        "ResourcePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.mubi",
+          "name": "MUBI",
+          "description": null,
+          "apkFileType": "APKM",
+          "appIconColor": "#0F0F0F",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "100.0",
+              "versionCodes": {
+                "ARM64_V8A": 29145546,
+                "ARMEABI_V7A": 29145546,
+                "X86_64": 29145546,
+                "X86": 29145546
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "99.1",
+              "versionCodes": {
+                "ARM64_V8A": 29145545,
+                "ARMEABI_V7A": 29145545,
+                "X86_64": 29145545,
+                "X86": 29145545
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
       "name": "Fix Amazon manifest conflicts",
       "description": "Updates shared Amazon permissions so other Amazon apps can coexist.",
       "default": true,
@@ -2094,6 +2416,92 @@
         "RawResourcePatch"
       ],
       "compatiblePackages": null,
+      "options": []
+    },
+    {
+      "name": "Force TV (leanback) UI",
+      "description": "Makes MUBI believe the device is a television, so Android TV boxes that misreport their form factor open the leanback UI. Do not enable on phones.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.mubi",
+          "name": "MUBI",
+          "description": null,
+          "apkFileType": "APKM",
+          "appIconColor": "#0F0F0F",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "100.0",
+              "versionCodes": {
+                "ARM64_V8A": 29145546,
+                "ARMEABI_V7A": 29145546,
+                "X86_64": 29145546,
+                "X86": 29145546
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "99.1",
+              "versionCodes": {
+                "ARM64_V8A": 29145545,
+                "ARMEABI_V7A": 29145545,
+                "X86_64": 29145545,
+                "X86": 29145545
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Force highest video quality",
+      "description": "Reports a 1 Gbps connection to ExoPlayer/Media3 so MUBI picks the highest available rendition instead of downshifting. May increase data use and buffering on slow connections; server-side caps still apply.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.mubi",
+          "name": "MUBI",
+          "description": null,
+          "apkFileType": "APKM",
+          "appIconColor": "#0F0F0F",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "100.0",
+              "versionCodes": {
+                "ARM64_V8A": 29145546,
+                "ARMEABI_V7A": 29145546,
+                "X86_64": 29145546,
+                "X86": 29145546
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "99.1",
+              "versionCodes": {
+                "ARM64_V8A": 29145545,
+                "ARMEABI_V7A": 29145545,
+                "X86_64": 29145545,
+                "X86": 29145545
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
       "options": []
     },
     {
@@ -2664,6 +3072,96 @@
                 "ARMEABI_V7A": 1243250306,
                 "X86_64": 1243250306,
                 "X86": 1243250306
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Packaging toolkit (signature, install source, MicroG)",
+      "description": "Applies the shared signature, install-source and GmsCore/MicroG patches to MUBI in one step. Does not bypass Play Integrity or fix Play Billing.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch",
+        "BytecodePatch",
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.mubi",
+          "name": "MUBI",
+          "description": null,
+          "apkFileType": "APKM",
+          "appIconColor": "#0F0F0F",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "100.0",
+              "versionCodes": {
+                "ARM64_V8A": 29145546,
+                "ARMEABI_V7A": 29145546,
+                "X86_64": 29145546,
+                "X86": 29145546
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "99.1",
+              "versionCodes": {
+                "ARM64_V8A": 29145545,
+                "ARMEABI_V7A": 29145545,
+                "X86_64": 29145545,
+                "X86": 29145545
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Prefer external browser over Custom Tabs",
+      "description": "Removes MUBI's Custom Tabs service query so browser links can fall back to the normal external browser. No effect if MUBI launches Custom Tabs directly.",
+      "default": true,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.mubi",
+          "name": "MUBI",
+          "description": null,
+          "apkFileType": "APKM",
+          "appIconColor": "#0F0F0F",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "100.0",
+              "versionCodes": {
+                "ARM64_V8A": 29145546,
+                "ARMEABI_V7A": 29145546,
+                "X86_64": 29145546,
+                "X86": 29145546
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "99.1",
+              "versionCodes": {
+                "ARM64_V8A": 29145545,
+                "ARMEABI_V7A": 29145545,
+                "X86_64": 29145545,
+                "X86": 29145545
               },
               "isExperimental": false,
               "minSdk": null,
@@ -3893,6 +4391,51 @@
       "options": []
     },
     {
+      "name": "Remove promo cards & upsell banners",
+      "description": "Disables Braze Content Cards, the Braze feed and card refreshes in MUBI. Push notifications and the app's own screens are untouched.",
+      "default": true,
+      "dependencies": [
+        "ResourcePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.mubi",
+          "name": "MUBI",
+          "description": null,
+          "apkFileType": "APKM",
+          "appIconColor": "#0F0F0F",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "100.0",
+              "versionCodes": {
+                "ARM64_V8A": 29145546,
+                "ARMEABI_V7A": 29145546,
+                "X86_64": 29145546,
+                "X86": 29145546
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "99.1",
+              "versionCodes": {
+                "ARM64_V8A": 29145545,
+                "ARMEABI_V7A": 29145545,
+                "X86_64": 29145545,
+                "X86": 29145545
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
       "name": "Remove tracking & analytics",
       "description": "Kills Facebook auto-init and OneSignal, and opts Firebase Crashlytics/Performance/Analytics out of collection at boot, in Everything Widgets. Widget functionality is unaffected; OneSignal push notifications stop.",
       "default": true,
@@ -3941,6 +4484,92 @@
                 "ARMEABI_V7A": 988,
                 "X86_64": 988,
                 "X86": 988
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Skip TV confirmation dialog",
+      "description": "Closes MUBI's Android TV confirmation screen before it draws. Only useful on TV devices; a flow waiting on a dialog result may stall.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.mubi",
+          "name": "MUBI",
+          "description": null,
+          "apkFileType": "APKM",
+          "appIconColor": "#0F0F0F",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "100.0",
+              "versionCodes": {
+                "ARM64_V8A": 29145546,
+                "ARMEABI_V7A": 29145546,
+                "X86_64": 29145546,
+                "X86": 29145546
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "99.1",
+              "versionCodes": {
+                "ARM64_V8A": 29145545,
+                "ARMEABI_V7A": 29145545,
+                "X86_64": 29145545,
+                "X86": 29145545
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Skip pre-roll promos",
+      "description": "Disables MUBI's app-side pre-roll gate when it is a boolean check. Pre-roll injected by the server or embedded in the stream is unaffected.",
+      "default": true,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.mubi",
+          "name": "MUBI",
+          "description": null,
+          "apkFileType": "APKM",
+          "appIconColor": "#0F0F0F",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "100.0",
+              "versionCodes": {
+                "ARM64_V8A": 29145546,
+                "ARMEABI_V7A": 29145546,
+                "X86_64": 29145546,
+                "X86": 29145546
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "99.1",
+              "versionCodes": {
+                "ARM64_V8A": 29145545,
+                "ARMEABI_V7A": 29145545,
+                "X86_64": 29145545,
+                "X86": 29145545
               },
               "isExperimental": false,
               "minSdk": null,
@@ -4045,6 +4674,51 @@
           }
         }
       ]
+    },
+    {
+      "name": "Spoof Widevine level for MUBI",
+      "description": "Reports L1 / HDCP 2.2 to MUBI's local DRM checks. Server-side licensing still decides the resolution, so HD may remain unavailable.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.mubi",
+          "name": "MUBI",
+          "description": null,
+          "apkFileType": "APKM",
+          "appIconColor": "#0F0F0F",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "100.0",
+              "versionCodes": {
+                "ARM64_V8A": 29145546,
+                "ARMEABI_V7A": 29145546,
+                "X86_64": 29145546,
+                "X86": 29145546
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "99.1",
+              "versionCodes": {
+                "ARM64_V8A": 29145545,
+                "ARMEABI_V7A": 29145545,
+                "X86_64": 29145545,
+                "X86": 29145545
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
     },
     {
       "name": "Spoof app signature",
@@ -4229,6 +4903,49 @@
           "values": null
         }
       ]
+    },
+    {
+      "name": "Suppress subscription paywall",
+      "description": "Closes MUBI's upgrade screen immediately instead of showing it. Does not unlock playback or grant a subscription; only hides the upsell screen.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.mubi",
+          "name": "MUBI",
+          "description": null,
+          "apkFileType": "APKM",
+          "appIconColor": "#0F0F0F",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "100.0",
+              "versionCodes": {
+                "ARM64_V8A": 29145546,
+                "ARMEABI_V7A": 29145546,
+                "X86_64": 29145546,
+                "X86": 29145546
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "99.1",
+              "versionCodes": {
+                "ARM64_V8A": 29145545,
+                "ARMEABI_V7A": 29145545,
+                "X86_64": 29145545,
+                "X86": 29145545
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
     },
     {
       "name": "Unlock Account Entitlements",
