@@ -2020,4 +2020,38 @@ val LEAP_FITNESS_ALL = arrayOf(
             )
         )
     )
+
+    /**
+     * MUBI: Curated Cinema (com.mubi).
+     *
+     * MUBI ships split APK bundles and a new build every 1–3 weeks (versionCode
+     * increments by one per release: 99.1 = 29145545, 100.0 = 29145546), so the
+     * MUBI patches are written as structural scans rather than single-version
+     * fingerprints. Keep this list rolling: add each new release after verifying
+     * the patch set against it, and drop versions older than a few months.
+     *
+     * Component map (verified via public static analysis of a merged com.mubi
+     * APK, targetSdk 34, and the MediaHub deep-link registry):
+     *   com.mubi.ui.MainActivity                         launcher + App Links
+     *   com.mubi.ui.player.PlayerActivity                phone playback
+     *   com.mubi.ui.player.tv.TvPlayerActivity           TV playback
+     *   com.mubi.ui.player.trailer.TrailerActivity       phone trailer/pre-roll
+     *   com.mubi.ui.player.trailer.TvTrailerActivity     TV trailer/pre-roll
+     *   com.mubi.ui.subscriptions.UpgradeSubscriptionsActivity
+     *   com.mubi.ui.TvMainActivity                       leanback home
+     *
+     * The backend is entitlement-gated: streaming manifests and Widevine
+     * licences are only issued to subscribed accounts. None of the MUBI patches
+     * in this bundle attempt to bypass that.
+     */
+    val MUBI_COMPATIBILITY = Compatibility(
+        name = "MUBI",
+        packageName = "com.mubi",
+        apkFileType = ApkFileType.APKM,
+        appIconColor = 0x0F0F0F,
+        targets = listOf(
+            AppTarget(version = "100.0", versionCode = 29145546),
+            AppTarget(version = "99.1", versionCode = 29145545),
+        )
+    )
 }

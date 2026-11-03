@@ -1,4 +1,4 @@
-rootProject.name = "Halo-patches"
+rootProject.name = "proteus-patches"
 
 pluginManagement {
     repositories {
@@ -21,7 +21,7 @@ pluginManagement {
 plugins {
     // The Morphe patches plugin. It auto-includes the `patches` and
     // `extensions/extension` modules and provides the `buildAndroid` task
-    // that produces patches-*.mpp (Holopatch Patches bundle).
+    // that produces patches-*.mpp (Proteus Patches bundle).
     // Forked lineage: Doom's Morphe Patches recipe.
     id("app.morphe.patches") version "1.3.3"
 }

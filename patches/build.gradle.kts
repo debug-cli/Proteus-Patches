@@ -1,13 +1,13 @@
-group = "app.Halo.patches"
+group = "app.proteus.patches"
 
 patches {
     about {
-        name = "Halo Patches"
-        description = "One bundle, patches everywhere. 320+ apps."
-        source = "https://github.com/ineednotitle/Halo-patches"
+        name = "Proteus Patches"
+        description = "One bundle, patches everywhere. 230+ apps."
+        source = "https://github.com/ineednotitle/proteus-patches"
         author = "ineednotitle"
         contact = "https://github.com/ineednotitle"
-        website = "https://morphe.software/add-source?github=ineednotitle/Halo-patches"
+        website = "https://morphe.software/add-source?github=ineednotitle/proteus-patches"
         license = "GPLv3"
     }
 }

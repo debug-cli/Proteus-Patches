@@ -1,8 +1,8 @@
-# 👋🧩 Halo Patches
+# 👋🧩 Proteus Patches
 
-> *One bundle, patches everywhere. A Morphe patch suite spanning 320+ apps.*
+> *One bundle, patches everywhere. A Morphe patch suite spanning 230+ apps.*
 
-A **Morphe patch bundle** spanning 320+ apps (grown from a `com.reddit.frontpage`
+A **Morphe patch bundle** spanning 230+ apps (grown from a `com.reddit.frontpage`
 recipe), built by cloning the exact recipe from [rushiranpise/morphe-patches](https://github.com/rushiranpise/morphe-patches)
 ("Doom's Morphe Patches") — which itself is generated from the official
 [morphe-patches-template](https://github.com/MorpheApp/morphe-patches-template).
@@ -37,7 +37,7 @@ to gradle/gradle@v9.7.0's own wrapper
 ## 🧩 Patches
 
 <!-- PATCHES_START -->
-> **[v1.17.0](https://github.com/ineednotitle/Halo-patches/releases/tag/v1.17.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;343 patches total
+> **[v1.17.0](https://github.com/ineednotitle/proteus-patches/releases/tag/v1.17.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;343 patches total
 <details>
 <summary>📦 AAAD&nbsp;&nbsp;•&nbsp;&nbsp;2 patches</summary>
 <br>
@@ -3733,7 +3733,7 @@ Morphe merges splits automatically.
    - `patches-<version>.mpp` (+ attestation)
    - `patches-bundle.json` ← the **remote patch source** for Morphe Manager
    - `patches-list.json`, `SHA256SUMS.txt`
-4. Users then add `https://github.com/YOU/Halo-patches` as a patch
+4. Users then add `https://github.com/YOU/proteus-patches` as a patch
    source in Morphe Manager.
 
 ## 🛠 When Reddit updates and a patch breaks (fingerprint maintenance)
