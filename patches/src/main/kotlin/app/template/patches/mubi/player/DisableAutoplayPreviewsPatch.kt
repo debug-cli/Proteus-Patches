@@ -113,7 +113,7 @@ private fun literalForRegister(
         val instruction = instructions[index]
 
         if (instruction is OneRegisterInstruction && instruction.registerA == register) {
-            val literal = (instruction as? NarrowLiteralInstruction)?.literal ?: return null
+            val literal = (instruction as? NarrowLiteralInstruction)?.narrowLiteral ?: return null
             return index to literal
         }
 
