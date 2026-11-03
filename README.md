@@ -29,7 +29,9 @@ ads, annoyances and risky defaults from popular Android apps — plus a set of
 > if you need the full app set.
 
 **🎯 Supported versions:**
-
+<details>
+<summary>📦 Pinterest &nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
+<br>
 | 14.41.0 |
 | :---: |
 
@@ -563,7 +565,7 @@ patches on apps you don't trust — see the audit for details.
 
 ## 🧾 Provenance
 
-**Thanks For Doom's Morphe Patches to inspire this Project
+**Thanks For Doom's Morphe Patches to inspire this Project for reddit as premium is closed by Doom's
 ([rushiranpise/morphe-patches](https://github.com/rushiranpise/morphe-patches))
 And Thanks to the Morphe Team for creating App and
 The bundle *format* for creating patches
@@ -589,7 +591,7 @@ Releases are versioned by semantic-release (conventional commits); CI builds the
 - [CI_BUILD_GUIDE.md](CI_BUILD_GUIDE.md) — CI/build notes
 
 ## Warning:
-I have no intentions of stealing any of your data. So, Be chill about getting Hacked. You can Even check the code or give it to AI to check.
+I have no intentions of stealing any of your data. So, Be chill about getting Hacked. You can Even check the code or give it to AI to check or put patched apps in the Virustotal.
 The Project created becoz I am a big fan of Morphe Project & I Love my Privacy as it a right! for everyone.  
 
 ## ⚖️ License
