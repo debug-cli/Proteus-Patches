@@ -41,6 +41,8 @@ https://github.com/ineednotitle/Proteus-Patches
 > list below were removed from this bundle. Use `patches-1.19.0.mpp` (or earlier)
 > if you need the full app set.
 
+<!-- PATCHES_START EXPANDED -->
+
 **🎯 Supported versions:**
 <details>
 <summary>📦 Pinterest &nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
