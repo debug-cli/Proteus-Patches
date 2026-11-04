@@ -42,11 +42,34 @@ https://github.com/ineednotitle/Proteus-Patches
 > if you need the full app set.
 
 <!-- PATCHES_START EXPANDED -->
+> **[v2.0.1](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.0.1)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;154 patches total
+<details open>
+<summary>📦 Google Photos&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
+<br>
 
 **🎯 Supported versions:**
-<details>
-<summary>📦 Pinterest &nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
+
+| 7.97.0.997578476 |
+| :---: |
+
+| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
+|----------|----------------|-----------|
+| [AMOLED dark theme](#amoled-dark-theme) | Makes Google Photos dark surfaces true black. |  |
+| [Change package name](#change-package-name) | Installs Google Photos beside the system Photos app by changing package, permissions, providers, and app name. | • Package name<br>• App name |
+| [Custom branding](#custom-branding) | Adds an option to replace the Google Photos launcher icon. | • Custom icon |
+| [Enable DCIM folders backup control](#enable-dcim-folders-backup-control) | Allows controlling Camera and other DCIM folder backup individually. |  |
+| [Fix DCIM folder classification](#fix-dcim-folder-classification) | Prevents non-Camera DCIM folders from being grouped as Camera. |  |
+| [GmsCore support](#gmscore-support) | Adds MicroG/GmsCore support metadata for Google Photos. |  |
+| [Spoof features](#spoof-features) | Spoofs selectable Pixel Photos build and feature flags. | • Pixel profile<br>• Android version<br>• Override ROM feature levels |
+
+</details>
+
+<details open>
+<summary>📦 Pinterest&nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
 <br>
+
+**🎯 Supported versions:**
+
 | 14.41.0 |
 | :---: |
 
@@ -58,7 +81,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 Mereframe&nbsp;&nbsp;•&nbsp;&nbsp;4 patches</summary>
 <br>
 
@@ -76,7 +99,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 Meesho&nbsp;&nbsp;•&nbsp;&nbsp;12 patches</summary>
 <br>
 
@@ -102,7 +125,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 MUBI&nbsp;&nbsp;•&nbsp;&nbsp;16 patches</summary>
 <br>
 
@@ -132,7 +155,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 Telegram&nbsp;&nbsp;•&nbsp;&nbsp;14 patches</summary>
 <br>
 
@@ -160,7 +183,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 Telegram Web&nbsp;&nbsp;•&nbsp;&nbsp;14 patches</summary>
 <br>
 
@@ -188,7 +211,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 Telegram Plus&nbsp;&nbsp;•&nbsp;&nbsp;15 patches</summary>
 <br>
 
@@ -217,7 +240,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 Firefox&nbsp;&nbsp;•&nbsp;&nbsp;2 patches</summary>
 <br>
 
@@ -233,7 +256,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 Claude&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
 <br>
 
@@ -248,7 +271,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 District&nbsp;&nbsp;•&nbsp;&nbsp;2 patches</summary>
 <br>
 
@@ -264,7 +287,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 Strava&nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
 <br>
 
@@ -281,7 +304,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 Amazon Shopping&nbsp;&nbsp;•&nbsp;&nbsp;8 patches</summary>
 <br>
 
@@ -303,7 +326,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 Amazon India&nbsp;&nbsp;•&nbsp;&nbsp;8 patches</summary>
 <br>
 
@@ -325,7 +348,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 Reddit&nbsp;&nbsp;•&nbsp;&nbsp;5 patches</summary>
 <br>
 
@@ -344,7 +367,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 Inure App Manager (GitHub)&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
 <br>
 
@@ -359,7 +382,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 ChatGPT&nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
 <br>
 
@@ -376,7 +399,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 Everything Widgets&nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
 <br>
 
@@ -393,7 +416,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 Excel&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
 <br>
 
@@ -408,7 +431,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 Inure App Manager&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
 <br>
 
@@ -423,7 +446,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 Proxyman&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
 <br>
 
@@ -438,7 +461,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 Malwarebytes Mobile Security&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
 <br>
 
@@ -453,7 +476,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 Proton Pass&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
 <br>
 
@@ -468,7 +491,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 trakt.TV Shows & Movies&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
 <br>
 
@@ -483,7 +506,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 Yatri&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
 <br>
 
@@ -498,7 +521,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 Proton VPN&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
 <br>
 
@@ -513,7 +536,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>📦 Word&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
 <br>
 
@@ -528,7 +551,7 @@ https://github.com/ineednotitle/Proteus-Patches
 
 </details>
 
-<details>
+<details open>
 <summary>🌐 Universal&nbsp;&nbsp;•&nbsp;&nbsp;24 patches</summary>
 <br>
 
