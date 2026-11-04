@@ -14,14 +14,27 @@ ads, annoyances and risky defaults from popular Android apps — plus a set of
 - **v2.0.0** — curated release: **118 patches**, **24 universal**, across **27 app packages** (23 apps)
 - Built and verified with the Morphe Manager v2.3.0 patcher (`patches-list.json` regenerated, zip integrity checked)
 
+[![Add to Morphe](https://img.shields.io/badge/Add_to-Morphe-1f6feb?style=for-the-badge)](https://morphe.software/add-source?github=ineednotitle/Proteus-Patches)
+
+> Tapping **Add to Morphe** on a device with
+> [Morphe Manager](https://github.com/MorpheApp/Morphe) installed adds this repo
+> as a patch source automatically.
+
+Patch source URL (to add manually in Morphe Manager → Sources):
+
+```text
+https://github.com/ineednotitle/Proteus-Patches
+```
+
 ---
 
 ## 📦 Install
 
 1. Install **[Morphe Manager](https://github.com/MorpheApp/Morphe)**.
-2. Download the latest bundle from **[Releases](https://github.com/ineednotitle/Proteus-Patches/releases)** (e.g. `patches-2.0.0.mpp`).
-3. In the Manager: **Settings → Patches → Import patches** → select the `.mpp` file
-   (or add the release URL as a patch source).
+2. Easiest: tap the **Add to Morphe** button above, or add
+   `https://github.com/ineednotitle/Proteus-Patches` as a patch source.
+3. Or download the latest bundle from **[Releases](https://github.com/ineednotitle/Proteus-Patches/releases)**
+   (`patches-2.0.0.mpp`) and use **Settings → Patches → Import patches** in the Manager.
 4. Pick the apps you patch, choose your patches, and patch.
 
 > ⚠️ v2.0.0 is a **breaking, curated** release — patches for apps outside the

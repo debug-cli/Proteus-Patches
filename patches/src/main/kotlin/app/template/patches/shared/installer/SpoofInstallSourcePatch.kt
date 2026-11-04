@@ -6,6 +6,7 @@ import app.morphe.patcher.extensions.InstructionExtensions.instructionsOrNull
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.bytecodePatch
 import app.morphe.patcher.patch.stringOption
+import app.template.patches.shared.getFreeRegisterProvider
 import com.android.tools.smali.dexlib2.AccessFlags
 import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.iface.Method
@@ -169,9 +170,47 @@ val spoofInstallSourcePatch = bytecodePatch(
         // Find Application.onCreate() — present in every Android app.
         val onCreateMethod = ApplicationOnCreateFingerprint.methodOrNull
 
-        if (onCreateMethod != null) {
-            onCreateMethod.addInstructions(0, "const-string v0, \"$targetInstaller\"\ninvoke-static {v0}, $EXTENSION_CLASS->init(Ljava/lang/String;)V")
-            println("Spoof install source: binder proxy injected into Application.onCreate().")
+        // A call to a class that never made it into the DEX would leave an APK that
+        // dies with NoClassDefFoundError at startup, so verify the extension merged
+        // before wiring Layer 2 up.
+        val extensionAvailable = try {
+            classDefBy(EXTENSION_CLASS) != null
+        } catch (_: Throwable) {
+            false
+        }
+
+        if (onCreateMethod != null && !extensionAvailable) {
+            println(
+                "Spoof install source: $EXTENSION_CLASS not found in the merged DEX — " +
+                    "Layer 2 skipped (Layer 1 still applied).",
+            )
+        } else if (onCreateMethod != null) {
+            // Use a scratch register instead of hardcoding v0: in a method with no
+            // locals v0 IS p0, so overwriting it would replace "this".
+            val implementation = onCreateMethod.implementation
+            val parameterRegisters = listOf((implementation?.registerCount ?: 1) - 1)
+            val scratchRegister = implementation?.let {
+                try {
+                    onCreateMethod
+                        .getFreeRegisterProvider(0, 1, parameterRegisters)
+                        .getFreeRegister()
+                } catch (_: IllegalArgumentException) {
+                    null
+                }
+            }
+            if (scratchRegister == null) {
+                println(
+                    "Spoof install source: no free register in Application.onCreate() — " +
+                        "Layer 2 skipped (Layer 1 still applied).",
+                )
+            } else {
+                onCreateMethod.addInstructions(
+                    0,
+                    "const-string v$scratchRegister, \"$targetInstaller\"\n" +
+                        "invoke-static {v$scratchRegister}, $EXTENSION_CLASS->init(Ljava/lang/String;)V",
+                )
+                println("Spoof install source: binder proxy injected into Application.onCreate().")
+            }
         } else {
             println("Spoof install source: Application.onCreate() not found — Layer 2 skipped.")
         }

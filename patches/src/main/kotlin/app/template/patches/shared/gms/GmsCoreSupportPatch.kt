@@ -590,9 +590,18 @@ val gmsCoreVendorOption by stringOption(
             println("GmsCore extension: getOriginalPackageName() patched → \"$originalPackageName\"")
         } ?: println("GmsCore extension: getOriginalPackageName() NOT FOUND — extension may not be merged.")
 
-        // Inject checkGmsCore(context) into Application.onCreate()
+        // Inject checkGmsCore(context) into Application.onCreate().
+        // Skip when the extension class is missing: a dangling reference would only
+        // produce a NoClassDefFoundError at runtime.
+        val extensionAvailable = try {
+            classDefBy(EXTENSION_CLASS) != null
+        } catch (_: Throwable) {
+            false
+        }
         val onCreate = ActivityOnCreateFingerprint.methodOrNull
-        if (onCreate != null) {
+        if (onCreate != null && !extensionAvailable) {
+            println("GmsCore extension: $EXTENSION_CLASS NOT FOUND — checkGmsCore() not injected.")
+        } else if (onCreate != null) {
             onCreate.addInstruction(
                 0,
                 "invoke-static/range { p0 .. p0 }, $EXTENSION_CLASS->checkGmsCore(Landroid/content/Context;)V",

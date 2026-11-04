@@ -145,25 +145,60 @@ val packageNameOption by stringOption(
             )
 
         // Patch placeholder const-strings in SignatureHookApp's static initializer.
-        SignatureHookAppStaticInitFingerprint.method.apply {
-            val instructions = implementation?.instructions?.toList() ?: return@apply
-            var packageNameIndex = -1
-            var signatureIndex = -1
-            instructions.forEachIndexed { i, instr ->
-                val ref = (instr as? com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction21c)
-                    ?.reference as? com.android.tools.smali.dexlib2.iface.reference.StringReference
-                when (ref?.string) {
-                    "<package-name>" -> packageNameIndex = i
-                    "<signature>"    -> signatureIndex = i
-                }
-            }
-            if (packageNameIndex >= 0)
-                replaceInstruction(packageNameIndex, "const-string v0, \"$packageName\"")
-            if (signatureIndex >= 0)
-                replaceInstruction(signatureIndex, "const-string v1, \"${signature.trim()}\"")
+        //
+        // The hook lives in the extension, so if extensions/extension.mpe was not
+        // merged (or the class is missing from it) there is nothing to patch. Report
+        // it and stop instead of throwing: this patch is a dependency of several
+        // toolkits ("Packaging toolkit", Excel/Word signature, Telegram, Proton Pass)
+        // and one missing helper must not fail the whole run.
+        val staticInit = SignatureHookAppStaticInitFingerprint.methodOrNull
+        if (staticInit == null) {
+            println(
+                "Spoof app signature: $EXTENSION_CLASS not found in the merged DEX — " +
+                    "skipping, the signature hook cannot be installed. " +
+                    "Depending patches continue without it.",
+            )
+            return@execute
         }
 
         val hookClass = SignatureHookAppStaticInitFingerprint.originalClassDef
+
+        staticInit.apply {
+            val instructions = implementation?.instructions?.toList() ?: return@apply
+            var packageNameIndex = -1
+            var packageNameRegister = 0
+            var signatureIndex = -1
+            var signatureRegister = 1
+            instructions.forEachIndexed { i, instr ->
+                val instruction21c =
+                    instr as? com.android.tools.smali.dexlib2.iface.instruction.formats.Instruction21c
+                        ?: return@forEachIndexed
+                val ref = instruction21c.reference
+                    as? com.android.tools.smali.dexlib2.iface.reference.StringReference
+                when (ref?.string) {
+                    "<package-name>" -> {
+                        packageNameIndex = i
+                        packageNameRegister = instruction21c.registerA
+                    }
+                    "<signature>" -> {
+                        signatureIndex = i
+                        signatureRegister = instruction21c.registerA
+                    }
+                }
+            }
+            // Keep the register the compiler picked for each const-string: hardcoding
+            // v0/v1 breaks as soon as the extension is compiled differently.
+            if (packageNameIndex >= 0)
+                replaceInstruction(
+                    packageNameIndex,
+                    "const-string v$packageNameRegister, \"$packageName\"",
+                )
+            if (signatureIndex >= 0)
+                replaceInstruction(
+                    signatureIndex,
+                    "const-string v$signatureRegister, \"${signature.trim()}\"",
+                )
+        }
 
         // For apps that already have a custom Application subclass, redirect their superclass
         // to SignatureHookApp so the static initializer fires without replacing app logic.

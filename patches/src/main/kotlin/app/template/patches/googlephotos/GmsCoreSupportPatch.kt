@@ -326,6 +326,22 @@ val googlePhotosGmsCoreSupportPatch = bytecodePatch(
     )
 
     execute {
+        // Everything below targets the extension class. If extensions/extension.mpe
+        // did not merge (or lacks the class) these steps cannot run — skip them with
+        // a warning instead of failing the whole patch.
+        val extensionAvailable = try {
+            classDefBy(EXTENSION_CLASS) != null
+        } catch (_: Throwable) {
+            false
+        }
+        if (!extensionAvailable) {
+            println(
+                "GmsCore extension: $EXTENSION_CLASS not found in the merged DEX — " +
+                    "skipping the runtime GmsCore helpers.",
+            )
+            return@execute
+        }
+
         OriginalPackageNameFingerprint.method.addInstructions(
             0,
             "const-string v0, \"$ORIGINAL_PACKAGE_NAME\"\nreturn-object v0",
@@ -336,10 +352,15 @@ val googlePhotosGmsCoreSupportPatch = bytecodePatch(
             "const-string v0, \"$GMS_CORE_VENDOR_GROUP\"\nreturn-object v0",
         )
 
-        GooglePhotosHomeActivityOnCreateFingerprint.method.addInstruction(
-            0,
-            "invoke-static/range { p0 .. p0 }, $EXTENSION_CLASS->checkGmsCore(Landroid/app/Activity;)V",
-        )
+        GooglePhotosHomeActivityOnCreateFingerprint.methodOrNull
+            ?.addInstruction(
+                0,
+                "invoke-static/range { p0 .. p0 }, $EXTENSION_CLASS->checkGmsCore(Landroid/app/Activity;)V",
+            )
+            ?: println(
+                "GmsCore extension: home activity onCreate() NOT FOUND — " +
+                    "checkGmsCore() not injected.",
+            )
 
         ServiceCheckFingerprint.method.addInstruction(0, "return-void")
 

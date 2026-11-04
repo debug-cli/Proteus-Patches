@@ -18,6 +18,20 @@ val googlePhotosDcimFolderClassificationPatch = bytecodePatch(
     extendWith("extensions/extension.mpe")
 
     execute {
+        // The classification logic lives in the extension; without it this patch can
+        // only produce a dangling reference, so skip instead of breaking the APK.
+        val extensionAvailable = try {
+            classDefBy(EXTENSION_CLASS) != null
+        } catch (_: Throwable) {
+            false
+        }
+        if (!extensionAvailable) {
+            println(
+                "DCIM classification: $EXTENSION_CLASS not found in the merged DEX — skipping.",
+            )
+            return@execute
+        }
+
         LocalMediaInCameraFolderSetterFingerprint.method.addInstructions(
             0,
             """
