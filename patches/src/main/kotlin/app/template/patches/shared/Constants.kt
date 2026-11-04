@@ -649,6 +649,16 @@ val GOOGLE_PHOTOS_COMPATIBILITY = Compatibility(
         targets = listOf(AppTarget(version = "7.97.0.997578476", versionCode = 52547203))
     )
 
+val GBOARD_COMPATIBILITY = Compatibility(
+        name = "Gboard",
+        packageName = "com.google.android.inputmethod.latin",
+        apkFileType = ApkFileType.XAPK,
+        appIconColor = 0x4285F4,
+        targets = listOf(
+            AppTarget(version = "18.5.4.993608717-release-arm64-v8a", versionCode = 176049702)
+        )
+    )
+
 val GREENIFY_COMPATIBILITY = Compatibility(
         name = "Greenify",
         packageName = "com.oasisfeng.greenify",
