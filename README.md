@@ -42,7 +42,7 @@ https://github.com/ineednotitle/Proteus-Patches
 > if you need the full app set.
 
 <!-- PATCHES_START EXPANDED -->
-> **[v2.0.1](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.0.1)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;154 patches total
+> **[v2.1.0](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.1.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;155 patches total
 <details open>
 <summary>📦 Google Photos&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
 <br>
@@ -379,6 +379,21 @@ https://github.com/ineednotitle/Proteus-Patches
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
 |----------|----------------|-----------|
 | [Inure — Unlock Full Version (GitHub)](#inure-unlock-full-version-github) | Bypasses the 15-day trial gate and unlocks all premium features in Inure App Manager (GitHub). |  |
+
+</details>
+
+<details open>
+<summary>📦 Gboard&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
+<br>
+
+**🎯 Supported versions:**
+
+| 18.5.4.993608717-release-arm64-v8a |
+| :---: |
+
+| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
+|----------|----------------|-----------|
+| [Offline-only voice typing & telemetry reduction](#offline-only-voice-typing-telemetry-reduction) | On Gboard 18.5.4.993608717 arm64, routes core voice typing only through the on-device<br>recognizers and returns no recognizer when a local provider/model is unavailable (no<br>online fallback). Disables Agentic Dictation's server/batch retry path, reduces selected<br>metrics/telemetry and disables app backup. INTERNET and unrelated network features are<br>retained; this is best-effort telemetry reduction, not a guarantee of zero Google traffic.<br><br>Requires the appropriate offline speech model/provider to be installed. Without one,<br>voice typing is unavailable by design. Agentic Dictation is disabled. |  |
 
 </details>
 

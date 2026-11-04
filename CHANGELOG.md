@@ -1,3 +1,13 @@
+## [2.1.0](https://github.com/ineednotitle/Proteus-Patches/compare/v2.0.1...v2.1.0) (2026-11-04)
+
+### 🐛 Bug Fixes
+
+* **gboard:** resolve bytecode patch context access ([7f54155](https://github.com/ineednotitle/Proteus-Patches/commit/7f5415577e1765c6780044d515054652c29206ae))
+
+### ✨ New Features
+
+* **gboard:** add offline-only voice typing privacy patch ([e3c0385](https://github.com/ineednotitle/Proteus-Patches/commit/e3c0385ba7ddd71087bc0c4d2e798f526c86eae5))
+
 ## [2.0.1](https://github.com/ineednotitle/Proteus-Patches/compare/v2.0.0...v2.0.1) (2026-11-04)
 
 ### 🐛 Bug Fixes
