@@ -1,3 +1,9 @@
+## [2.1.1](https://github.com/ineednotitle/Proteus-Patches/compare/v2.1.0...v2.1.1) (2026-11-04)
+
+### 🐛 Bug Fixes
+
+* **gboard:** patch Agentic Dictation flags in class initializer ([b31572f](https://github.com/ineednotitle/Proteus-Patches/commit/b31572fd93ea711d018bf2342f4b6c7f746371b1))
+
 ## [2.1.0](https://github.com/ineednotitle/Proteus-Patches/compare/v2.0.1...v2.1.0) (2026-11-04)
 
 ### 🐛 Bug Fixes
