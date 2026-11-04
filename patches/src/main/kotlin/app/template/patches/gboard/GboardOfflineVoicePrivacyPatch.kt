@@ -6,6 +6,7 @@ import app.morphe.patcher.extensions.InstructionExtensions.addInstructionsWithLa
 import app.morphe.patcher.patch.PatchException
 import app.morphe.patcher.patch.bytecodePatch
 import app.morphe.patcher.patch.resourcePatch
+import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod
 import app.template.patches.shared.Constants.GBOARD_COMPATIBILITY
 import app.template.patches.shared.clearBody
 import app.template.patches.shared.ensureRegisters
@@ -70,11 +71,10 @@ private val gboardPrivacyResourcesPatch = resourcePatch(
     }
 }
 
-private fun Fingerprint.replaceBody(requiredRegisters: Int, instructions: String) {
-    val target = method
-    target.ensureRegisters(requiredRegisters)
-    target.clearBody()
-    target.addInstructions(0, instructions.trimIndent())
+private fun MutableMethod.replaceBody(requiredRegisters: Int, instructions: String) {
+    ensureRegisters(requiredRegisters)
+    clearBody()
+    addInstructions(0, instructions.trimIndent())
 }
 
 @Suppress("unused")
@@ -153,7 +153,7 @@ val gboardOfflineVoicePrivacyPatch = bytecodePatch(
             name = "B",
             returnType = "Z",
             parameters = listOf("Lqel;"),
-        ).replaceBody(
+        ).method.replaceBody(
             requiredRegisters = 3, // instance + argument + one local boolean scratch register
             instructions = """
                 const/4 v0, 0x0
@@ -167,14 +167,14 @@ val gboardOfflineVoicePrivacyPatch = bytecodePatch(
             name = "l",
             returnType = "V",
             parameters = listOf("Ljava/lang/Runnable;"),
-        ).replaceBody(requiredRegisters = 3, instructions = "return-void")
+        ).method.replaceBody(requiredRegisters = 3, instructions = "return-void")
 
         Fingerprint(
             definingClass = "Lqet;",
             name = "h",
             returnType = "V",
             parameters = emptyList(),
-        ).replaceBody(requiredRegisters = 2, instructions = "return-void")
+        ).method.replaceBody(requiredRegisters = 2, instructions = "return-void")
 
         // Keep Primes on its built-in no-op instance rather than selecting Clearcut.
         Fingerprint(
@@ -182,7 +182,7 @@ val gboardOfflineVoicePrivacyPatch = bytecodePatch(
             name = "b",
             returnType = "V",
             parameters = listOf("Luml;"),
-        ).replaceBody(requiredRegisters = 2, instructions = "return-void")
+        ).method.replaceBody(requiredRegisters = 2, instructions = "return-void")
 
         // Disable Agentic Dictation's server/batch retry entry point.
         Fingerprint(
@@ -190,7 +190,7 @@ val gboardOfflineVoicePrivacyPatch = bytecodePatch(
             name = "D",
             returnType = "Z",
             parameters = listOf("Lfkh;"),
-        ).replaceBody(
+        ).method.replaceBody(
             requiredRegisters = 3, // instance + argument + one local boolean scratch register
             instructions = """
                 const/4 v0, 0x0
