@@ -10,6 +10,10 @@ import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod
 import app.template.patches.shared.Constants.GBOARD_COMPATIBILITY
 import app.template.patches.shared.clearBody
 import app.template.patches.shared.ensureRegisters
+import com.android.tools.smali.dexlib2.Opcode
+import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
+import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
+import com.android.tools.smali.dexlib2.iface.reference.FieldReference
 import org.w3c.dom.Element
 
 private val gboardPrivacyResourcesPatch = resourcePatch(
@@ -75,6 +79,38 @@ private fun MutableMethod.replaceBody(requiredRegisters: Int, instructions: Stri
     ensureRegisters(requiredRegisters)
     clearBody()
     addInstructions(0, instructions.trimIndent())
+}
+
+/**
+ * Rewrite the register feeding each Agentic Dictation flag assignment. Do not assume
+ * <clinit>'s last instruction is return-void: this Gboard build has a nontrivial initializer.
+ */
+private fun MutableMethod.forceAgenticFlagsFalse() {
+    val instructions = implementation?.instructions
+        ?: throw PatchException("Gboard Agentic Dictation flags have no class initializer")
+
+    val assignments = listOf("a", "c").map { fieldName ->
+        val matches = instructions.mapIndexedNotNull { index, instruction ->
+            if (instruction.opcode != Opcode.SPUT_OBJECT) return@mapIndexedNotNull null
+            val field = (instruction as? ReferenceInstruction)?.reference as? FieldReference
+                ?: return@mapIndexedNotNull null
+            if (field.definingClass != "Lnbx;" || field.name != fieldName || field.type != "Lokc;") {
+                return@mapIndexedNotNull null
+            }
+            val register = (instruction as? OneRegisterInstruction)?.registerA
+                ?: throw PatchException("Gboard Lnbx.$fieldName assignment has no source register")
+            Triple(fieldName, index, register)
+        }
+        if (matches.size != 1) {
+            throw PatchException("Expected one Gboard Lnbx.$fieldName flag assignment, found ${matches.size}")
+        }
+        matches.single()
+    }
+
+    // Insert from the end so the earlier instruction indices remain valid.
+    assignments.sortedByDescending { it.second }.forEach { (_, index, register) ->
+        addInstructions(index, "sget-object v$register, Lokf;->b:Lokc;")
+    }
 }
 
 @Suppress("unused")
@@ -198,26 +234,13 @@ val gboardOfflineVoicePrivacyPatch = bytecodePatch(
             """,
         )
 
-        // Force both Agentic Dictation configuration holders false after their original init.
-        val agenticFlagsInitializer = Fingerprint(
+        // Force both Agentic Dictation configuration holders false at their original assignments.
+        // This works regardless of branches or trailing instructions in <clinit>.
+        Fingerprint(
             definingClass = "Lnbx;",
             name = "<clinit>",
             returnType = "V",
             parameters = emptyList(),
-        ).method
-        agenticFlagsInitializer.ensureRegisters(1)
-        val instructions = agenticFlagsInitializer.implementation?.instructions
-            ?: throw PatchException("Gboard Agentic Dictation flags have no class initializer")
-        if (instructions.lastOrNull()?.opcode?.name != "RETURN_VOID") {
-            throw PatchException("Gboard Agentic Dictation class initializer does not end in return-void")
-        }
-        agenticFlagsInitializer.addInstructions(
-            instructions.size - 1,
-            """
-                sget-object v0, Lokf;->b:Lokc;
-                sput-object v0, Lnbx;->a:Lokc;
-                sput-object v0, Lnbx;->c:Lokc;
-            """.trimIndent(),
-        )
+        ).method.forceAgenticFlagsFalse()
     }
 }
