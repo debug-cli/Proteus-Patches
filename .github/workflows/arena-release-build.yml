@@ -44,6 +44,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Dump build log to step summary on failure
+        if: failure()
+        run: |
+          {
+            echo '### build.log (tail)'
+            echo '```text'
+            tail -300 build.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Prepare release assets
         run: |
           mkdir -p release-assets
