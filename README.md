@@ -42,7 +42,7 @@ https://github.com/ineednotitle/Proteus-Patches
 > if you need the full app set.
 
 <!-- PATCHES_START EXPANDED -->
-> **[v2.2.2](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.2)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/663d48dc-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;157 patches total
+> **[v2.2.2](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.2)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;157 patches total
 <details open>
 <summary>📦 Google Photos&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
 <br>
