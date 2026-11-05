@@ -1,3 +1,9 @@
+## [2.2.1](https://github.com/ineednotitle/Proteus-Patches/compare/v2.2.0...v2.2.1) (2026-11-05)
+
+### 🐛 Bug Fixes
+
+* **reddit:** replace the content-filter config placeholder via its `const-string` instead of a `<clinit>` fingerprint (D8 folds static String initializers into DEX field values on Patcher 2.2.0 / Reddit 2026.42.0)
+
 ## [2.2.0](https://github.com/ineednotitle/Proteus-Patches/compare/v2.1.2...v2.2.0) (2026-11-05)
 
 ### ✨ New Features

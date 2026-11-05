@@ -11,7 +11,7 @@
 ads, annoyances and risky defaults from popular Android apps — plus a set of
 **universal patches** that apply to any app.
 
-- **v2.2.0** — curated release: **157 patches**, **24 universal**, across **28 app packages** (23 apps)
+- **v2.2.1** — curated release: **157 patches**, **24 universal**, across **28 app packages** (23 apps)
 - Built and verified with the Morphe Manager v2.3.0 patcher (`patches-list.json` regenerated, zip integrity checked)
 
 [![Add to Morphe](https://img.shields.io/badge/Add_to-Morphe-1f6feb?style=for-the-badge)](https://morphe.software/add-source?github=ineednotitle/Proteus-Patches)
@@ -34,7 +34,7 @@ https://github.com/ineednotitle/Proteus-Patches
 2. Easiest: tap the **Add to Morphe** button above, or add
    `https://github.com/ineednotitle/Proteus-Patches` as a patch source.
 3. Or download the latest bundle from **[Releases](https://github.com/ineednotitle/Proteus-Patches/releases)**
-   (`patches-2.2.0.mpp`) and use **Settings → Patches → Import patches** in the Manager.
+   (`patches-2.2.1.mpp`) and use **Settings → Patches → Import patches** in the Manager.
 4. Pick the apps you patch, choose your patches, and patch.
 
 > ⚠️ v2.0.0 is a **breaking, curated** release — patches for apps outside the
@@ -42,7 +42,7 @@ https://github.com/ineednotitle/Proteus-Patches
 > if you need the full app set.
 
 <!-- PATCHES_START EXPANDED -->
-> **[v2.2.0](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/663d48dc-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;157 patches total
+> **[v2.2.1](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.1)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/663d48dc-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;157 patches total
 <details open>
 <summary>📦 Google Photos&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
 <br>

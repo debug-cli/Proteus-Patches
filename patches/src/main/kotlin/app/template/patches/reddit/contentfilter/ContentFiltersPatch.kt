@@ -1,6 +1,5 @@
 package app.template.patches.reddit.contentfilter
 
-import app.morphe.patcher.Fingerprint
 import app.morphe.patcher.extensions.InstructionExtensions.getInstruction
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.PatchException
@@ -14,6 +13,7 @@ import app.template.patches.reddit.premium.forceAccountFlags
 import app.template.patches.reddit.shared.REDDIT_CONTENT_FILTER_HELPER
 import app.template.patches.reddit.shared.injectListingChildrenFilter
 import app.template.patches.shared.Constants.REDDIT_COMPATIBILITY
+import app.template.patches.shared.matchAllMethodIndicesForEach
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import java.util.Base64
 
@@ -36,24 +36,18 @@ import java.util.Base64
  *      fields, and content that Reddit never returns (server-side filters,
  *      quarantined communities, age assurance) cannot be restored.
  *
- * Configuration is baked into the helper's `<clinit>` as a Base64 blob at patch
- * time, so the listing hooks need only one register (the children list).  No
- * runtime settings UI is added; repatch to change the rules.
+ * Configuration is baked into the helper by rewriting every `const-string`
+ * carrying [CONFIG_PLACEHOLDER] with a Base64 blob, so the listing hooks need
+ * only one register (the children list).  No runtime settings UI is added;
+ * repatch to change the rules.
  *
- * Verified statically against the Reddit 2026.42.0 Account adapter / Listing
- * layouts used by the existing Reddit patches.  No APK was available in this
- * workspace for on-device testing.
+ * The helper deliberately returns the placeholder from a method rather than a
+ * `static final` field: D8 encodes constant static String fields as DEX static
+ * field initial values and removes their `<clinit>` assignment.  A `<clinit>`
+ * fingerprint therefore failed on Patcher 2.2.0 / Reddit 2026.42.0 (device
+ * report).  Replacing the string constant itself is immune to that folding.
  */
 private const val CONFIG_PLACEHOLDER = "PROTEUS_REDDIT_FILTER_CONFIG_V1"
-
-/** The `const-string` carrying [CONFIG_PLACEHOLDER] in the helper's static initializer. */
-private val HelperConfigFingerprint = Fingerprint(
-    definingClass = REDDIT_CONTENT_FILTER_HELPER,
-    name = "<clinit>",
-    returnType = "V",
-    parameters = emptyList(),
-    filters = listOf(string(CONFIG_PLACEHOLDER)),
-)
 
 private fun encodeField(value: String?): String =
     Base64.getUrlEncoder().encodeToString((value ?: "").toByteArray(Charsets.UTF_8))
@@ -139,17 +133,29 @@ val redditContentFiltersPatch = bytecodePatch(
             ),
         ).joinToString("|")
 
-        val clinit = HelperConfigFingerprint.method
-        // instructionMatches belongs to the Fingerprint (it carries the match
-        // result), not to the resolved MutableMethod.
-        val index = HelperConfigFingerprint.instructionMatches.firstOrNull()?.index
-            ?: throw PatchException(
+        // D8 may keep the placeholder in patchConfig() or inline it into
+        // config(); replace every occurrence so whichever one feeds
+        // Config.parse() carries the real config.  The placeholder is unique to
+        // the extension, so a global string scan (same as replaceStringPatch)
+        // is safe and does not depend on the class/method D8 chose.
+        // Indexes are visited last to first, so replacements do not invalidate
+        // each other.
+        var replacements = 0
+        string(CONFIG_PLACEHOLDER).matchAllMethodIndicesForEach(requireMatches = false) { index ->
+            val register = getInstruction<OneRegisterInstruction>(index).registerA
+            replaceInstruction(index, "const-string v$register, \"$config\"")
+            replacements++
+        }
+        if (replacements == 0) {
+            throw PatchException(
                 "Content filters: config placeholder '$CONFIG_PLACEHOLDER' not found in " +
-                    "$REDDIT_CONTENT_FILTER_HELPER <clinit>. Rebuild the extension module.",
+                    "$REDDIT_CONTENT_FILTER_HELPER. Rebuild the extension module.",
             )
-        val register = clinit.getInstruction<OneRegisterInstruction>(index).registerA
-        clinit.replaceInstruction(index, "const-string v$register, \"$config\"")
-        println("Content filters: baked ${config.length}-character config into helper <clinit>.")
+        }
+        println(
+            "Content filters: baked ${config.length}-character config into " +
+                "$replacements helper constant(s).",
+        )
 
         injectListingChildrenFilter(
             helperMethod = "filterContent",

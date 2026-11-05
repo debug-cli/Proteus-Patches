@@ -35,17 +35,22 @@ import java.util.concurrent.ConcurrentHashMap;
  *       NSFW / spoiler / quarantine / blur gates on the returned items.</li>
  * </ul>
  *
- * <p>{@link #CONFIG} is a placeholder string in the shipped .mpe.  The
- * "Content filters" patch rewrites the matching {@code const-string} in this
- * class' {@code <clinit>} to a Base64-encoded config, so no extra register is
+ * <p>{@link #patchConfig()} returns a placeholder string in the shipped
+ * .mpe.  The "Content filters" patch rewrites every {@code const-string}
+ * carrying that value to a Base64-encoded config, so no extra register is
  * needed at the {@code Listing.children} injection sites.
+ *
+ * <p>Do not move the placeholder into a {@code static final String} field:
+ * D8 encodes such fields as DEX static-field initial values and drops the
+ * {@code <clinit>} assignment, which leaves no instruction for the patch to
+ * replace (seen on Patcher 2.2.0 / Reddit 2026.42.0).
  */
 public final class RedditContentFilterHelper {
 
-    private static final String CONFIG_PLACEHOLDER = "PROTEUS_REDDIT_FILTER_CONFIG_V1";
-
-    /** Replaced at patch time by ContentFiltersPatch. Never final (needs <clinit>). */
-    private static volatile String CONFIG = CONFIG_PLACEHOLDER;
+    /** Replaced at patch time by ContentFiltersPatch. */
+    private static String patchConfig() {
+        return "PROTEUS_REDDIT_FILTER_CONFIG_V1";
+    }
 
     private static volatile Config parsedConfig;
 
@@ -578,7 +583,7 @@ public final class RedditContentFilterHelper {
         }
         synchronized (RedditContentFilterHelper.class) {
             if (parsedConfig == null) {
-                parsedConfig = Config.parse(CONFIG);
+                parsedConfig = Config.parse(patchConfig());
             }
             return parsedConfig;
         }
@@ -600,13 +605,14 @@ public final class RedditContentFilterHelper {
 
         static Config parse(String raw) {
             Config config = new Config();
-            if (raw == null || raw.equals(CONFIG_PLACEHOLDER)) {
-                // Placeholder means the patch-time config rewrite did not run.
+            if (raw == null) {
                 return config;
             }
 
             String[] parts = raw.split("\\|", -1);
             if (parts.length < 5) {
+                // The unpatched placeholder (and any malformed value) has no
+                // pipe-separated fields, so it is a safe no-op.
                 return config;
             }
 
