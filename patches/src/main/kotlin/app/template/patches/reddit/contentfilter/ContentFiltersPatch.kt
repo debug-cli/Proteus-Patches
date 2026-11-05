@@ -140,7 +140,9 @@ val redditContentFiltersPatch = bytecodePatch(
         ).joinToString("|")
 
         val clinit = HelperConfigFingerprint.method
-        val index = clinit.instructionMatches.firstOrNull()?.index
+        // instructionMatches belongs to the Fingerprint (it carries the match
+        // result), not to the resolved MutableMethod.
+        val index = HelperConfigFingerprint.instructionMatches.firstOrNull()?.index
             ?: throw PatchException(
                 "Content filters: config placeholder '$CONFIG_PLACEHOLDER' not found in " +
                     "$REDDIT_CONTENT_FILTER_HELPER <clinit>. Rebuild the extension module.",
