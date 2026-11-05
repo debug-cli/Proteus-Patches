@@ -44,9 +44,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Dump build log to step summary on failure
+      - name: Dump build log to annotations on failure
         if: failure()
         run: |
+          LOG=$(tail -200 build.log | python3 -c 'import sys; print(sys.stdin.read().replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A"))')
+          echo "::error::$LOG"
           {
             echo '### build.log (tail)'
             echo '```text'
