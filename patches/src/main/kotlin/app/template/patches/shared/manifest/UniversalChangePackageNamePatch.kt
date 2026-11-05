@@ -1,4 +1,5 @@
 package app.template.patches.shared.manifest
+import app.template.patches.shared.logUniversal
 
 import app.morphe.patcher.patch.resourcePatch
 import app.morphe.patcher.patch.stringOption
@@ -65,7 +66,7 @@ val universalChangePackageNamePatch = resourcePatch(
             replaceTaskAffinity(allElements, originalPackageName, newPackageName)
 
             application?.setAttribute("android:label", newAppName)
-            println("Change package name: $originalPackageName -> $newPackageName (\"$newAppName\").")
+            logUniversal("Change package name: $originalPackageName -> $newPackageName (\"$newAppName\").")
         }
     }
 }

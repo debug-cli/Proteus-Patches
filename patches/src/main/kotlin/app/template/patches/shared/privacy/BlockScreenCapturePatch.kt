@@ -1,4 +1,5 @@
 package app.template.patches.shared.privacy
+import app.template.patches.shared.logUniversal
 
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
@@ -144,7 +145,7 @@ val blockScreenCapturePatch = bytecodePatch(
             }
         }
 
-        println(
+        logUniversal(
             "Block screen capture: $activitiesPatched activity onCreate(s) forced FLAG_SECURE, " +
                 "$surfaceViewsPatched SurfaceView.setSecure(true) site(s).",
         )

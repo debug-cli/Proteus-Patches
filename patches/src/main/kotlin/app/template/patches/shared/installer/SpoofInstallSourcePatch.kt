@@ -1,4 +1,5 @@
 package app.template.patches.shared.installer
+import app.template.patches.shared.logUniversal
 
 import app.morphe.patcher.Fingerprint
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
@@ -181,7 +182,7 @@ val spoofInstallSourcePatch = bytecodePatch(
         }
 
         if (onCreateMethod != null && !extensionAvailable) {
-            println(
+            logUniversal(
                 "Spoof install source: $EXTENSION_CLASS not found in the merged DEX — " +
                     "Layer 2 skipped (Layer 1 still applied).",
             )
@@ -200,7 +201,7 @@ val spoofInstallSourcePatch = bytecodePatch(
                 }
             }
             if (scratchRegister == null) {
-                println(
+                logUniversal(
                     "Spoof install source: no free register in Application.onCreate() — " +
                         "Layer 2 skipped (Layer 1 still applied).",
                 )
@@ -210,16 +211,16 @@ val spoofInstallSourcePatch = bytecodePatch(
                     "const-string v$scratchRegister, \"$targetInstaller\"\n" +
                         "invoke-static {v$scratchRegister}, $EXTENSION_CLASS->init(Ljava/lang/String;)V",
                 )
-                println("Spoof install source: binder proxy injected into Application.onCreate().")
+                logUniversal("Spoof install source: binder proxy injected into Application.onCreate().")
             }
         } else {
-            println("Spoof install source: Application.onCreate() not found — Layer 2 skipped.")
+            logUniversal("Spoof install source: Application.onCreate() not found — Layer 2 skipped.")
         }
 
         if (patchedCount == 0 && onCreateMethod == null) {
-            println("Spoof install source: no call sites and no Application.onCreate() — patch has no effect.")
+            logUniversal("Spoof install source: no call sites and no Application.onCreate() — patch has no effect.")
         } else {
-            println("Spoof install source: $patchedCount DEX call site(s) patched → \"$targetInstaller\".")
+            logUniversal("Spoof install source: $patchedCount DEX call site(s) patched → \"$targetInstaller\".")
         }
     }
 }

@@ -1,4 +1,5 @@
 package app.template.patches.shared.web
+import app.template.patches.shared.logUniversal
 
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.bytecodePatch
@@ -76,7 +77,7 @@ val webViewMixedContentPatch = bytecodePatch(
             }
         }
 
-        println("WebView mixed content: $patched call site(s) forced to NEVER_ALLOW.")
+        logUniversal("WebView mixed content: $patched call site(s) forced to NEVER_ALLOW.")
     }
 }
 

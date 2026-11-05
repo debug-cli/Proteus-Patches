@@ -1,4 +1,5 @@
 package app.template.patches.shared.web
+import app.template.patches.shared.logUniversal
 
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.bytecodePatch
@@ -62,6 +63,6 @@ val removeJsInterfacesPatch = bytecodePatch(
             }
         }
 
-        println("Remove JS interfaces: $patched addJavascriptInterface call(s) NOPed.")
+        logUniversal("Remove JS interfaces: $patched addJavascriptInterface call(s) NOPed.")
     }
 }

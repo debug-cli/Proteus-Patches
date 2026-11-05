@@ -1,3 +1,22 @@
+## [2.2.2](https://github.com/ineednotitle/Proteus-Patches/compare/v2.2.1...v2.2.2) (2026-11-05)
+
+### ✨ Improvements
+
+* **universal:** optimize all 24 universal patches with shared single-pass manifest helpers, tolerant list parsing, consistent logging and guarded best-effort layers
+* **universal:** make `Remove dangerous permissions` easy to use with 16 category switches, aggressive defaults, keep/extra lists and a legacy exact-list override
+
+## [2.2.1](https://github.com/ineednotitle/Proteus-Patches/compare/v2.2.0...v2.2.1) (2026-11-05)
+
+### 🐛 Bug Fixes
+
+* **reddit:** replace the content-filter config placeholder via its `const-string` instead of a `<clinit>` fingerprint (D8 folds static String initializers into DEX field values on Patcher 2.2.0 / Reddit 2026.42.0)
+
+## [2.2.0](https://github.com/ineednotitle/Proteus-Patches/compare/v2.1.2...v2.2.0) (2026-11-05)
+
+### ✨ New Features
+
+* **reddit:** add AutoMod comment blocking and content filters patches ([b6146b7](https://github.com/ineednotitle/Proteus-Patches/commit/b6146b7))
+
 ## [2.1.2](https://github.com/ineednotitle/Proteus-Patches/compare/v2.1.1...v2.1.2) (2026-11-05)
 
 ### 🐛 Bug Fixes

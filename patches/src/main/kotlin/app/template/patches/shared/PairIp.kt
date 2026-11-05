@@ -258,7 +258,8 @@ val disablePairIPLicenseCheckPatch = bytecodePatch(
     default = false,
 ) {
     execute {
-        killPairIpFull()
+        guarded("Disable PairIP license check") { killPairIpFull() }
+        logUniversal("Disable PairIP license check: completed (missing PairIP classes are skipped).")
     }
 }
 
@@ -292,6 +293,7 @@ fun pairIPManifestPatch(replacementAppClass: String? = null) = resourcePatch(
     default = false,
 ) {
     execute {
+        logUniversal("PairIP manifest bypass: removing LicenseActivity and CHECK_LICENSE permission.")
         document("AndroidManifest.xml").use { doc ->
             if (replacementAppClass != null) {
                 val app = doc.getElementsByTagName("application").item(0) as? org.w3c.dom.Element

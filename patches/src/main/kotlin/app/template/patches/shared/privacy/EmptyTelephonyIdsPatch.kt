@@ -1,4 +1,5 @@
 package app.template.patches.shared.privacy
+import app.template.patches.shared.logUniversal
 
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.bytecodePatch
@@ -78,6 +79,6 @@ val emptyTelephonyIdsPatch = bytecodePatch(
             }
         }
 
-        println("Empty telephony IDs: $patched call site(s) now return \"\".")
+        logUniversal("Empty telephony IDs: $patched call site(s) now return \"\".")
     }
 }

@@ -1,4 +1,5 @@
 package app.template.patches.shared.misc
+import app.template.patches.shared.logUniversal
 
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.bytecodePatch
@@ -67,6 +68,6 @@ val stripLoggingPatch = bytecodePatch(
             }
         }
 
-        println("Strip logging: $patched Log call site(s) removed.")
+        logUniversal("Strip logging: $patched Log call site(s) removed.")
     }
 }

@@ -1,4 +1,5 @@
 package app.template.patches.shared.firebase
+import app.template.patches.shared.logUniversal
 
 import app.morphe.patcher.Fingerprint
 import app.morphe.patcher.extensions.InstructionExtensions.addInstruction
@@ -63,6 +64,7 @@ val spoofFirebaseCertHashPatch = bytecodePatch(
     dependsOn(extractApkCertificatePatch)
 
     execute {
+        logUniversal("Fix Firebase after re-signing: patch applied (or Firebase SDK absent).")
         val hash = autoSha1
             ?.uppercase()
             ?: throw PatchException(

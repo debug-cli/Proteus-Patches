@@ -1,4 +1,5 @@
 package app.template.patches.shared.privacy
+import app.template.patches.shared.logUniversal
 
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.bytecodePatch
@@ -101,7 +102,7 @@ val blockAnalyticsSdksPatch = bytecodePatch(
             }
         }
 
-        println("Block analytics SDKs: $eventsNop event call(s) NOPed, $collectionOff collection flag(s) off.")
+        logUniversal("Block analytics SDKs: $eventsNop event call(s) NOPed, $collectionOff collection flag(s) off.")
     }
 }
 

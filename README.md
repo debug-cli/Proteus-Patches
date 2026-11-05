@@ -3,7 +3,7 @@
 > *One bundle, patches everywhere. A curated [Morphe](https://github.com/MorpheApp/Morphe) patch suite for Android.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](#license)
-[![Patches](https://img.shields.io/badge/patches-118-blue.svg)](#whats-inside)
+[![Patches](https://img.shields.io/badge/patches-157-blue.svg)](#whats-inside)
 [![Universal patches](https://img.shields.io/badge/universal-24-purple.svg)](#universal-patches)
 [![Apps](https://img.shields.io/badge/apps-23-orange.svg)](#supported-apps)
 
@@ -11,7 +11,7 @@
 ads, annoyances and risky defaults from popular Android apps — plus a set of
 **universal patches** that apply to any app.
 
-- **v2.0.0** — curated release: **118 patches**, **24 universal**, across **27 app packages** (23 apps)
+- **v2.2.2** — curated release: **157 patches**, **24 universal**, across **28 app packages** (23 apps)
 - Built and verified with the Morphe Manager v2.3.0 patcher (`patches-list.json` regenerated, zip integrity checked)
 
 [![Add to Morphe](https://img.shields.io/badge/Add_to-Morphe-1f6feb?style=for-the-badge)](https://morphe.software/add-source?github=ineednotitle/Proteus-Patches)
@@ -34,7 +34,7 @@ https://github.com/ineednotitle/Proteus-Patches
 2. Easiest: tap the **Add to Morphe** button above, or add
    `https://github.com/ineednotitle/Proteus-Patches` as a patch source.
 3. Or download the latest bundle from **[Releases](https://github.com/ineednotitle/Proteus-Patches/releases)**
-   (`patches-2.0.0.mpp`) and use **Settings → Patches → Import patches** in the Manager.
+   (`patches-2.2.2.mpp`) and use **Settings → Patches → Import patches** in the Manager.
 4. Pick the apps you patch, choose your patches, and patch.
 
 > ⚠️ v2.0.0 is a **breaking, curated** release — patches for apps outside the
@@ -42,7 +42,7 @@ https://github.com/ineednotitle/Proteus-Patches
 > if you need the full app set.
 
 <!-- PATCHES_START EXPANDED -->
-> **[v2.1.2](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.1.2)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;155 patches total
+> **[v2.2.2](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.2)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;157 patches total
 <details open>
 <summary>📦 Google Photos&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
 <br>
@@ -241,6 +241,27 @@ https://github.com/ineednotitle/Proteus-Patches
 </details>
 
 <details open>
+<summary>📦 Reddit&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
+<br>
+
+**🎯 Supported versions:**
+
+| 2026.42.0 | 🧪&nbsp;2026.41.0 | 🧪&nbsp;2026.40.0 | 🧪&nbsp;2026.39.0 | 2026.24.0 | 2026.10.0 |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+
+| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
+|----------|----------------|-----------|
+| [Block AutoMod comments](#block-automod-comments) | Hides all comments from u/AutoModerator, including stickied bot comments. AutoModerator posts are kept. Client-side only; off by default. |  |
+| [Content filters](#content-filters) | Adds patch-time keyword, community, author and flair filters for feed posts (optionally comments), and locally bypasses Reddit's NSFW/spoiler/quarantine gates and over-18 account flags. Server-side filtering still applies. Off by default. | • Keywords to hide<br>• Communities to hide<br>• Authors to hide<br>• Flairs to hide<br>• Match mode<br>• Bypass built-in content gates<br>• Also filter comments |
+| [Disable Click Tracking](#disable-click-tracking) | Forces the outbound click-tracking account preference off at the Account deserialization choke point (local; server-side click analytics may still be recorded). Enabled by default. |  |
+| [Employee Debug Flags](#employee-debug-flags) | Spoofs is_employee locally at the Account JSON adapter, exposing Reddit's internal employee/debug UI menus (mostly non-functional without the employee backend, and a few may misbehave — enable for exploration only). Off by default. |  |
+| [Remove ads](#remove-ads) | Hides promoted posts in feeds and banner ads in comment threads. |  |
+| [Unlock Account Entitlements](#unlock-account-entitlements) | Locally flips account-gating flags at the Account JSON adapter: can_create_subreddit, can_edit_name, password_set (kills the SSO 'set password' nag) and has_verified_email. Off by default; server entitlements still rule API actions. |  |
+| [Unlock Premium](#unlock-premium) | Flips the local isGold/has_gold_subscription account flags at the JSON adapter to enable Reddit Premium UI (custom icons, premium screens). Server-side perks cannot be unlocked. |  |
+
+</details>
+
+<details open>
 <summary>📦 Firefox&nbsp;&nbsp;•&nbsp;&nbsp;2 patches</summary>
 <br>
 
@@ -345,25 +366,6 @@ https://github.com/ineednotitle/Proteus-Patches
 | [Open links in browser](#open-links-in-browser) | Opens non-Amazon URLs in the default browser instead of the in-app WebView. |  |
 | [Price history charts](#price-history-charts) | Injects Keepa and CamelCamelCamel price history charts on Amazon product pages. | • Chart period<br>• Show period toggle<br>• Toggle periods<br>• Keepa price lines<br>• CamelCamelCamel chart<br>• Hide zero-price gaps<br>• Chart size<br>• Start collapsed |
 | [Remove ads](#remove-ads) | Hides sponsored and ad content in Amazon Shopping via CSS injection. |  |
-
-</details>
-
-<details open>
-<summary>📦 Reddit&nbsp;&nbsp;•&nbsp;&nbsp;5 patches</summary>
-<br>
-
-**🎯 Supported versions:**
-
-| 2026.42.0 | 🧪&nbsp;2026.41.0 | 🧪&nbsp;2026.40.0 | 🧪&nbsp;2026.39.0 | 2026.24.0 | 2026.10.0 |
-| :---: | :---: | :---: | :---: | :---: | :---: |
-
-| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
-|----------|----------------|-----------|
-| [Disable Click Tracking](#disable-click-tracking) | Forces the outbound click-tracking account preference off at the Account deserialization choke point (local; server-side click analytics may still be recorded). Enabled by default. |  |
-| [Employee Debug Flags](#employee-debug-flags) | Spoofs is_employee locally at the Account JSON adapter, exposing Reddit's internal employee/debug UI menus (mostly non-functional without the employee backend, and a few may misbehave — enable for exploration only). Off by default. |  |
-| [Remove ads](#remove-ads) | Hides promoted posts in feeds and banner ads in comment threads. |  |
-| [Unlock Account Entitlements](#unlock-account-entitlements) | Locally flips account-gating flags at the Account JSON adapter: can_create_subreddit, can_edit_name, password_set (kills the SSO 'set password' nag) and has_verified_email. Off by default; server entitlements still rule API actions. |  |
-| [Unlock Premium](#unlock-premium) | Flips the local isGold/has_gold_subscription account flags at the JSON adapter to enable Reddit Premium UI (custom icons, premium screens). Server-side perks cannot be unlocked. |  |
 
 </details>
 
@@ -588,7 +590,7 @@ https://github.com/ineednotitle/Proteus-Patches
 | [Lock down exported components](#lock-down-exported-components) | Sets android:exported="false" on activities, services and receivers that have no<br>intent filter, so other apps cannot start them directly. Deep links, share-in<br>targets and the launcher activity (all of them have intent filters) are never<br>touched.<br><br>Applies to any app. May break apps that rely on explicitly exported entry points. |  |
 | [Prefer external browser over Custom Tabs](#prefer-external-browser-over-custom-tabs) | Opens links in the default external browser instead of an in-app Custom Tab,<br>by rewriting CustomTabsIntent.launchUrl call sites into ACTION_VIEW intents.<br><br>Applies to any app. Some apps rely on the Custom Tab session (shared cookies,<br>return results) and may misbehave. |  |
 | [Provide Original app certificate](#provide-original-app-certificate) | Automatically reads the signing certificate from the APK you are patching — no original app installed or file provided needed. Only fill the options below if you are patching an APK that was already re-signed (e.g. a previously patched build): in that case point to the original APK file, or enter the certificate manually. | • Path to original APK (if uninstalled)<br>• Certificate SHA-1 (manual)<br>• Certificate SHA-256 (manual)<br>• Certificate Base64 DER (manual) |
-| [Remove dangerous permissions](#remove-dangerous-permissions) | Removes privacy-invasive permissions (package visibility, phone state, accounts,<br>location, contacts, microphone, screen-capture detection, advertising ID) from any<br>app's manifest. Storage and SMS permissions are kept by default.<br><br>The removal list is configurable. Removing a permission the app actually needs can<br>break features (login, calls, address auto-detect). | • Permissions to remove |
+| [Remove dangerous permissions](#remove-dangerous-permissions) | Removes privacy-invasive permissions from any app's manifest using simple<br>category switches. All categories are ON by default (aggressive): package<br>visibility, phone, accounts, location, contacts, microphone, camera,<br>storage, SMS, calendar, sensors, nearby devices, ad ID, AdServices,<br>notifications and screen-capture detection.<br><br>Use "Permissions to keep" to exempt a single permission, or "Advanced:<br>exact removal list" to replace the switches with your own list.<br><br>Removing a permission the app actually needs can break features (login,<br>calls, camera, file picker, notifications). Off by default. | • Package visibility<br>• Phone state & numbers<br>• Accounts<br>• Location<br>• Contacts<br>• Microphone<br>• Camera<br>• Storage & media<br>• SMS<br>• Calendar<br>• Sensors & activity<br>• Nearby devices<br>• Screen-capture detection<br>• Advertising ID<br>• AdServices permissions<br>• Notifications<br>• Permissions to keep<br>• Extra permissions to remove<br>• Advanced: exact removal list |
 | [Spoof Widevine / DRM level](#spoof-widevine-drm-level) | Reports Widevine L1 (hardware DRM) to apps that check DRM level locally.<br><br>Useful for apps that refuse to play HD/4K content on L3 devices or after re-signing.<br><br>Does not bypass server-side DRM - Netflix, Disney+ and similar are not affected.<br>Applies to any app; no effect if the app does not query Widevine. | • Widevine security level to report<br>• HDCP level to report |
 | [Spoof app signature](#spoof-app-signature) | Makes the app think its signing certificate is unchanged after Morphe re-signs it.<br><br>Useful when an app crashes or shows a tamper warning because it checks its own certificate.<br><br>Does not bypass Play Integrity / SafetyNet hardware attestation.<br><br>Apply with Original app certificate patch. | • Package name override (optional)<br>• Certificate Base64 override (optional) |
 | [Spoof install source](#spoof-install-source) | Makes the app think it was installed from a specific store (default: Google Play).<br><br>Useful when an app blocks features or shows errors because it detects it was not installed from the Play Store.<br><br>Only affects what the app itself sees - does not change the real system install record. | • Store to impersonate |

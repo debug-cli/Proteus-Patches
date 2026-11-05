@@ -1,4 +1,5 @@
 package app.template.patches.shared.cert
+import app.template.patches.shared.logUniversal
 
 import app.morphe.patcher.patch.rawResourcePatch
 import app.morphe.patcher.patch.stringOption
@@ -188,6 +189,7 @@ val extractApkCertificatePatch = rawResourcePatch(
     ) { it == null || it.isBlank() || runCatching { Base64.getDecoder().decode(it.replace(Regex("\\s+"), "")) }.isSuccess }
 
     execute {
+        logUniversal("Provide Original app certificate: resolving signing certificate.")
         // Pre-seeded cert takes top priority (e.g. SpotifyCertSeedPatch)
         if (autoCertSource == "preseed") {
             log.info("Using pre-seeded cert.")

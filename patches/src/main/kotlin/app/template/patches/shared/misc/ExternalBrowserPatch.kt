@@ -1,4 +1,5 @@
 package app.template.patches.shared.misc
+import app.template.patches.shared.logUniversal
 
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstructions
 import app.morphe.patcher.patch.bytecodePatch
@@ -116,6 +117,6 @@ val externalBrowserPatch = bytecodePatch(
             }
         }
 
-        println("External browser: $patched CustomTabsIntent.launchUrl call site(s) rewritten.")
+        logUniversal("External browser: $patched CustomTabsIntent.launchUrl call site(s) rewritten.")
     }
 }
