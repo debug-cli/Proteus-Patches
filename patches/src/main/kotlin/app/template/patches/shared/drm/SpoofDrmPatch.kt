@@ -1,4 +1,5 @@
 package app.template.patches.shared.drm
+import app.template.patches.shared.logUniversal
 
 import app.morphe.patcher.Fingerprint
 import app.morphe.patcher.extensions.InstructionExtensions.addInstruction
@@ -191,7 +192,7 @@ val spoofDrmPatch = bytecodePatch(
             }
         }
 
-        println("Spoof DRM: $patchedCount site(s) patched → securityLevel=$level hdcp=$hdcp")
+        logUniversal("Spoof DRM: $patchedCount site(s) patched → securityLevel=$level hdcp=$hdcp")
     }
 }
 

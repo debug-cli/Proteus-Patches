@@ -80,3 +80,54 @@ This pass covered two things:
 3. Patch an app that uses PairIP and confirm it starts.
 4. Patch an already re-signed APK and confirm manual certificate values are used by
    the GmsCore/Firebase/signature patches.
+
+## v2.2.2 optimization & usability pass
+
+Scope requested: **all 24 universal patches**, with the permission patch as the
+main usability target. User selections: category toggles, aggressive defaults.
+
+### Shared layer (`shared/UniversalUtils.kt`, new)
+- `logUniversal(message)` — one greppable `[Proteus/Universal]` log prefix; every
+  universal patch now uses it instead of ad-hoc `println`.
+- `guarded(tag, block)` — one fail-safe wrapper for best-effort bytecode layers
+  (used by the PairIP patch; other `runCatching` sites keep their specific handling).
+- `parseTokens(value, fallback)` — tolerant comma/semicolon/newline lists: blank
+  entries, trailing commas and whitespace are ignored. Backs `RELAXED_LIST_VALIDATOR`,
+  which replaces validators that rejected harmless blank input.
+- `forEachManifestElement` / `removeManifestElements` — **single-pass** DOM
+  traversal helpers. Removal is snapshotted and applied in reverse document order,
+  so live `NodeList` indices stay valid.
+- `UNIVERSAL_PERMISSION_TAGS` — one shared constant for
+  `uses-permission` / `-sdk-23` / `-sdk-m`.
+
+### Manifest patches refactored to one traversal
+`Block cleartext (HTTP) traffic`, `Block user-added certificate authorities`,
+`Disable app backup`, `Force not debuggable`, `Lock down exported components`,
+`Remove dangerous permissions`. `Change package name (clone app)` keeps its
+existing all-elements walk (already single-pass) and gains the shared logger.
+
+### `Remove dangerous permissions` — usability rewrite
+- Replaced the single long `permissionsToRemove` string with **16 category
+  switches** (package visibility, phone, accounts, location, contacts, mic,
+  camera, storage, SMS, calendar, sensors, nearby devices, screen-capture
+  detection, ad ID, AdServices prefix, notifications).
+- **All switches default ON** (aggressive), as selected. The patch itself stays
+  `default = false` (universal patches are forced off by the patcher).
+- `permissionsToKeep` exempts individual permissions; `extraPermissionsToRemove`
+  adds names; `permissionsToRemove` remains as a legacy exact-list override so
+  existing configurations keep working.
+- AdServices is now a real toggle instead of being unconditionally removed.
+- Single `removeManifestElements` pass over all three permission tags; logs the
+  count and a short preview.
+
+### Cross-cutting
+All 24 universal patch sources now emit the shared log prefix. Bytecode patches
+were not semantically rewritten in this pass — their previously audited
+register-safe rewrites remain intact — so the risk is confined to the two
+shared helpers and the six manifest patches above.
+
+> Verification status: CI `./gradlew buildAndroid` is run for the v2.2.2 release;
+> `./gradlew generatePatchesList` is used in CI to reconcile `patches-list.json`
+> with the new option set. On-device validation of the aggressive permission
+> defaults is still recommended (camera / storage / notifications / SMS can break
+> app features when removed).

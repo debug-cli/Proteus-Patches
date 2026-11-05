@@ -1,15 +1,17 @@
 package app.template.patches.shared.manifest
 
 import app.morphe.patcher.patch.resourcePatch
+import app.template.patches.shared.forEachManifestElement
+import app.template.patches.shared.logUniversal
 import org.w3c.dom.Element
 
 // Universal "Lock down exported components" patch.
 // Sets android:exported="false" on <activity>/<activity-alias>/<service>/
 // <receiver> that have NO <intent-filter> child (deep links, share-in and the
 // MAIN/LAUNCHER activity all have filters and are never touched; providers are
-// skipped). Fail-safe; default = false.
+// skipped). Fail-safe; default = false. Single-pass component traversal.
 
-private val COMPONENT_TAGS = listOf("activity", "activity-alias", "service", "receiver")
+private val COMPONENT_TAGS = arrayOf("activity", "activity-alias", "service", "receiver")
 
 @Suppress("unused")
 val lockExportedComponentsPatch = resourcePatch(
@@ -30,25 +32,23 @@ val lockExportedComponentsPatch = resourcePatch(
                 ?: return@use
 
             var patched = 0
-            COMPONENT_TAGS.forEach { tag ->
-                val nodes = doc.getElementsByTagName(tag)
-                for (index in 0 until nodes.length) {
-                    val component = nodes.item(index) as? Element ?: continue
-                    if (component.parentNode !== application &&
-                        component.parentNode?.parentNode !== application
-                    ) continue
+            doc.forEachManifestElement(*COMPONENT_TAGS) { component ->
+                if (component.parentNode !== application &&
+                    component.parentNode?.parentNode !== application
+                ) return@forEachManifestElement
 
-                    val hasIntentFilter = (0 until component.childNodes.length).any { childIndex ->
-                        (component.childNodes.item(childIndex) as? Element)?.tagName == "intent-filter"
-                    }
-                    if (hasIntentFilter) continue
-
-                    if (component.getAttribute("android:exported") == "false") continue
-                    component.setAttribute("android:exported", "false")
-                    patched++
+                val hasIntentFilter = (0 until component.childNodes.length).any { childIndex ->
+                    (component.childNodes.item(childIndex) as? Element)?.tagName == "intent-filter"
                 }
+                if (hasIntentFilter) return@forEachManifestElement
+
+                if (component.getAttribute("android:exported") == "false") return@forEachManifestElement
+                component.setAttribute("android:exported", "false")
+                patched++
             }
-            println("Lock exported components: $patched component(s) set to exported=false.")
+            logUniversal(
+                "Lock exported components: $patched component(s) set to exported=false.",
+            )
         }
     }
 }

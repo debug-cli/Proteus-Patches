@@ -1,3 +1,10 @@
+## [2.2.2](https://github.com/ineednotitle/Proteus-Patches/compare/v2.2.1...v2.2.2) (2026-11-05)
+
+### ✨ Improvements
+
+* **universal:** optimize all 24 universal patches with shared single-pass manifest helpers, tolerant list parsing, consistent logging and guarded best-effort layers
+* **universal:** make `Remove dangerous permissions` easy to use with 16 category switches, aggressive defaults, keep/extra lists and a legacy exact-list override
+
 ## [2.2.1](https://github.com/ineednotitle/Proteus-Patches/compare/v2.2.0...v2.2.1) (2026-11-05)
 
 ### 🐛 Bug Fixes

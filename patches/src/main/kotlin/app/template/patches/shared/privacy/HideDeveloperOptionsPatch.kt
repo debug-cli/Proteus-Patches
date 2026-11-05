@@ -1,4 +1,5 @@
 package app.template.patches.shared.privacy
+import app.template.patches.shared.logUniversal
 
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstructions
@@ -136,7 +137,7 @@ val hideDeveloperOptionsPatch = bytecodePatch(
             }
         }
 
-        println(
+        logUniversal(
             "Hide developer options: $settingsSitesPatched settings read(s) forced to 0, " +
                 "$propertySitesPatched system property read(s) forced to \"0\".",
         )

@@ -1,4 +1,5 @@
 package app.template.patches.shared.web
+import app.template.patches.shared.logUniversal
 
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.bytecodePatch
@@ -81,7 +82,7 @@ val webViewFileAccessPatch = bytecodePatch(
             }
         }
 
-        println("WebView file access: $patched call site(s) forced to false.")
+        logUniversal("WebView file access: $patched call site(s) forced to false.")
     }
 }
 

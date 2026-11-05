@@ -1,4 +1,5 @@
 package app.template.patches.shared.privacy
+import app.template.patches.shared.logUniversal
 
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.bytecodePatch
@@ -94,7 +95,7 @@ val universalAllowScreenCapturePatch = bytecodePatch(
             }
         }
 
-        println("Allow screen capture: $patched FLAG_SECURE literal(s) cleared.")
+        logUniversal("Allow screen capture: $patched FLAG_SECURE literal(s) cleared.")
     }
 }
 

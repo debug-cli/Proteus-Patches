@@ -1,4 +1,5 @@
 package app.template.patches.shared.gms
+import app.template.patches.shared.logUniversal
 
 import app.morphe.patcher.Fingerprint
 import app.morphe.patcher.extensions.InstructionExtensions.addInstruction
@@ -426,7 +427,7 @@ val gmsCorePatch = bytecodePatch(
                 val vendorGroup = gmsVendorGroup(vendor)
                 val sig = autoSha1
                 if (sig == null) {
-                    println(
+                    logUniversal(
                         "GmsCore support: no signing certificate available — " +
                             "SPOOFED_PACKAGE_SIGNATURE will not be injected. Apply the " +
                             "\"Provide Original app certificate\" patch (or fill its manual options) " +
@@ -652,15 +653,15 @@ val gmsCorePatch = bytecodePatch(
         GmsCoreSupportFingerprint.methodOrNull?.apply {
             addInstruction(0, "return-object v0")
             addInstruction(0, "const-string v0, \"$vendorGroup\"")
-            println("GmsCore extension: getGmsCoreVendorGroupId() patched → \"$vendorGroup\"")
-        } ?: println("GmsCore extension: getGmsCoreVendorGroupId() NOT FOUND — extension may not be merged.")
+            logUniversal("GmsCore extension: getGmsCoreVendorGroupId() patched → \"$vendorGroup\"")
+        } ?: logUniversal("GmsCore extension: getGmsCoreVendorGroupId() NOT FOUND — extension may not be merged.")
 
         // Patch extension: getOriginalPackageName() → return "<original package name>"
         OriginalPackageNameFingerprint.methodOrNull?.apply {
             addInstruction(0, "return-object v0")
             addInstruction(0, "const-string v0, \"$originalPackageName\"")
-            println("GmsCore extension: getOriginalPackageName() patched → \"$originalPackageName\"")
-        } ?: println("GmsCore extension: getOriginalPackageName() NOT FOUND — extension may not be merged.")
+            logUniversal("GmsCore extension: getOriginalPackageName() patched → \"$originalPackageName\"")
+        } ?: logUniversal("GmsCore extension: getOriginalPackageName() NOT FOUND — extension may not be merged.")
 
         // Inject checkGmsCore(context) into Application.onCreate().
         // Skip when the extension class is missing: a dangling reference would only
@@ -672,15 +673,15 @@ val gmsCorePatch = bytecodePatch(
         }
         val onCreate = ActivityOnCreateFingerprint.methodOrNull
         if (onCreate != null && !extensionAvailable) {
-            println("GmsCore extension: $EXTENSION_CLASS NOT FOUND — checkGmsCore() not injected.")
+            logUniversal("GmsCore extension: $EXTENSION_CLASS NOT FOUND — checkGmsCore() not injected.")
         } else if (onCreate != null) {
             onCreate.addInstruction(
                 0,
                 "invoke-static/range { p0 .. p0 }, $EXTENSION_CLASS->checkGmsCore(Landroid/content/Context;)V",
             )
-            println("GmsCore extension: checkGmsCore() injected into Activity.onCreate().")
+            logUniversal("GmsCore extension: checkGmsCore() injected into Activity.onCreate().")
         } else {
-            println("GmsCore extension: Activity.onCreate() NOT FOUND — checkGmsCore() not injected.")
+            logUniversal("GmsCore extension: Activity.onCreate() NOT FOUND — checkGmsCore() not injected.")
         }
     }
 }

@@ -1,4 +1,5 @@
 package app.template.patches.shared.signature
+import app.template.patches.shared.logUniversal
 
 import app.morphe.patcher.Fingerprint
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
@@ -170,7 +171,7 @@ val spoofSignatureVerificationPatch = bytecodePatch(
         // and one missing helper must not fail the whole run.
         val staticInit = SignatureHookAppStaticInitFingerprint.methodOrNull
         if (staticInit == null) {
-            println(
+            logUniversal(
                 "Spoof app signature: $EXTENSION_CLASS not found in the merged DEX — " +
                     "skipping, the signature hook cannot be installed. " +
                     "Depending patches continue without it.",
@@ -225,6 +226,6 @@ val spoofSignatureVerificationPatch = bytecodePatch(
             }
         }
 
-        println("Spoof signature: package=$packageName, cert=${signature.take(20)}...")
+        logUniversal("Spoof signature: package=$packageName, cert=${signature.take(20)}...")
     }
 }
