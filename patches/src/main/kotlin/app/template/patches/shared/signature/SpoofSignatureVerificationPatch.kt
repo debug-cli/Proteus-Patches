@@ -120,14 +120,27 @@ val spoofSignatureVerificationPatch = bytecodePatch(
     """.trimIndent(),
     default = false,
 ) {
-val packageNameOption by stringOption(
+    val packageNameOption by stringOption(
         key = "packageName",
         default = null,
         title = "Package name override (optional)",
         description = "Leave blank — read automatically from the app. " +
             "Only set this if you changed the app's package name and the patch is using the wrong one.",
         required = false,
-    ) { it == null || it!!.matches(Regex("^[a-z]\\w*(\\.[a-z]\\w*)+\$")) }
+    ) { it == null || it.isBlank() || it.matches(Regex("^[a-z]\\w*(\\.[a-z]\\w*)+\$")) }
+
+    val signatureOption by stringOption(
+        key = "signature",
+        default = null,
+        title = "Certificate Base64 override (optional)",
+        description = "Leave blank to read the original certificate from the APK automatically. " +
+            "Only paste a Base64-encoded DER certificate here if auto-detection fails " +
+            "(for example because the APK was already re-signed).",
+        required = false,
+    ) {
+        it == null || it.isBlank() ||
+            runCatching { java.util.Base64.getDecoder().decode(it.replace(Regex("\\s+"), "")) }.isSuccess
+    }
 
     dependsOn(extractPackageNamePatch, extractApkCertificatePatch, injectSignatureHookAppPatch)
 
@@ -137,11 +150,15 @@ val packageNameOption by stringOption(
         // Resolve package name.
         val packageName = packageNameOption?.takeIf { it.isNotBlank() } ?: extractedPackageName
 
-        // Resolve signature.
-        val signature = autoBase64Der
+        // Resolve signature. The manual option wins over auto-extraction so a user
+        // can always recover from a re-signed input APK.
+        val signature = signatureOption
+            ?.replace(Regex("\\s+"), "")
+            ?.takeIf { it.isNotEmpty() }
+            ?: autoBase64Der
             ?: throw PatchException(
-                "No certificate found in META-INF and no signature supplied. " +
-                    "Provide the Base64-encoded certificate via the 'signature' option."
+                "No certificate found in META-INF and no certificate supplied. " +
+                    "Paste the Base64 DER certificate in the 'Certificate Base64 override' option."
             )
 
         // Patch placeholder const-strings in SignatureHookApp's static initializer.

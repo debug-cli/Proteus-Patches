@@ -6,6 +6,7 @@ import app.morphe.patcher.extensions.InstructionExtensions.instructionsOrNull
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.bytecodePatch
 import app.morphe.patcher.patch.stringOption
+import app.template.patches.shared.constValue
 import app.template.patches.shared.getFreeRegisterProvider
 import com.android.tools.smali.dexlib2.AccessFlags
 import com.android.tools.smali.dexlib2.Opcode
@@ -156,7 +157,7 @@ val spoofInstallSourcePatch = bytecodePatch(
 
                     val reg = moveResult.registerA
                     val replacement = if (isIntReturn)
-                        "const/4 v$reg, 0x$PACKAGE_SOURCE_STORE"
+                        constValue(reg, PACKAGE_SOURCE_STORE)
                     else
                         "const-string v$reg, \"$targetInstaller\""
 

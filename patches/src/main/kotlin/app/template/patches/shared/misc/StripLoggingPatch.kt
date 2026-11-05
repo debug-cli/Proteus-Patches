@@ -2,6 +2,7 @@ package app.template.patches.shared.misc
 
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.bytecodePatch
+import app.template.patches.shared.constValue
 import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
@@ -48,10 +49,13 @@ val stripLoggingPatch = bytecodePatch(
                     if (reference.name !in LOG_METHODS || reference.returnType != "I") return@forEachIndexed
 
                     replacements[index] = "nop"
+                    // Count every Log call once, independent of whether its int result
+                    // is captured by a following move-result.
+                    patched++
 
                     val next = instructions.getOrNull(index + 1)
                     if (next is OneRegisterInstruction && next.opcode == Opcode.MOVE_RESULT) {
-                        replacements[index + 1] = "const/4 v${next.registerA}, 0x0"
+                        replacements[index + 1] = constValue(next.registerA, 0)
                     }
                 }
 
@@ -59,7 +63,6 @@ val stripLoggingPatch = bytecodePatch(
                     replacements.entries
                         .sortedByDescending { it.key }
                         .forEach { (index, smali) -> method.replaceInstruction(index, smali) }
-                    patched += replacements.size / 2 + replacements.size % 2
                 }
             }
         }

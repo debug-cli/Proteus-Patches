@@ -181,6 +181,40 @@ private val APP_PERMISSIONS = mutableSetOf(
 private val APP_AUTHORITIES = mutableSetOf<String>()
 
 /**
+ * Ensure `<queries>` contains `<package android:name="…"/>`.
+ *
+ * Android 11+ package-visibility rules hide other packages unless they are declared
+ * here. Without this entry an app cannot resolve GmsCore/MicroG at all, which makes
+ * the GmsCore patch silently ineffective on modern Android even though the meta-data
+ * and permission are present. Creates the `<queries>` element when the manifest has
+ * none.
+ */
+private fun upsertQueriesPackage(doc: org.w3c.dom.Document, packageName: String) {
+    val manifest = doc.getElementsByTagName("manifest").item(0) as? Element ?: return
+    val queriesNodes = doc.getElementsByTagName("queries")
+    val queries: Element = if (queriesNodes.length > 0) {
+        queriesNodes.item(0) as? Element ?: return
+    } else {
+        val created = doc.createElement("queries") as Element
+        val application = doc.getElementsByTagName("application").item(0)
+        if (application != null) manifest.insertBefore(created, application)
+        else manifest.appendChild(created)
+        created
+    }
+
+    val alreadyPresent = (0 until queries.childNodes.length).any { index ->
+        val node = queries.childNodes.item(index)
+        node.nodeName == "package" &&
+            node.attributes?.getNamedItem("android:name")?.nodeValue == packageName
+    }
+    if (alreadyPresent) return
+
+    val pkg = doc.createElement("package") as Element
+    pkg.setAttribute("android:name", packageName)
+    queries.appendChild(pkg)
+}
+
+/**
  * Resource-only half of GmsCore support. Injects spoofing metadata into AndroidManifest so
  * MicroG RE (or any GmsCore fork) can present itself as Google Play Services to this app.
  *
@@ -202,9 +236,19 @@ fun gmsCoreSupportResourcePatch(
     gmsCoreVendor: String = DEFAULT_GMS_CORE_VENDOR,
 ) = resourcePatch {
     execute {
+        // Accept either a full GmsCore package ("app.revanced.android.gms") or a
+        // vendor group ("app.revanced"); always derive the full package for lookups.
+        val vendorPackage = if (gmsCoreVendor.endsWith(".android.gms")) {
+            gmsCoreVendor
+        } else {
+            "$gmsCoreVendor.android.gms"
+        }
+        val vendorGroup = gmsVendorGroup(gmsCoreVendor)
+
         document("AndroidManifest.xml").use { doc ->
             val manifestNode = doc.getElementsByTagName("manifest").item(0)
-            val applicationNode = doc.getElementsByTagName("application").item(0)
+            val applicationNode = doc.getElementsByTagName("application").item(0) as? Element
+                ?: return@use
 
             // FAKE_PACKAGE_SIGNATURE permission — MicroG RE reads this to enable spoofing.
             val existingPerms = doc.getElementsByTagName("uses-permission")
@@ -219,27 +263,8 @@ fun gmsCoreSupportResourcePatch(
                 manifestNode.appendChild(permNode)
             }
 
-            // <queries> entry so the app can resolve the GmsCore package.
-            val manifestFile = get("AndroidManifest.xml")
-            var manifestContent = manifestFile.readText()
-            if ("</queries>" in manifestContent && "$gmsCoreVendor.android.gms" !in manifestContent) {
-                manifestContent = manifestContent.replace(
-                    "</queries>",
-                    "<package android:name=\"$gmsCoreVendor.android.gms\"/></queries>",
-                )
-            }
-
-            // Manifest string rewrites: c2dm, authorities, per-package permissions.
-            mapOf(
-                "com.google.android.c2dm" to "$gmsCoreVendor.android.c2dm",
-                "android:authorities=\"$originalPackageName" to "android:authorities=\"$patchedPackageName",
-                "$originalPackageName.permission.C2D_MESSAGE" to "$patchedPackageName.permission.C2D_MESSAGE",
-                "$originalPackageName.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" to
-                    "$patchedPackageName.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
-            ).forEach { (from, to) ->
-                manifestContent = manifestContent.replace(from, to)
-            }
-            manifestFile.writeText(manifestContent)
+            // <queries> entry so the app can resolve the GmsCore package (Android 11+).
+            upsertQueriesPackage(doc, vendorPackage)
 
             // meta-data entries read by GmsCore to spoof the original identity.
             fun Node.upsertMeta(name: String, value: String) {
@@ -260,18 +285,34 @@ fun gmsCoreSupportResourcePatch(
             }
 
             applicationNode.upsertMeta(
-                "$gmsCoreVendor.android.gms.SPOOFED_PACKAGE_NAME",
+                "$vendorPackage.SPOOFED_PACKAGE_NAME",
                 originalPackageName,
             )
             applicationNode.upsertMeta(
-                "$gmsCoreVendor.android.gms.SPOOFED_PACKAGE_SIGNATURE",
+                "$vendorPackage.SPOOFED_PACKAGE_SIGNATURE",
                 spoofedPackageSignature,
             )
             applicationNode.upsertMeta(
-                "$gmsCoreVendor.MICROG_PACKAGE_NAME",
-                "$gmsCoreVendor.android.gms",
+                "$vendorPackage.MICROG_PACKAGE_NAME",
+                vendorPackage,
             )
         }
+
+        // Text rewrites must run AFTER document() closes. Closing serialises the DOM
+        // back to AndroidManifest.xml; writing the file inside the use-block would be
+        // overwritten and the c2dm/package rewrites silently lost.
+        val manifestFile = get("AndroidManifest.xml")
+        var manifestContent = manifestFile.readText()
+        mapOf(
+            "com.google.android.c2dm" to "$vendorGroup.android.c2dm",
+            "android:authorities=\"$originalPackageName" to "android:authorities=\"$patchedPackageName",
+            "$originalPackageName.permission.C2D_MESSAGE" to "$patchedPackageName.permission.C2D_MESSAGE",
+            "$originalPackageName.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" to
+                "$patchedPackageName.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+        ).forEach { (from, to) ->
+            manifestContent = manifestContent.replace(from, to)
+        }
+        manifestFile.writeText(manifestContent)
     }
 }
 
@@ -306,7 +347,7 @@ val gmsCorePatch = bytecodePatch(
     extendWith("extensions/extension.mpe")
 
     // Optional — if left blank, SPOOFED_PACKAGE_SIGNATURE meta-data is not injected.
-val gmsCoreVendorOption by stringOption(
+    val gmsCoreVendorOption by stringOption(
         key = "gmsCoreVendor",
         default = "app.revanced.android.gms",
         values = mapOf(
@@ -335,7 +376,7 @@ val gmsCoreVendorOption by stringOption(
         description = "The app's main Activity class name ending with a semicolon, e.g. /MainActivity; " +
             "Used to inject the MicroG check at startup. Leave blank for auto-detection.",
         required = false,
-    ) { it == null || it.endsWith(";") }
+    ) { it == null || it.isBlank() || it.trim().endsWith(";") }
 
     // Optional — blank keeps the original package name unchanged.
     val customPackageName by stringOption(
@@ -345,7 +386,7 @@ val gmsCoreVendorOption by stringOption(
         description = "Rename the app to this package name. Leave blank to keep the original. " +
             "Must be a valid package name (e.g. com.example.myapp).",
         required = false,
-    ) { it == null || it.matches(Regex("^[a-z]\\w*(\\.[a-z]\\w*)+$")) }
+    ) { it == null || it.isBlank() || it.trim().matches(Regex("^[a-z]\\w*(\\.[a-z]\\w*)+$")) }
 
     // Read original package name from the manifest before execute runs.
     lateinit var originalPackageName: String
@@ -357,6 +398,11 @@ val gmsCoreVendorOption by stringOption(
     dependsOn(extractApkCertificatePatch,
         resourcePatch {
             execute {
+                // These are process-global: clear them so a previous patch run in the
+                // same Morphe session cannot leak entries into this app.
+                APP_PERMISSIONS.clear()
+                APP_AUTHORITIES.clear()
+
                 document("AndroidManifest.xml").use { doc ->
                     originalPackageName = (doc.getElementsByTagName("manifest").item(0) as Element)
                         .getAttribute("package")
@@ -376,13 +422,22 @@ val gmsCoreVendorOption by stringOption(
 
                 val vendor = gmsCoreVendorOption ?: DEFAULT_GMS_CORE_VENDOR
                 val sig = autoSha1
+                if (sig == null) {
+                    println(
+                        "GmsCore support: no signing certificate available — " +
+                            "SPOOFED_PACKAGE_SIGNATURE will not be injected. Apply the " +
+                            "\"Provide Original app certificate\" patch (or fill its manual options) " +
+                            "and re-patch.",
+                    )
+                }
                 // Resolve package name: user custom > <original>.revanced
                 resolvedPackageName = customPackageName?.takeIf { it.isNotBlank() }
                     ?: originalPackageName
 
                 document("AndroidManifest.xml").use { doc ->
                     val manifestNode = doc.getElementsByTagName("manifest").item(0)
-                    val applicationNode = doc.getElementsByTagName("application").item(0)
+                    val applicationNode = doc.getElementsByTagName("application").item(0) as? Element
+                        ?: return@use
 
                     // FAKE_PACKAGE_SIGNATURE permission for MicroG RE.
                     val existingPerms = doc.getElementsByTagName("uses-permission")
@@ -396,6 +451,9 @@ val gmsCoreVendorOption by stringOption(
                         perm.setAttribute("android:name", "org.microg.gms.permission.FAKE_PACKAGE_SIGNATURE")
                         manifestNode.appendChild(perm)
                     }
+
+                    // <queries> entry so the app can resolve the GmsCore package (Android 11+).
+                    upsertQueriesPackage(doc, vendor)
 
                     fun Node.upsertMeta(name: String, value: String) {
                         val existing = (0 until childNodes.length)
@@ -465,11 +523,12 @@ val gmsCoreVendorOption by stringOption(
                 // Manifest text rewrites.
                 val manifestFile = get("AndroidManifest.xml")
                 var text = manifestFile.readText()
-                if ("</queries>" in text && vendor !in text)
-                    text = text.replace("</queries>", "<package android:name=\"$vendor\"/></queries>")
-                // c2dm rewrite only makes sense for app.revanced/app.morphe style vendors
+                // c2dm rewrite only makes sense for app.revanced/app.morphe style vendors.
+                // Use the same "<vendorGroup>.android.c2dm" prefix as the DEX rewrite below,
+                // otherwise the manifest action and the string in the APK disagree and push
+                // notifications stop being delivered.
                 if (!vendor.contains("microg") && !vendor.startsWith("com.google"))
-                    text = text.replace("com.google.android.c2dm", "${vendor.substringBeforeLast(".")}.c2dm")
+                    text = text.replace("com.google.android.c2dm", "$vendorGroup.android.c2dm")
                 // Rewrite package-specific manifest strings to the resolved package name.
                 text = text.replace("android:authorities=\"$originalPackageName", "android:authorities=\"$resolvedPackageName")
                 text = text.replace("$originalPackageName.permission.C2D_MESSAGE", "$resolvedPackageName.permission.C2D_MESSAGE")
@@ -562,7 +621,18 @@ val gmsCoreVendorOption by stringOption(
 
         // Set activity class suffix for fingerprint (must be before fingerprint matching runs,
         // but fingerprints are evaluated lazily on first access so we set this in execute).
+        // Normalise "MainActivity;" / "/MainActivity;" / "Lcom/x/MainActivity;" to a
+        // suffix that classDef.type can end with.
         activityClassSuffix = mainActivityName
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { name ->
+                when {
+                    name.startsWith("L") && name.endsWith(";") -> name
+                    name.startsWith("/") -> name
+                    else -> "/$name"
+                }
+            }
 
         ServiceCheckFingerprint.methodOrNull?.addInstruction(0, "return-void")
 

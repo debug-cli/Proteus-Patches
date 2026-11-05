@@ -5,13 +5,16 @@ import app.morphe.patcher.extensions.InstructionExtensions.addInstruction
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.bytecodePatch
 import app.morphe.patcher.patch.stringOption
-import com.android.tools.smali.dexlib2.AccessFlags
 import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.iface.ClassDef
 import com.android.tools.smali.dexlib2.iface.Method
+import com.android.tools.smali.dexlib2.iface.instruction.FiveRegisterInstruction
+import com.android.tools.smali.dexlib2.iface.instruction.Instruction
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
+import com.android.tools.smali.dexlib2.iface.instruction.RegisterRangeInstruction
 import com.android.tools.smali.dexlib2.iface.reference.MethodReference
+import com.android.tools.smali.dexlib2.iface.reference.StringReference
 
 // Widevine DRM UUID constant used in most apps
 private const val WIDEVINE_UUID_STRING = "edef8ba9-79d6-4ace-a3c8-27dcd51d21ed"
@@ -33,8 +36,11 @@ private val DRM_STRING_PROPERTIES = setOf(
     "sessionSharing",
 )
 
-// MediaDrm.getPropertyByteArray — provisioningUniqueId used for device fingerprinting
-private val DRM_BYTE_PROPERTIES = setOf("provisioningUniqueId", "deviceUniqueId")
+private val MOVE_RESULT_OPCODES = setOf(
+    Opcode.MOVE_RESULT,
+    Opcode.MOVE_RESULT_OBJECT,
+    Opcode.MOVE_RESULT_WIDE,
+)
 
 // ── Fingerprints ───────────────────────────────────────────────────────────────
 
@@ -49,21 +55,16 @@ private val GetDrmStringPropertyFingerprint = Fingerprint(
     },
 )
 
-// MediaDrm.getPropertyByteArray(String) → byte[]
-private val GetDrmByteArrayPropertyFingerprint = Fingerprint(
-    custom = { method: Method, _: ClassDef ->
-        val ref = method.implementation?.instructions
-            ?.filterIsInstance<ReferenceInstruction>()
-            ?.mapNotNull { it.reference as? MethodReference }
-            ?.any { it.definingClass == "Landroid/media/MediaDrm;" && it.name == "getPropertyByteArray" }
-        ref == true
-    },
-)
-
-// getSecurityLevel / isCryptoSchemeSupported / requiresSecureDecoder checks
+// getSecurityLevel / isCryptoSchemeSupported / requiresSecureDecoder checks.
+// Restricted to methods whose name looks like a security-level accessor so a
+// method that merely mentions the string (e.g. a logger) is never gutted.
 private val SecurityLevelStringFingerprint = Fingerprint(
     returnType = "Ljava/lang/String;",
     strings = listOf("securityLevel"),
+    custom = { method: Method, _: ClassDef ->
+        val name = method.name.lowercase()
+        "security" in name || "level" in name
+    },
 )
 
 private val WidevineSupportFingerprint = Fingerprint(
@@ -79,8 +80,6 @@ private val WidevineSupportFingerprint = Fingerprint(
  * HOW:
  * - Replaces `MediaDrm.getPropertyString("securityLevel")` return values with "L1"
  * - Replaces `MediaDrm.getPropertyString("hdcpLevel")` with a high HDCP level string
- * - Replaces `MediaDrm.getPropertyByteArray("provisioningUniqueId")` with a stable fake ID
- *   (prevents device fingerprinting via DRM unique ID after re-signing)
  * - Bypasses `isCryptoSchemeSupported` checks that gate Widevine availability
  *
  * LIMITATION: does NOT bypass server-side Widevine license checks or CDM verification.
@@ -96,6 +95,7 @@ val spoofDrmPatch = bytecodePatch(
         Useful for apps that refuse to play HD/4K content on L3 devices or after re-signing.
 
         Does not bypass server-side DRM - Netflix, Disney+ and similar are not affected.
+        Applies to any app; no effect if the app does not query Widevine.
     """.trimIndent(),
     default = false,
 ) {
@@ -136,19 +136,29 @@ val spoofDrmPatch = bytecodePatch(
         GetDrmStringPropertyFingerprint.methodOrNull?.let { method ->
             val instructions = method.implementation?.instructions?.toList() ?: return@let
             instructions.forEachIndexed { i, instr ->
-                if (instr.opcode !in setOf(Opcode.INVOKE_VIRTUAL, Opcode.INVOKE_VIRTUAL_RANGE)) return@forEachIndexed
-                val ref = (instr as? ReferenceInstruction)?.reference as? MethodReference ?: return@forEachIndexed
-                if (ref.definingClass != "Landroid/media/MediaDrm;" || ref.name != "getPropertyString") return@forEachIndexed
-                val next = instructions.getOrNull(i + 1) as? OneRegisterInstruction ?: return@forEachIndexed
+                if (instr.opcode != Opcode.INVOKE_VIRTUAL &&
+                    instr.opcode != Opcode.INVOKE_VIRTUAL_RANGE
+                ) return@forEachIndexed
+                val ref = (instr as? ReferenceInstruction)?.reference as? MethodReference
+                    ?: return@forEachIndexed
+                if (ref.definingClass != "Landroid/media/MediaDrm;" ||
+                    ref.name != "getPropertyString" ||
+                    ref.parameterTypes != listOf("Ljava/lang/String;")
+                ) return@forEachIndexed
+
+                val next = instructions.getOrNull(i + 1) as? OneRegisterInstruction
+                    ?: return@forEachIndexed
                 if (next.opcode != Opcode.MOVE_RESULT_OBJECT) return@forEachIndexed
 
-                // Check what property name was loaded before this call (scan backwards for const-string)
-                val propName = (i downTo maxOf(0, i - 5)).firstNotNullOfOrNull { j ->
-                    val instr2 = instructions[j] as? ReferenceInstruction ?: return@firstNotNullOfOrNull null
-                    (instr2.reference as? com.android.tools.smali.dexlib2.iface.reference.StringReference)?.string
-                } ?: "securityLevel"
+                // Locate the exact string loaded into the property-name argument.
+                // If it cannot be resolved, leave the call alone instead of assuming
+                // it is "securityLevel" (the old fallback could spoof unrelated reads).
+                val propertyRegister = argumentRegister(instr, 1) ?: return@forEachIndexed
+                val property = stringForRegister(instructions, i, propertyRegister)
+                    ?: return@forEachIndexed
+                if (property !in DRM_STRING_PROPERTIES) return@forEachIndexed
 
-                val spoofValue = when (propName) {
+                val spoofValue = when (property) {
                     "securityLevel" -> level
                     "hdcpLevel", "maxHdcpLevel" -> hdcp
                     else -> return@forEachIndexed
@@ -159,16 +169,22 @@ val spoofDrmPatch = bytecodePatch(
             }
         }
 
-        // Patch SecurityLevelStringFingerprint — direct return "L1"
+        // Patch SecurityLevelStringFingerprint — direct return "L1".
+        // Abstract/native methods have no body to rewrite, so skip them.
         SecurityLevelStringFingerprint.methodOrNull?.let { method ->
-            method.addInstruction(0, "return-object v0")
-            method.addInstruction(0, "const-string v0, \"$level\"")
-            patchedCount++
+            if (method.implementation != null && method.implementation!!.registerCount >= 1) {
+                method.addInstruction(0, "return-object v0")
+                method.addInstruction(0, "const-string v0, \"$level\"")
+                patchedCount++
+            }
         }
 
         // Patch isCryptoSchemeSupported that checks Widevine — return true
         WidevineSupportFingerprint.methodOrNull?.let { method ->
-            if (method.returnType == "Z") {
+            if (method.returnType == "Z" &&
+                method.implementation != null &&
+                method.implementation!!.registerCount >= 1
+            ) {
                 method.addInstruction(0, "return v0")
                 method.addInstruction(0, "const/4 v0, 0x1")
                 patchedCount++
@@ -177,4 +193,36 @@ val spoofDrmPatch = bytecodePatch(
 
         println("Spoof DRM: $patchedCount site(s) patched → securityLevel=$level hdcp=$hdcp")
     }
+}
+
+private fun argumentRegister(instruction: Instruction, argumentIndex: Int): Int? = when (instruction) {
+    is FiveRegisterInstruction -> when (argumentIndex) {
+        0 -> instruction.registerC
+        1 -> instruction.registerD
+        2 -> instruction.registerE
+        else -> null
+    }
+
+    is RegisterRangeInstruction ->
+        (instruction.startRegister + argumentIndex)
+            .takeIf { argumentIndex < instruction.registerCount }
+
+    else -> null
+}
+
+private fun stringForRegister(
+    instructions: List<Instruction>,
+    before: Int,
+    register: Int,
+): String? {
+    var inspected = 0
+    for (index in before - 1 downTo 0) {
+        val instruction = instructions[index]
+        if (instruction is OneRegisterInstruction && instruction.registerA == register) {
+            return ((instruction as? ReferenceInstruction)?.reference as? StringReference)?.string
+        }
+        if (instruction.opcode in MOVE_RESULT_OPCODES) return null
+        if (++inspected >= 8) return null
+    }
+    return null
 }

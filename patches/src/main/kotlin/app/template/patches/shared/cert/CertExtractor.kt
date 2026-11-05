@@ -168,7 +168,7 @@ val extractApkCertificatePatch = rawResourcePatch(
         title = "Certificate SHA-1 (manual)",
         description = "40-char hex. Found on APKMirror under app signature info.",
         required = false,
-    ) { it == null || it.matches(Regex("^[0-9A-Fa-f]{40}$")) }
+    ) { it == null || it.isBlank() || it.matches(Regex("^[0-9A-Fa-f]{40}$")) }
 
     val manualCertSha256 by stringOption(
         key = "manualCertSha256",
@@ -176,7 +176,7 @@ val extractApkCertificatePatch = rawResourcePatch(
         title = "Certificate SHA-256 (manual)",
         description = "64-char hex. Optional companion to SHA-1.",
         required = false,
-    ) { it == null || it.matches(Regex("^[0-9A-Fa-f]{64}$")) }
+    ) { it == null || it.isBlank() || it.matches(Regex("^[0-9A-Fa-f]{64}$")) }
 
     val manualCertBase64 by stringOption(
         key = "manualCertBase64",
@@ -185,13 +185,57 @@ val extractApkCertificatePatch = rawResourcePatch(
         description = "Needed only for Signature spoof patch. " +
             "Get it with: apksigner verify --print-certs original.apk",
         required = false,
-    ) { it == null || it.isNotBlank() }
+    ) { it == null || it.isBlank() || runCatching { Base64.getDecoder().decode(it.replace(Regex("\\s+"), "")) }.isSuccess }
 
     execute {
         // Pre-seeded cert takes top priority (e.g. SpotifyCertSeedPatch)
         if (autoCertSource == "preseed") {
             log.info("Using pre-seeded cert.")
             return@execute
+        }
+
+        // ── Explicit user input always wins over auto-detection ──────────────
+        // The APK being patched may already be re-signed. Auto-extraction would
+        // then return the *replacement* certificate, which is precisely what the
+        // user is trying to correct by filling these options in.
+        val manualBase64 = manualCertBase64?.trim()?.takeIf { it.isNotEmpty() }
+        val sha1Manual = manualCertSha1?.takeIf { it.length == 40 }
+        val sha256Manual = manualCertSha256?.takeIf { it.length == 64 }
+
+        if (manualBase64 != null) {
+            val decoded = runCatching {
+                Base64.getDecoder().decode(manualBase64.replace(Regex("\\s+"), ""))
+            }.getOrNull()
+            if (decoded != null && decoded.isNotEmpty()) {
+                populateFromEncoded(decoded, "manual")
+                // Explicit hashes override the ones derived from the DER bytes.
+                sha1Manual?.let { autoSha1 = it.uppercase() }
+                sha256Manual?.let { autoSha256 = it.uppercase() }
+                log.info("Using manual Base64 certificate")
+                return@execute
+            }
+            log.warning("manualCertBase64 is not valid Base64 — ignoring it.")
+        }
+        if (sha1Manual != null || sha256Manual != null) {
+            sha1Manual?.let { autoSha1 = it.uppercase() }
+            sha256Manual?.let { autoSha256 = it.uppercase() }
+            autoBase64Der = null
+            autoCertSource = "manual"
+            autoCertPriority = certSourcePriority("manual")
+            log.info("Using manual certificate hashes")
+            return@execute
+        }
+
+        // ── A user-supplied original APK also outranks the input APK ─────────
+        val path = originalApkPath
+        if (!path.isNullOrBlank()) {
+            val file = File(path)
+            if (!file.exists()) {
+                log.warning("File not found: $path")
+            } else {
+                log.info("Reading cert from provided path: ${file.name}")
+                if (extractFromFile(file, "provided")) return@execute
+            }
         }
 
         // Strategy 0a: packageMetadata.signingCertificates — Morphe parses the APK signing block
@@ -224,27 +268,6 @@ val extractApkCertificatePatch = rawResourcePatch(
             }
         } catch (e: Exception) {
             log.info("Input APK META-INF strategy skipped: ${e.message}")
-        }
-
-        val path = originalApkPath
-        if (!path.isNullOrBlank()) {
-            val file = File(path)
-            if (!file.exists()) {
-                log.warning("File not found: $path")
-            } else {
-                log.info("Reading cert from provided path: ${file.name}")
-                if (extractFromFile(file, "provided")) return@execute
-            }
-        }
-        val sha1Manual = manualCertSha1?.takeIf { it.length == 40 }
-        if (sha1Manual != null) {
-            autoSha1      = sha1Manual
-            autoSha256    = manualCertSha256?.takeIf { it.length == 64 }
-            autoBase64Der = manualCertBase64?.takeIf { it.isNotBlank() }
-            autoCertSource = "manual"
-            autoCertPriority = certSourcePriority("manual")
-            log.info("Using manual cert values")
-            return@execute
         }
 
         // Strategy 1: installed app sourceDir

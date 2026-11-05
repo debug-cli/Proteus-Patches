@@ -2,6 +2,7 @@ package app.template.patches.shared.web
 
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.bytecodePatch
+import app.template.patches.shared.constValue
 import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.iface.instruction.FiveRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.Instruction
@@ -67,7 +68,7 @@ val webViewFileAccessPatch = bytecodePatch(
                     val literal = literalForRegister(instructions, index, valueRegister)
                         ?: return@forEachIndexed
                     if (literal.second == 1) {
-                        replacements[literal.first] = "const/4 v$valueRegister, 0x0"
+                        replacements[literal.first] = constValue(valueRegister, 0)
                     }
                 }
 

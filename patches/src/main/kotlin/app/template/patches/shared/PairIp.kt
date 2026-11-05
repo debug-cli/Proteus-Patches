@@ -4,6 +4,7 @@ import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.patch.BytecodePatchContext
 import app.morphe.patcher.patch.bytecodePatch
 import app.morphe.patcher.patch.resourcePatch
+import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod
 import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod.Companion.toMutable
 import com.android.tools.smali.dexlib2.AccessFlags
 import com.android.tools.smali.dexlib2.immutable.ImmutableMethod
@@ -16,14 +17,44 @@ private const val SIGNATURE_CHECK = "Lcom/pairip/SignatureCheck;"
 private const val VM_RUNNER = "Lcom/pairip/VMRunner;"
 private const val STARTUP_LAUNCHER = "Lcom/pairip/StartupLauncher;"
 
+/**
+ * Replace a method body with a type-correct early return.
+ *
+ * PairIP ships different method signatures across app versions. Hard-coding
+ * `return-void` or `return-object v0` for a method whose return type changed
+ * produces invalid DEX and the app fails verification on launch. This helper
+ * picks the matching return form for the method it is given.
+ */
+private fun MutableMethod.neutralize() {
+    if (implementation == null) return
+    when (returnType.first()) {
+        'V' -> returnEarly()
+        'Z' -> returnEarly(false)
+        'B' -> returnEarly(0.toByte())
+        'S' -> returnEarly(0.toShort())
+        'C' -> returnEarly(0.toChar())
+        'I' -> returnEarly(0)
+        'J' -> returnEarly(0L)
+        'F' -> returnEarly(0f)
+        'D' -> returnEarly(0.0)
+        else -> returnEarly(null as Void?)
+    }
+}
+
 fun BytecodePatchContext.gutPairIpVm(vararg extraNoOps: Pair<String, String>) {
-    mutableClassDefBy(SIGNATURE_CHECK).methods.first { it.name == "verifyIntegrity" }.returnEarly()
-    val vmRunner = mutableClassDefBy(VM_RUNNER)
-    vmRunner.methods.first { it.name == "<clinit>" }.returnEarly()
-    vmRunner.methods.first { it.name == "invoke" }.returnEarly()
-    mutableClassDefBy(STARTUP_LAUNCHER).methods.first { it.name == "launch" }.returnEarly()
+    mutableClassDefByOrNull(SIGNATURE_CHECK)
+        ?.methods?.firstOrNull { it.name == "verifyIntegrity" }?.neutralize()
+
+    mutableClassDefByOrNull(VM_RUNNER)?.let { vmRunner ->
+        vmRunner.methods.firstOrNull { it.name == "<clinit>" }?.neutralize()
+        vmRunner.methods.firstOrNull { it.name == "invoke" }?.neutralize()
+    }
+
+    mutableClassDefByOrNull(STARTUP_LAUNCHER)
+        ?.methods?.firstOrNull { it.name == "launch" }?.neutralize()
+
     for ((cls, method) in extraNoOps)
-        mutableClassDefBy(cls).methods.first { it.name == method }.returnEarly()
+        mutableClassDefByOrNull(cls)?.methods?.firstOrNull { it.name == method }?.neutralize()
 }
 
 fun BytecodePatchContext.restorePairIpHolders(resourceDir: String) {
@@ -69,7 +100,7 @@ fun BytecodePatchContext.restorePairIpHolders(resourceDir: String) {
 // ── killPairIpFull ────────────────────────────────────────────────────────────
 
 /**
- * Full DEX-layer Pairip kill. No-ops:
+ * Full DEX-layer Pairip kill. Neutralises:
  *   VMRunner.<clinit>()                    — stops System.loadLibrary("pairipcore")
  *   VMRunner.invoke()                      — belt-and-suspenders
  *   SignatureCheck.verifyIntegrity()       — DEX cert check
@@ -81,8 +112,10 @@ fun BytecodePatchContext.restorePairIpHolders(resourceDir: String) {
  *   LicenseClient.startPaywallActivity()   — paywall + System.exit failsafe
  *   All VMRunner.invoke() call sites outside com.pairip.*
  *
- * Also calls [initPairipStringHolders] to inject "" <clinit>s into string
- * holder classes to prevent NPEs when the native lib is not running.
+ * Missing classes/methods are skipped instead of failing, and every replacement
+ * uses the method's real return type so different PairIP versions stay loadable.
+ * Also calls [restorePairIpHolders] in app-specific patches to inject "" <clinit>s
+ * into string holder classes and prevent NPEs when the native lib is not running.
  */
 fun BytecodePatchContext.killPairIpFull(
     vararg extraNoOps: Pair<String, String>,
@@ -93,52 +126,86 @@ fun BytecodePatchContext.killPairIpFull(
     val lic   = "Lcom/pairip/licensecheck/LicenseClient;"
     val state = "Lcom/pairip/licensecheck/LicenseClient\$LicenseCheckState;"
 
-    mutableClassDefByOrNull(vm)?.methods?.firstOrNull { it.name == "<clinit>" }
-        ?.apply { clearBody(); addInstructions(0, "return-void") }
-    mutableClassDefByOrNull(vm)?.methods?.firstOrNull { it.name == "invoke" }
-        ?.apply { clearBody(); addInstructions(0, "const/4 v0, 0x0\nreturn-object v0") }
+    mutableClassDefByOrNull(vm)?.methods?.firstOrNull { it.name == "<clinit>" }?.neutralize()
+    mutableClassDefByOrNull(vm)?.methods?.firstOrNull { it.name == "invoke" }?.neutralize()
 
-    mutableClassDefByOrNull(sig)?.methods?.firstOrNull { it.name == "verifyIntegrity" }
-        ?.apply { clearBody(); addInstructions(0, "return-void") }
+    mutableClassDefByOrNull(sig)?.methods?.firstOrNull { it.name == "verifyIntegrity" }?.neutralize()
     mutableClassDefByOrNull(sig)?.methods?.firstOrNull { it.name == "verifySignatureMatches" }
-        ?.apply { clearBody(); addInstructions(0, "const/4 v0, 0x1\nreturn v0") }
-
-    mutableClassDefByOrNull(sl)?.methods?.firstOrNull { it.name == "launch" }
-        ?.apply { clearBody(); addInstructions(0, "return-void") }
-
-    mutableClassDefByOrNull(lic)?.methods?.firstOrNull { it.name == "initializeLicenseCheck" }
-        ?.apply {
-            clearBody()
-            addInstructions(0, """
-                sget-object v0, $state->LOCAL_CHECK_OK:$state
-                sput-object v0, $lic->licenseCheckState:$state
-                return-void
-            """.trimIndent())
-        }
-    listOf("connectToLicensingService", "lambda\$retryOrThrow\$0", "processResponse", "startPaywallActivity",
-           "validateResponse", "performLocalInstallerCheck")
-        .forEach { name ->
-            mutableClassDefByOrNull(lic)?.methods?.firstOrNull { it.name == name }
-                ?.apply { clearBody(); addInstructions(0, "return-void") }
+        ?.let { method ->
+            if (method.returnType == "Z") method.returnEarly(true) else method.neutralize()
         }
 
-    // performLocalInstallerCheck lives on LicenseClient — returnEarly(true)
-    mutableClassDefByOrNull(lic)?.methods?.firstOrNull { it.name == "performLocalInstallerCheck" }
-        ?.apply { clearBody(); addInstructions(0, "const/4 v0, 0x1\nreturn v0") }
+    mutableClassDefByOrNull(sl)?.methods?.firstOrNull { it.name == "launch" }?.neutralize()
 
-    // validateResponse lives on ResponseValidator
+    val licenseClient = mutableClassDefByOrNull(lic)
+    val licenseState = mutableClassDefByOrNull(state)
+    val hasLicenseStateField = licenseClient?.fields?.any { it.name == "licenseCheckState" } == true
+    val hasLocalCheckOk = licenseState?.fields?.any { it.name == "LOCAL_CHECK_OK" } == true
+
+    val initializeLicenseCheck = licenseClient?.methods
+        ?.firstOrNull { it.name == "initializeLicenseCheck" }
+    if (initializeLicenseCheck != null) {
+        // Only write the enum field when both the field and the enum constant exist;
+        // otherwise fall back to a plain early return so the class still verifies.
+        if (hasLicenseStateField && hasLocalCheckOk &&
+            (initializeLicenseCheck.implementation?.registerCount ?: 0) >= 1
+        ) {
+            initializeLicenseCheck.clearBody()
+            initializeLicenseCheck.addInstructions(
+                0,
+                """
+                    sget-object v0, $state->LOCAL_CHECK_OK:$state
+                    sput-object v0, $lic->licenseCheckState:$state
+                    return-void
+                """.trimIndent(),
+            )
+        } else {
+            initializeLicenseCheck.neutralize()
+        }
+    }
+
+    listOf(
+        "connectToLicensingService",
+        "lambda\$retryOrThrow\$0",
+        "processResponse",
+        "startPaywallActivity",
+    ).forEach { name ->
+        licenseClient?.methods?.firstOrNull { it.name == name }?.neutralize()
+    }
+
+    // performLocalInstallerCheck must report success.
+    licenseClient?.methods?.firstOrNull { it.name == "performLocalInstallerCheck" }
+        ?.let { method ->
+            if (method.returnType == "Z") method.returnEarly(true) else method.neutralize()
+        }
+
+    // validateResponse lives on ResponseValidator, not LicenseClient.
     val rv = "Lcom/pairip/licensecheck/ResponseValidator;"
     mutableClassDefByOrNull(rv)?.methods?.firstOrNull { it.name == "validateResponse" }
-        ?.apply { clearBody(); addInstructions(0, "return-void") }
+        ?.neutralize()
 
-    // Disable repeated background checks via LicenseClient.<clinit>
-    mutableClassDefByOrNull(lic)?.methods?.firstOrNull { it.name == "<clinit>" }
-        ?.addInstructions(0, """
-            const/4 v0, 0x0
-            sput-boolean v0, $lic->repeatedCheckEnabled:Z
-        """.trimIndent())
+    // Disable repeated background checks via LicenseClient.<clinit>.
+    // Guard both the field and register count: PairIP builds without the field
+    // (or with an empty <clinit>) must not receive a dangling sput-boolean.
+    val hasRepeatedCheckField =
+        licenseClient?.fields?.any { it.name == "repeatedCheckEnabled" } == true
+    licenseClient?.methods?.firstOrNull { it.name == "<clinit>" }?.let { clinit ->
+        if (hasRepeatedCheckField &&
+            (clinit.implementation?.registerCount ?: 0) >= 1
+        ) {
+            clinit.addInstructions(
+                0,
+                """
+                    const/4 v0, 0x0
+                    sput-boolean v0, $lic->repeatedCheckEnabled:Z
+                """.trimIndent(),
+            )
+        }
+    }
 
-    // Clear all VMRunner.invoke() call sites outside com.pairip.*
+    // Clear VMRunner.invoke() call sites outside com.pairip.*. Only void callers are
+    // rewritten: returning early from a typed method would need a value it may not
+    // have, and the gutted VMRunner already returns a harmless default.
     classDefForEach { classDef ->
         if (classDef.type.startsWith("Lcom/pairip/")) return@classDefForEach
         val callers = classDef.methods.filter { method ->
@@ -155,14 +222,15 @@ fun BytecodePatchContext.killPairIpFull(
         val mutableClass = mutableClassDefByOrNull(classDef.type) ?: return@classDefForEach
         for (method in callers) {
             mutableClass.methods.firstOrNull {
-                it.name == method.name && it.returnType == method.returnType
-            }?.returnEarly()
+                it.name == method.name &&
+                    it.returnType == method.returnType &&
+                    it.parameterTypes == method.parameterTypes
+            }?.takeIf { it.returnType == "V" }?.neutralize()
         }
     }
 
     for ((cls, method) in extraNoOps)
-        mutableClassDefByOrNull(cls)?.methods?.firstOrNull { it.name == method }
-            ?.apply { clearBody(); addInstructions(0, "return-void") }
+        mutableClassDefByOrNull(cls)?.methods?.firstOrNull { it.name == method }?.neutralize()
 }
 
 // ── Standalone shared patch ───────────────────────────────────────────────────
@@ -171,16 +239,22 @@ fun BytecodePatchContext.killPairIpFull(
  * Standalone shared patch — other patches can `dependsOn(disablePairIPLicenseCheckPatch)`.
  *
  * Combines [killPairIpFull] (full VM + license kill) with the rivanced additions:
- *   - ResponseValidator.validateResponse()         → return-void
+ *   - ResponseValidator.validateResponse()         → early return
  *   - LicenseClient.performLocalInstallerCheck()  → return true
  *   - LicenseClient.<clinit> repeatedCheckEnabled → false
  *
  * Gracefully skips any method that does not exist (not all apps include all PairIP classes).
+ * Applying it to an app without PairIP is a no-op.
  */
 @Suppress("unused")
 val disablePairIPLicenseCheckPatch = bytecodePatch(
     name = "Disable PairIP license check",
-    description = "Disables PairIP license verification, VM checks, and repeated background checks.",
+    description = """
+        Disables PairIP license verification: integrity/VM checks, the licensing
+        client and repeated background checks.
+
+        Applies to any app. No effect if the app does not use PairIP.
+    """.trimIndent(),
     default = false,
 ) {
     execute {

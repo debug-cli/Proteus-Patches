@@ -2,6 +2,7 @@ package app.template.patches.shared.privacy
 
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.bytecodePatch
+import app.template.patches.shared.constValue
 import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.iface.instruction.FiveRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.Instruction
@@ -78,7 +79,7 @@ val universalAllowScreenCapturePatch = bytecodePatch(
                             val literal = literalForRegister(instructions, index, valueRegister)
                                 ?: return@forEachIndexed
                             if (literal.second != 0) {
-                                replacements[literal.first] = "const/4 v$valueRegister, 0x0"
+                                replacements[literal.first] = constValue(valueRegister, 0)
                             }
                         }
                     }
@@ -107,7 +108,7 @@ private fun clearSecureBit(
     if (literal and FLAG_SECURE == 0) return
 
     val cleared = literal and FLAG_SECURE.inv()
-    replacements[literalIndex] = "const v$register, 0x${Integer.toHexString(cleared)}"
+    replacements[literalIndex] = constValue(register, cleared)
 }
 
 private fun literalForRegister(

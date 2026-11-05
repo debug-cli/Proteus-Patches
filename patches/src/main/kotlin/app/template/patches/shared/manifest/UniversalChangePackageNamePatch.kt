@@ -84,6 +84,7 @@ private val RENAMEABLE_NAME_ELEMENTS = setOf(
     "permission",
     "uses-permission",
     "uses-permission-sdk-23",
+    "uses-permission-sdk-m",
     "activity-alias",
 )
 

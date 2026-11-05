@@ -3,9 +3,13 @@ package app.template.patches.shared.privacy
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstructions
 import app.morphe.patcher.patch.bytecodePatch
+import app.template.patches.shared.constValue
 import com.android.tools.smali.dexlib2.Opcode
+import com.android.tools.smali.dexlib2.iface.instruction.FiveRegisterInstruction
+import com.android.tools.smali.dexlib2.iface.instruction.Instruction
 import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
+import com.android.tools.smali.dexlib2.iface.instruction.RegisterRangeInstruction
 import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 import com.android.tools.smali.dexlib2.iface.reference.StringReference
 
@@ -62,6 +66,8 @@ val hideDeveloperOptionsPatch = bytecodePatch(
                 instructions.forEachIndexed { index, instruction ->
                     val key = ((instruction as? ReferenceInstruction)?.reference as? StringReference)
                         ?.string ?: return@forEachIndexed
+                    val keyRegister = (instruction as? OneRegisterInstruction)?.registerA
+                        ?: return@forEachIndexed
 
                     when {
                         key in ADB_SETTINGS_KEYS -> {
@@ -71,19 +77,26 @@ val hideDeveloperOptionsPatch = bytecodePatch(
                                     as? MethodReference ?: continue
                                 if (reference.definingClass !in SETTINGS_CLASSES) continue
                                 if (reference.name != "getInt" && reference.name != "getLong") continue
+                                // Settings.getInt(ContentResolver, String[, int]) takes the
+                                // key as argument 1. Only patch when this call really reads
+                                // the key we just loaded — never a nearby unrelated setting.
+                                if (argumentRegister(instructions[j], 1) != keyRegister) continue
 
                                 val moveResult = instructions.getOrNull(j + 1) as? OneRegisterInstruction
                                     ?: break
-                                val register = moveResult.registerA
                                 when (moveResult.opcode) {
-                                    Opcode.MOVE_RESULT ->
-                                        replacements[j + 1] = "const/4 v$register, 0x0"
-                                    Opcode.MOVE_RESULT_WIDE ->
+                                    Opcode.MOVE_RESULT -> {
+                                        replacements[j + 1] = constValue(moveResult.registerA, 0)
+                                        settingsSitesPatched++
+                                    }
+                                    Opcode.MOVE_RESULT_WIDE -> {
+                                        val register = moveResult.registerA
                                         replacements[j + 1] =
-                                            "const/4 v$register, 0x0\nconst/4 v${register + 1}, 0x0"
+                                            constValue(register, 0) + "\n" + constValue(register + 1, 0)
+                                        settingsSitesPatched++
+                                    }
                                     else -> {}
                                 }
-                                settingsSitesPatched++
                                 break
                             }
                         }
@@ -95,8 +108,10 @@ val hideDeveloperOptionsPatch = bytecodePatch(
                                     as? MethodReference ?: continue
                                 if (reference.definingClass != SYSTEM_PROPERTIES_CLASS ||
                                     reference.name != "get" ||
-                                    reference.parameterTypes != listOf("Ljava/lang/String;")
+                                    reference.parameterTypes.firstOrNull() != "Ljava/lang/String;"
                                 ) continue
+                                // SystemProperties.get(String) takes the key as argument 0.
+                                if (argumentRegister(instructions[j], 0) != keyRegister) continue
 
                                 val moveResult = instructions.getOrNull(j + 1) as? OneRegisterInstruction
                                     ?: break
@@ -126,4 +141,19 @@ val hideDeveloperOptionsPatch = bytecodePatch(
                 "$propertySitesPatched system property read(s) forced to \"0\".",
         )
     }
+}
+
+private fun argumentRegister(instruction: Instruction, argumentIndex: Int): Int? = when (instruction) {
+    is FiveRegisterInstruction -> when (argumentIndex) {
+        0 -> instruction.registerC
+        1 -> instruction.registerD
+        2 -> instruction.registerE
+        else -> null
+    }
+
+    is RegisterRangeInstruction ->
+        (instruction.startRegister + argumentIndex)
+            .takeIf { argumentIndex < instruction.registerCount }
+
+    else -> null
 }

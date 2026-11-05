@@ -48,10 +48,11 @@ val removeDangerousPermissionsPatch = resourcePatch(
         title = "Permissions to remove",
         description = "Comma-separated list of permission names to strip from the manifest.",
         required = false,
-    ) { it == null || it.split(",").all { token -> token.trim().isNotEmpty() } }
+    ) { it == null || it.isBlank() || it.split(",").all { token -> token.trim().isNotEmpty() } }
 
     execute {
-        val removalSet = (permissionsToRemove ?: DEFAULT_PERMISSIONS_TO_REMOVE.joinToString(","))
+        val removalSet = (permissionsToRemove?.takeIf { it.isNotBlank() }
+            ?: DEFAULT_PERMISSIONS_TO_REMOVE.joinToString(","))
             .split(",")
             .map { it.trim() }
             .filter { it.isNotEmpty() }
@@ -59,7 +60,7 @@ val removeDangerousPermissionsPatch = resourcePatch(
 
         document("AndroidManifest.xml").use { doc ->
             var removed = 0
-            listOf("uses-permission", "uses-permission-sdk-23").forEach { tag ->
+            listOf("uses-permission", "uses-permission-sdk-23", "uses-permission-sdk-m").forEach { tag ->
                 val nodes = doc.getElementsByTagName(tag)
                 for (index in nodes.length - 1 downTo 0) {
                     val node = nodes.item(index) as? Element ?: continue

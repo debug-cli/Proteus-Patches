@@ -66,8 +66,8 @@ val spoofFirebaseCertHashPatch = bytecodePatch(
         val hash = autoSha1
             ?.uppercase()
             ?: throw PatchException(
-                "No certificate found in META-INF and no certificateHash supplied. " +
-                    "Provide the 40-char SHA-1 hex fingerprint via the option."
+                "No signing certificate available. Apply the \"Provide Original app certificate\" " +
+                    "patch and, if the APK is already re-signed, fill in its manual SHA-1 option."
             )
 
         // ── Fix 1: Override getFingerprintHashForPackage() to return original SHA-1 ──
@@ -76,11 +76,21 @@ val spoofFirebaseCertHashPatch = bytecodePatch(
         // FirebaseInstallationServiceClient. Patching here means every caller
         // (the X-Android-Cert header, FID auth, etc.) gets the correct value
         // without relying on our in-process PackageManager hook reaching GMS.
-        FirebaseFingerprintHashFingerprint.methodOrNull?.addInstructions(0, """
-            const-string v0, "$hash"
-            return-object v0
-        """) ?: run {
-            // Firebase Installations SDK not present — fall through to header-only fix.
+        FirebaseFingerprintHashFingerprint.methodOrNull?.let { fingerprintMethod ->
+            // Abstract/native stubs and register-less methods cannot take the override.
+            if (fingerprintMethod.implementation != null &&
+                fingerprintMethod.implementation!!.registerCount >= 1
+            ) {
+                fingerprintMethod.addInstructions(
+                    0,
+                    """
+                        const-string v0, "$hash"
+                        return-object v0
+                    """.trimIndent(),
+                )
+            }
+            // Otherwise the Firebase Installations SDK is absent/unusual — the
+            // header-only fix below still covers the common case.
         }
 
         // ── Fix 2: Also overwrite the header value at the call site ──
@@ -94,7 +104,10 @@ val spoofFirebaseCertHashPatch = bytecodePatch(
                 return@execute
             }
 
-        val xAndroidCertIndex = FirebaseOpenHttpConnectionFingerprint.stringMatches.first().index
+        val xAndroidCertIndex = FirebaseOpenHttpConnectionFingerprint.stringMatches
+            .firstOrNull { it.string == "X-Android-Cert" }
+            ?.index
+            ?: 0
 
         val instructionList = method.instructions.toList()
         val addRequestPropertyInstr = instructionList
@@ -108,7 +121,11 @@ val spoofFirebaseCertHashPatch = bytecodePatch(
                 "Could not find addRequestProperty call after X-Android-Cert string."
             )
 
-        val valueRegister = (addRequestPropertyInstr as FiveRegisterInstruction).registerE
+        val fiveRegister = addRequestPropertyInstr as? FiveRegisterInstruction
+            ?: throw PatchException(
+                "addRequestProperty call uses an unexpected instruction format."
+            )
+        val valueRegister = fiveRegister.registerE
         val insertIndex = instructionList.indexOf(addRequestPropertyInstr)
         method.addInstruction(
             insertIndex,

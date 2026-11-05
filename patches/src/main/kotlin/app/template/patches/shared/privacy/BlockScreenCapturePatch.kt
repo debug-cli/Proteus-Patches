@@ -4,6 +4,7 @@ import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.BytecodePatchContext
 import app.morphe.patcher.patch.bytecodePatch
+import app.template.patches.shared.constValue
 import app.template.patches.shared.getFreeRegisterProvider
 import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.iface.ClassDef
@@ -84,13 +85,17 @@ val blockScreenCapturePatch = bytecodePatch(
                     if (registerProvider != null) {
                         val windowReg = registerProvider.getFreeRegister()
                         val flagsReg = registerProvider.getFreeRegister()
+                        // Only the flags register is initialised. v$windowReg holds the
+                        // Window object returned by getWindow() and must NOT be overwritten.
+                        // FLAG_SECURE is emitted as hex (0x2000); interpolating the Int
+                        // directly would produce the decimal digits (0x8192) and set the
+                        // wrong bit.
                         onCreate.addInstructions(
                             0,
                             """
                                 invoke-virtual {p0}, $ACTIVITY_CLASS->getWindow()$WINDOW_CLASS
                                 move-result-object v$windowReg
-                                const/16 v$windowReg, 0x$FLAG_SECURE
-                                const/16 v$flagsReg, 0x$FLAG_SECURE
+                                ${constValue(flagsReg, FLAG_SECURE)}
                                 invoke-virtual {v$windowReg, v$flagsReg}, $WINDOW_CLASS->setFlags(II)V
                             """.trimIndent(),
                         )
@@ -126,7 +131,7 @@ val blockScreenCapturePatch = bytecodePatch(
                         }
                     }
                     if (literalIndex >= 0 && literalValue == 0) {
-                        replacements[literalIndex] = "const/4 v$valueRegister, 0x1"
+                        replacements[literalIndex] = constValue(valueRegister, 1)
                     }
                 }
 

@@ -2,6 +2,7 @@ package app.template.patches.shared.web
 
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.bytecodePatch
+import app.template.patches.shared.constValue
 import com.android.tools.smali.dexlib2.Opcode
 import com.android.tools.smali.dexlib2.iface.instruction.FiveRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.Instruction
@@ -12,11 +13,13 @@ import com.android.tools.smali.dexlib2.iface.instruction.RegisterRangeInstructio
 import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 
 // Universal WebView mixed-content lockdown: rewrites literal
-// WebSettings.setMixedContentMode(0) to 2 (MIXED_CONTENT_NEVER_ALLOW).
+// WebSettings.setMixedContentMode(...) to 1 (MIXED_CONTENT_NEVER_ALLOW).
+// Android defines ALWAYS_ALLOW = 0, NEVER_ALLOW = 1, COMPATIBILITY_MODE = 2 —
+// using 2 here would silently select compatibility mode instead of blocking.
 // Fail-safe (literal args only); default = false.
 
 private const val WEB_SETTINGS = "Landroid/webkit/WebSettings;"
-private const val MIXED_CONTENT_NEVER_ALLOW = 2
+private const val MIXED_CONTENT_NEVER_ALLOW = 1
 
 private val INVOKE_OPCODES = setOf(
     Opcode.INVOKE_VIRTUAL,
@@ -59,8 +62,8 @@ val webViewMixedContentPatch = bytecodePatch(
                     val valueRegister = argumentRegister(instruction, 1) ?: return@forEachIndexed
                     val literal = literalForRegister(instructions, index, valueRegister)
                         ?: return@forEachIndexed
-                    if (literal.second == 0) {
-                        replacements[literal.first] = "const/4 v$valueRegister, 0x$MIXED_CONTENT_NEVER_ALLOW"
+                    if (literal.second != MIXED_CONTENT_NEVER_ALLOW) {
+                        replacements[literal.first] = constValue(valueRegister, MIXED_CONTENT_NEVER_ALLOW)
                     }
                 }
 

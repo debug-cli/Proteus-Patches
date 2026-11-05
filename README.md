@@ -578,7 +578,7 @@ https://github.com/ineednotitle/Proteus-Patches
 | [Block screenshots & screen recording](#block-screenshots-screen-recording) | Sets FLAG_SECURE on all activity windows so screenshots, screen recorders,<br>overlay apps and accessibility services cannot capture the app's content<br>(they see a black surface).<br><br>Applies to any app. Does not remove existing protections - it adds them. |  |
 | [Block user-added certificate authorities](#block-user-added-certificate-authorities) | Removes user-added certificate authorities from the app's network security<br>config (if it declares one), so the app does not trust certificates installed<br>on the device.<br><br>Applies to any app. No effect if the app has no network security config. |  |
 | [Change package name (clone app)](#change-package-name-clone-app) | Installs a clone of any app beside the original by changing the package,<br>permission names, provider authorities and launcher label.<br><br>The clone is re-signed: payments, SDK logins, Google sign-in and anti-fraud<br>checks bound to the original signature may not work on the clone. | • Package name<br>• App name |
-| [Disable PairIP license check](#disable-pairip-license-check) | Disables PairIP license verification, VM checks, and repeated background checks. |  |
+| [Disable PairIP license check](#disable-pairip-license-check) | Disables PairIP license verification: integrity/VM checks, the licensing<br>client and repeated background checks.<br><br>Applies to any app. No effect if the app does not use PairIP. |  |
 | [Disable app backup (allowBackup=false)](#disable-app-backup-allowbackup-false) | Sets android:allowBackup="false" so the app's private data is excluded from<br>ADB backups, cloud backups and device-to-device transfers.<br><br>Applies to any app. You lose automatic backup/restore of this app's data. |  |
 | [Empty telephony identifiers (IMEI, phone number, SIM)](#empty-telephony-identifiers-imei-phone-number-sim) | Makes TelephonyManager device-identifier getters (IMEI, device ID, phone<br>number, subscriber ID, SIM serial, software version) return an empty string<br>to the app.<br><br>Applies to any app. Features that need the real IMEI/number may degrade. |  |
 | [Fix Firebase after re-signing](#fix-firebase-after-re-signing) | Fixes Firebase services (push notifications, Remote Config, Firebase Auth) that break after Morphe re-signs the app with a different certificate.<br><br>Apply with Original app certificate patch — no other config needed. |  |
@@ -590,7 +590,7 @@ https://github.com/ineednotitle/Proteus-Patches
 | [Provide Original app certificate](#provide-original-app-certificate) | Automatically reads the signing certificate from the APK you are patching — no original app installed or file provided needed. Only fill the options below if you are patching an APK that was already re-signed (e.g. a previously patched build): in that case point to the original APK file, or enter the certificate manually. | • Path to original APK (if uninstalled)<br>• Certificate SHA-1 (manual)<br>• Certificate SHA-256 (manual)<br>• Certificate Base64 DER (manual) |
 | [Remove dangerous permissions](#remove-dangerous-permissions) | Removes privacy-invasive permissions (package visibility, phone state, accounts,<br>location, contacts, microphone, screen-capture detection, advertising ID) from any<br>app's manifest. Storage and SMS permissions are kept by default.<br><br>The removal list is configurable. Removing a permission the app actually needs can<br>break features (login, calls, address auto-detect). | • Permissions to remove |
 | [Spoof Widevine / DRM level](#spoof-widevine-drm-level) | Reports Widevine L1 (hardware DRM) to apps that check DRM level locally.<br><br>Useful for apps that refuse to play HD/4K content on L3 devices or after re-signing.<br><br>Does not bypass server-side DRM - Netflix, Disney+ and similar are not affected. | • Widevine security level to report<br>• HDCP level to report |
-| [Spoof app signature](#spoof-app-signature) | Makes the app think its signing certificate is unchanged after Morphe re-signs it.<br><br>Useful when an app crashes or shows a tamper warning because it checks its own certificate.<br><br>Does not bypass Play Integrity / SafetyNet hardware attestation.<br><br>Apply with Original app certificate patch. | • Package name override (optional) |
+| [Spoof app signature](#spoof-app-signature) | Makes the app think its signing certificate is unchanged after Morphe re-signs it.<br><br>Useful when an app crashes or shows a tamper warning because it checks its own certificate.<br><br>Does not bypass Play Integrity / SafetyNet hardware attestation.<br><br>Apply with Original app certificate patch. | • Package name override (optional)<br>• Certificate Base64 override (optional) |
 | [Spoof install source](#spoof-install-source) | Makes the app think it was installed from a specific store (default: Google Play).<br><br>Useful when an app blocks features or shows errors because it detects it was not installed from the Play Store.<br><br>Only affects what the app itself sees - does not change the real system install record. | • Store to impersonate |
 | [Strip logging (android.util.Log)](#strip-logging-android-util-log) | Removes all android.util.Log calls from the app, so logcat cannot leak<br>URLs, tokens, PII or debug output produced by the app.<br><br>Applies to any app. Safe. |  |
 | [WebView: block mixed content (HTTPS pages load HTTP subresources)](#webview-block-mixed-content-https-pages-load-http-subresources) | Forces WebSettings.setMixedContentMode to NEVER_ALLOW, so HTTPS pages in the<br>app's WebViews cannot load plaintext HTTP subresources.<br><br>Applies to any app. May break legacy web content inside the app. |  |
@@ -603,14 +603,15 @@ https://github.com/ineednotitle/Proteus-Patches
 
 ## 🛡️ Security & safety
 
-Every patch in this bundle follows strict safety rules (full report:
-**[SECURITY_AUDIT.md](SECURITY_AUDIT.md)**:
+Every patch follows a fail-safe design (details:
+**[UNIVERSAL_PATCH_AUDIT.md](UNIVERSAL_PATCH_AUDIT.md)**):
 
 - Fail-safe by default; heuristic patches default to **off**
-- Bytecode edits only NOP void-returning calls (never corrupt string results),
-  never rename component classes, never delete the only intent-filter entry point
-- No entitlement/DRM/payment/login/anti-fraud bypasses; no network calls, no
-  exec, no secrets in the bundle (scanned; dex 038, integrity-verified)
+- Bytecode edits only rewrite call sites that match known SDK shapes — unrecognised
+  sites are skipped, never guessed at, and component class names are never renamed
+- No payment, purchase or account bypasses. The PairIP and DRM patches only disable
+  local client-side checks; they do not defeat server-side billing or attestation
+- No network calls, no exec, no secrets in the bundle
 - Meesho's patch set deliberately **keeps storage and SMS permissions**
 
 Understand the risk classes before enabling signature/integrity-related
@@ -637,11 +638,9 @@ Releases are versioned by semantic-release (conventional commits); CI builds the
 
 ## 📄 Docs
 
-- [SECURITY_AUDIT.md](SECURITY_AUDIT.md) — full security audit
-- [ANALYSIS.md](ANALYSIS.md) — bundle analysis
-- [MEESHO_PATCH_PLAN.md](MEESHO_PATCH_PLAN.md) / [MUBI_PATCH_PLAN.md](MUBI_PATCH_PLAN.md) — per-app plans
-- [MUBI_ACCEPTANCE.md](MUBI_ACCEPTANCE.md) — MUBI acceptance report
-- [CI_BUILD_GUIDE.md](CI_BUILD_GUIDE.md) — CI/build notes
+- [UNIVERSAL_PATCH_AUDIT.md](UNIVERSAL_PATCH_AUDIT.md) — per-patch correctness & UX audit
+- [CHANGELOG.md](CHANGELOG.md) — release history
+- [docs/COMMUNITY-LISTING.md](docs/COMMUNITY-LISTING.md) — patch listing for community indexes
 
 ## Warning:
 I have no intentions of stealing any of your data. So, Be chill about getting Hacked. You can Even check the code or give it to AI to check or put patched apps in the Virustotal.
