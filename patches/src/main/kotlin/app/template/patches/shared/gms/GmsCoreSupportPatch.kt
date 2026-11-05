@@ -421,6 +421,9 @@ val gmsCorePatch = bytecodePatch(
                 }
 
                 val vendor = gmsCoreVendorOption ?: DEFAULT_GMS_CORE_VENDOR
+                // Derived once for the whole resource phase: used both inside the manifest
+                // DOM edits and in the raw manifest text rewrites below.
+                val vendorGroup = gmsVendorGroup(vendor)
                 val sig = autoSha1
                 if (sig == null) {
                     println(
@@ -482,7 +485,6 @@ val gmsCorePatch = bytecodePatch(
                     fun String.prefixOrReplace(from: String, to: String): String =
                         if (startsWith(from)) replace(from, to) else "$to.$this"
 
-                    val vendorGroup = gmsVendorGroup(vendor)
                     val isCustomVendor = !vendor.contains("microg") && !vendor.startsWith("com.google")
                     val isRenaming = resolvedPackageName != originalPackageName
 
