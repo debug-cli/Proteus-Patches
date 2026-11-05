@@ -47,8 +47,14 @@ jobs:
       - name: Dump build log to annotations on failure
         if: failure()
         run: |
-          LOG=$(tail -200 build.log | python3 -c 'import sys; print(sys.stdin.read().replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A"))')
-          echo "::error::$LOG"
+          python3 - <<'PY'
+          import pathlib
+          lines = pathlib.Path('build.log').read_text(errors='replace').splitlines()
+          for start in range(0, len(lines), 40):
+              chunk = '\n'.join(lines[start:start + 40])
+              escaped = chunk.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+              print(f'::error::BUILDLOG {start // 40}: {escaped}')
+          PY
           {
             echo '### build.log (tail)'
             echo '```text'
