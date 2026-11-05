@@ -1,3 +1,9 @@
+## [2.2.0](https://github.com/ineednotitle/Proteus-Patches/compare/v2.1.2...v2.2.0) (2026-11-05)
+
+### ✨ New Features
+
+* **reddit:** add AutoMod comment blocking and content filters patches ([b6146b7](https://github.com/ineednotitle/Proteus-Patches/commit/b6146b7))
+
 ## [2.1.2](https://github.com/ineednotitle/Proteus-Patches/compare/v2.1.1...v2.1.2) (2026-11-05)
 
 ### 🐛 Bug Fixes
