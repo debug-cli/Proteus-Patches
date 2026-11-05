@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   actions: read
   packages: read
 
@@ -31,13 +31,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Inspect compiled helper (javap + dexdump)
+      - name: Inspect compiled helper and publish diag.txt
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           {
             echo "=== artifacts ==="
             find extensions/extension/build -type f \( -name '*.mpe' -o -name '*.dex' -o -name '*.jar' \) | head -40
             echo "=== javap -c -p RedditContentFilterHelper.class ==="
-            find extensions/extension/build -name 'RedditContentFilterHelper.class' -exec javap -c -p {} \; | sed -n '1,220p'
+            find extensions/extension/build -name 'RedditContentFilterHelper.class' -exec javap -c -p {} \; | sed -n '1,260p'
             echo "=== DEX dump around placeholder ==="
             DEXDUMP=$(find "$ANDROID_HOME" -name dexdump -type f 2>/dev/null | head -1)
             echo "dexdump=$DEXDUMP"
@@ -48,15 +50,13 @@ jobs:
               unzip -o -q "$MPE" -d /tmp/mpe
               for dex in $(find /tmp/mpe -name '*.dex'); do
                 echo "--- $dex ---"
-                "$DEXDUMP" -d "$dex" 2>/dev/null | grep -n -B8 -A16 'PROTEUS_REDDIT_FILTER_CONFIG_V1\|Class descriptor.*RedditContentFilterHelper' | head -300
+                "$DEXDUMP" -d "$dex" 2>/dev/null | grep -n -B10 -A20 'PROTEUS_REDDIT_FILTER_CONFIG_V1\|RedditContentFilterHelper' | head -400
               done
             fi
-          } > diag.txt 2>&1
-          python3 - <<'PY'
-          import pathlib
-          lines = pathlib.Path('diag.txt').read_text(errors='replace').splitlines()
-          for start in range(0, len(lines), 40):
-              chunk = '\n'.join(lines[start:start + 40])
-              escaped = chunk.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
-              print(f'::error::DIAG {start // 40}: {escaped}')
-          PY
+          } > diag.txt 2>&1 || true
+          wc -l diag.txt
+          git config user.email "ci@users.noreply.github.com"
+          git config user.name "arena-ci"
+          git add -f diag.txt
+          git commit -m "diag: extension dump [skip ci]" || true
+          git push origin HEAD:arena/663d48dc-proteus-patches || true
