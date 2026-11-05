@@ -31,32 +31,29 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Inspect compiled helper and publish diag.txt
+      - name: Inspect compiled helper and publish dumps
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          MPE=$(find extensions/extension/build -name '*.mpe' -type f | head -1)
+          MERGED=$(find extensions/extension/build -path '*mergeDexRelease*' -name 'classes.dex' | head -1)
+          DEXDUMP=$(find "$ANDROID_HOME" -name dexdump -type f 2>/dev/null | head -1)
           {
-            echo "=== artifacts ==="
-            find extensions/extension/build -type f \( -name '*.mpe' -o -name '*.dex' -o -name '*.jar' \) | head -40
-            echo "=== javap -c -p RedditContentFilterHelper.class ==="
-            find extensions/extension/build -name 'RedditContentFilterHelper.class' -exec javap -c -p {} \; | sed -n '1,260p'
-            echo "=== DEX dump around placeholder ==="
-            DEXDUMP=$(find "$ANDROID_HOME" -name dexdump -type f 2>/dev/null | head -1)
-            echo "dexdump=$DEXDUMP"
-            MPE=$(find extensions/extension/build -name '*.mpe' -type f | head -1)
-            echo "mpe=$MPE"
-            if [ -n "$MPE" ] && [ -n "$DEXDUMP" ]; then
-              rm -rf /tmp/mpe && mkdir -p /tmp/mpe
-              unzip -o -q "$MPE" -d /tmp/mpe
-              for dex in $(find /tmp/mpe -name '*.dex'); do
-                echo "--- $dex ---"
-                "$DEXDUMP" -d "$dex" 2>/dev/null | grep -n -B10 -A20 'PROTEUS_REDDIT_FILTER_CONFIG_V1\|RedditContentFilterHelper' | head -400
-              done
-            fi
+            echo "MPE=$MPE"
+            echo "MERGED=$MERGED"
+            echo "DEXDUMP=$DEXDUMP"
+            echo "=== file types ==="
+            file "$MPE" "$MERGED"
+            echo "=== javap -c -p -constants (full) ==="
+            find extensions/extension/build -name 'RedditContentFilterHelper.class' -exec javap -c -p -constants {} \;
+            echo "=== dexdump .mpe (placeholder context) ==="
+            "$DEXDUMP" -d "$MPE" 2>/dev/null | grep -n -B12 -A24 'PROTEUS_REDDIT_FILTER_CONFIG_V1\|RedditContentFilterHelper' | head -500
+            echo "=== dexdump merged classes.dex (placeholder context) ==="
+            "$DEXDUMP" -d "$MERGED" 2>/dev/null | grep -n -B12 -A24 'PROTEUS_REDDIT_FILTER_CONFIG_V1\|RedditContentFilterHelper' | head -500
           } > diag.txt 2>&1 || true
           wc -l diag.txt
           git config user.email "ci@users.noreply.github.com"
           git config user.name "arena-ci"
           git add -f diag.txt
-          git commit -m "diag: extension dump [skip ci]" || true
+          git commit -m "diag: full extension dump [skip ci]" || true
           git push origin HEAD:arena/663d48dc-proteus-patches || true
