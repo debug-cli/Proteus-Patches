@@ -1,3 +1,10 @@
+## [2.1.2](https://github.com/ineednotitle/Proteus-Patches/compare/v2.1.1...v2.1.2) (2026-11-05)
+
+### 🐛 Bug Fixes
+
+* **universal:** harden all 24 universal patches ([c8cbf3f](https://github.com/ineednotitle/Proteus-Patches/commit/c8cbf3fb4775299d613439469959a8c0428dd635))
+* **universal:** resolve vendorGroup scope in GmsCore support ([b58d721](https://github.com/ineednotitle/Proteus-Patches/commit/b58d72196e5eba278052b1c34bc4f112efd23690))
+
 ## [2.1.1](https://github.com/ineednotitle/Proteus-Patches/compare/v2.1.0...v2.1.1) (2026-11-04)
 
 ### 🐛 Bug Fixes
