@@ -41,7 +41,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Test permission removal
-        run: ./gradlew :patches:testPermissionRemoval --stacktrace
+        run: ./gradlew :patches:testPermissionRemoval :extensions:extension:testReleaseUnitTest --stacktrace
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
