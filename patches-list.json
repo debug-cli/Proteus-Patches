@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "patches": [
     {
       "name": "AMOLED dark theme",
@@ -86,39 +86,6 @@
                 "X86_64": 118,
                 "X86": 118
               },
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
-      "name": "Allow screenshots & screen recording",
-      "description": "Removes FLAG_SECURE and secure-surface flags from Meesho's windows so screenshots and screen recording work. Payment screens may still capture black.",
-      "default": false,
-      "dependencies": [],
-      "compatiblePackages": [
-        {
-          "packageName": "com.meesho.supply",
-          "name": "Meesho",
-          "description": null,
-          "apkFileType": "APKM",
-          "appIconColor": "#F43397",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "29.7",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            },
-            {
-              "version": "29.6",
-              "versionCodes": null,
               "isExperimental": false,
               "minSdk": null,
               "description": null
@@ -617,39 +584,6 @@
     },
     {
       "name": "Block analytics & tracking",
-      "description": "No-ops AppsFlyer, Mixpanel, Facebook App Events, Firebase Analytics, GMS AppMeasurement and Crashlytics logging in Meesho. Push notifications and login/payments keep working.",
-      "default": true,
-      "dependencies": [],
-      "compatiblePackages": [
-        {
-          "packageName": "com.meesho.supply",
-          "name": "Meesho",
-          "description": null,
-          "apkFileType": "APKM",
-          "appIconColor": "#F43397",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "29.7",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            },
-            {
-              "version": "29.6",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
-      "name": "Block analytics & tracking",
       "description": "No-ops Braze, Firebase Analytics, AppsFlyer, Adjust, Facebook App Events and Segment logging in MUBI. Push notifications and account features keep working.",
       "default": true,
       "dependencies": [],
@@ -1024,39 +958,6 @@
     },
     {
       "name": "Bypass forced update",
-      "description": "Neutralizes Play Core's update-availability checks so Meesho does not block usage on a newer version. Running an outdated build may break.",
-      "default": false,
-      "dependencies": [],
-      "compatiblePackages": [
-        {
-          "packageName": "com.meesho.supply",
-          "name": "Meesho",
-          "description": null,
-          "apkFileType": "APKM",
-          "appIconColor": "#F43397",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "29.7",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            },
-            {
-              "version": "29.6",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
-      "name": "Bypass forced update",
       "description": "Neutralizes Play Core's update-availability checks so MUBI does not block startup on a newer version. Running an outdated build may break playback.",
       "default": false,
       "dependencies": [],
@@ -1253,58 +1154,6 @@
           "required": true,
           "type": "kotlin.String",
           "default": "Photos Morphe",
-          "values": null
-        }
-      ]
-    },
-    {
-      "name": "Change package name",
-      "description": "Installs Meesho beside the official app by changing the package, permission names, provider authorities and launcher label. Payments (JusPay), Truecaller/Otpless login, Google sign-in and Shield anti-fraud may not work on the clone.",
-      "default": false,
-      "dependencies": [],
-      "compatiblePackages": [
-        {
-          "packageName": "com.meesho.supply",
-          "name": "Meesho",
-          "description": null,
-          "apkFileType": "APKM",
-          "appIconColor": "#F43397",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "29.7",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            },
-            {
-              "version": "29.6",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": [
-        {
-          "key": "meeshoPackageName",
-          "title": "Package name",
-          "description": "Package name for the cloned Meesho app.",
-          "required": true,
-          "type": "kotlin.String",
-          "default": "app.morphe.meesho",
-          "values": null
-        },
-        {
-          "key": "meeshoAppName",
-          "title": "App name",
-          "description": "Launcher name for the cloned Meesho app.",
-          "required": true,
-          "type": "kotlin.String",
-          "default": "Meesho Proteus",
           "values": null
         }
       ]
@@ -1979,72 +1828,6 @@
                 "X86_64": 22510,
                 "X86": 22510
               },
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
-      "name": "Disable in-app popup upsells",
-      "description": "Disables Meesho's InAppPopupActivity so full-screen promo/upsell popups never render. May break a flow that legitimately routes through it — verify first.",
-      "default": false,
-      "dependencies": [],
-      "compatiblePackages": [
-        {
-          "packageName": "com.meesho.supply",
-          "name": "Meesho",
-          "description": null,
-          "apkFileType": "APKM",
-          "appIconColor": "#F43397",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "29.7",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            },
-            {
-              "version": "29.6",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
-      "name": "Disable reels autoplay",
-      "description": "Stops Meesho's reels from autoplaying muted previews. Opening a reel still plays normally. Heuristic — verify ExoPlayer anchors against the real APK.",
-      "default": false,
-      "dependencies": [],
-      "compatiblePackages": [
-        {
-          "packageName": "com.meesho.supply",
-          "name": "Meesho",
-          "description": null,
-          "apkFileType": "APKM",
-          "appIconColor": "#F43397",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "29.7",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            },
-            {
-              "version": "29.6",
-              "versionCodes": null,
               "isExperimental": false,
               "minSdk": null,
               "description": null
@@ -2870,39 +2653,6 @@
       "options": []
     },
     {
-      "name": "Hide sponsored listings & ad slots",
-      "description": "Hides 'Ad'-labelled sponsored products in Meesho's search and feed by forcing app-side boolean ad gates to false. Heuristic — verify anchors against the real APK. Server still serves ads; only client rendering is affected.",
-      "default": false,
-      "dependencies": [],
-      "compatiblePackages": [
-        {
-          "packageName": "com.meesho.supply",
-          "name": "Meesho",
-          "description": null,
-          "apkFileType": "APKM",
-          "appIconColor": "#F43397",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "29.7",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            },
-            {
-              "version": "29.6",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
       "name": "Hide typing indicator",
       "description": "Hides your typing indicator from other users in all chats. On Telegram Plus also silences the controller-level sendTyping dispatcher.",
       "default": true,
@@ -3050,39 +2800,6 @@
       "options": []
     },
     {
-      "name": "Lock exported share-in / bank-link activities",
-      "description": "Makes Meesho's exported SharedTextRedirectionActivity and MyBankActivity non-exported. Internal navigation still works; external apps/links can no longer start them.",
-      "default": false,
-      "dependencies": [],
-      "compatiblePackages": [
-        {
-          "packageName": "com.meesho.supply",
-          "name": "Meesho",
-          "description": null,
-          "apkFileType": "APKM",
-          "appIconColor": "#F43397",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "29.7",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            },
-            {
-              "version": "29.6",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
       "name": "Offline-only voice typing & telemetry reduction",
       "description": "On Gboard 18.5.4.993608717 arm64, routes core voice typing only through the on-device\nrecognizers and returns no recognizer when a local provider/model is unavailable (no\nonline fallback). Disables Agentic Dictation's server/batch retry path, reduces selected\nmetrics/telemetry and disables app backup. INTERNET and unrelated network features are\nretained; this is best-effort telemetry reduction, not a guarantee of zero Google traffic.\n\nRequires the appropriate offline speech model/provider to be installed. Without one,\nvoice typing is unavailable by design. Agentic Dictation is disabled.",
       "default": false,
@@ -3182,43 +2899,6 @@
     },
     {
       "name": "Packaging toolkit (signature, install source, MicroG)",
-      "description": "Applies the shared signature, install-source and GmsCore/MicroG patches to Meesho in one step. Does not bypass Play Integrity, Shield or fix payments.",
-      "default": false,
-      "dependencies": [
-        "BytecodePatch",
-        "BytecodePatch",
-        "BytecodePatch"
-      ],
-      "compatiblePackages": [
-        {
-          "packageName": "com.meesho.supply",
-          "name": "Meesho",
-          "description": null,
-          "apkFileType": "APKM",
-          "appIconColor": "#F43397",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "29.7",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            },
-            {
-              "version": "29.6",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
-      "name": "Packaging toolkit (signature, install source, MicroG)",
       "description": "Applies the shared signature, install-source and GmsCore/MicroG patches to MUBI in one step. Does not bypass Play Integrity or fix Play Billing.",
       "default": false,
       "dependencies": [
@@ -3255,39 +2935,6 @@
                 "X86_64": 29145545,
                 "X86": 29145545
               },
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
-      "name": "Prefer external browser over Custom Tabs",
-      "description": "Removes Meesho's Custom Tabs service query so browser links can fall back to the normal external browser. No effect if Meesho launches Custom Tabs directly.",
-      "default": true,
-      "dependencies": [],
-      "compatiblePackages": [
-        {
-          "packageName": "com.meesho.supply",
-          "name": "Meesho",
-          "description": null,
-          "apkFileType": "APKM",
-          "appIconColor": "#F43397",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "29.7",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            },
-            {
-              "version": "29.6",
-              "versionCodes": null,
               "isExperimental": false,
               "minSdk": null,
               "description": null
@@ -4119,39 +3766,6 @@
       ]
     },
     {
-      "name": "Remove dangerous permissions (keep storage & SMS)",
-      "description": "Removes contacts, phone-state, microphone, location, screen-capture detection and advertising-ID permissions from Meesho's manifest. Storage and SMS permissions are kept. Truecaller login, support voice calls and location-based address entry may degrade.",
-      "default": true,
-      "dependencies": [],
-      "compatiblePackages": [
-        {
-          "packageName": "com.meesho.supply",
-          "name": "Meesho",
-          "description": null,
-          "apkFileType": "APKM",
-          "appIconColor": "#F43397",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "29.7",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            },
-            {
-              "version": "29.6",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
       "name": "Remove promo cards & upsell banners",
       "description": "Disables Braze Content Cards, the Braze feed and card refreshes in MUBI. Push notifications and the app's own screens are untouched.",
       "default": true,
@@ -4217,6 +3831,69 @@
               "versionCodes": null,
               "isExperimental": true,
               "minSdk": 31,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Show deleted comments",
+      "description": "Shows the original text of comments deleted or removed on Reddit, restored at render time from the free Arctic Shift archive (no API key; falls back to PullPush). Only the ids of deleted comments in the threads you open are sent, and restored text is prefixed with [archived]. Coverage depends on the archive; needs network. Off by default.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.reddit.frontpage",
+          "name": "Reddit",
+          "description": null,
+          "apkFileType": "APKM",
+          "appIconColor": "#FF4500",
+          "signatures": [
+            "970b91143813b4c9d5f3634f672c9fcaa5621b4efaaedafd6c235cbbb869736f"
+          ],
+          "targets": [
+            {
+              "version": "2026.42.0",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 29,
+              "description": null
+            },
+            {
+              "version": "2026.41.0",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": 29,
+              "description": null
+            },
+            {
+              "version": "2026.40.0",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": 29,
+              "description": null
+            },
+            {
+              "version": "2026.39.0",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": 29,
+              "description": null
+            },
+            {
+              "version": "2026.24.0",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 29,
+              "description": null
+            },
+            {
+              "version": "2026.10.0",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 28,
               "description": null
             }
           ]
@@ -4667,39 +4344,6 @@
               "version": "1.98.63",
               "versionCodes": null,
               "isExperimental": true,
-              "minSdk": null,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
-      "name": "Stop pull-notification alarms (keep push)",
-      "description": "Disables Meesho's alarm-based pull-notification receivers so the app is not periodically woken to fetch marketing notifications. FCM push keeps working.",
-      "default": false,
-      "dependencies": [],
-      "compatiblePackages": [
-        {
-          "packageName": "com.meesho.supply",
-          "name": "Meesho",
-          "description": null,
-          "apkFileType": "APKM",
-          "appIconColor": "#F43397",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "29.7",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            },
-            {
-              "version": "29.6",
-              "versionCodes": null,
-              "isExperimental": false,
               "minSdk": null,
               "description": null
             }

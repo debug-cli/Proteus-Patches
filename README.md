@@ -53,7 +53,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 > if you need the full app set.
 
 <!-- PATCHES_START EXPANDED -->
-> **[v2.2.4](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.4)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/e51b332d-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;167 patches total
+> **[v2.2.5](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.5)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/4877b858-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;155 patches total
 <details open>
 <summary>📦 Google Photos&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
 <br>
@@ -108,32 +108,6 @@ For configuration advice, limitations, and permission-patch examples, see the
 | [Bypass native integrity checks](#bypass-native-integrity-checks) | libunnamed_raw.so JNI-throws 'app integrity check failed' on re-signed builds, killing camera session start (preview) - observed via diagnostic crash log. This patch catches the throw at the session-opening wrapper and substitutes a valid session result. Required together with 'Allow re-signed/sideloaded installs'. |  |
 | [Diagnostic crash log](#diagnostic-crash-log) | DIAGNOSTIC ONLY - writes the full stack trace to Downloads/mereframe-crash-*.txt when the app crashes, for remote diagnosis. Off by default; enable when asked to produce a crash log. Chain-forwards to the original crash handler. |  |
 | [Unlock Pro features](#unlock-pro-features) | Includes every registered feature in the resolved feature set by dropping the ownership check at the entitlement resolver (nv.e). LOCAL client-side effect only. WARNING (kept off by default): on at least one device (realme/Android 16) enabling the single registered Pro feature crashes capture - the Pro pipeline path is gated by this flag and we cannot verify its safety side. Enable only if you specifically want the Pro toolset; the app works fully (RAW capture incl.) with just 'Allow re-signed installs'. |  |
-
-</details>
-
-<details open>
-<summary>📦 Meesho&nbsp;&nbsp;•&nbsp;&nbsp;12 patches</summary>
-<br>
-
-**🎯 Supported versions:**
-
-| 29.7 | 29.6 |
-| :---: | :---: |
-
-| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
-|----------|----------------|-----------|
-| [Allow screenshots & screen recording](#allow-screenshots-screen-recording) | Removes FLAG_SECURE and secure-surface flags from Meesho's windows so screenshots and screen recording work. Payment screens may still capture black. |  |
-| [Block analytics & tracking](#block-analytics-tracking) | No-ops AppsFlyer, Mixpanel, Facebook App Events, Firebase Analytics, GMS AppMeasurement and Crashlytics logging in Meesho. Push notifications and login/payments keep working. |  |
-| [Bypass forced update](#bypass-forced-update) | Neutralizes Play Core's update-availability checks so Meesho does not block usage on a newer version. Running an outdated build may break. |  |
-| [Change package name](#change-package-name) | Installs Meesho beside the official app by changing the package, permission names, provider authorities and launcher label. Payments (JusPay), Truecaller/Otpless login, Google sign-in and Shield anti-fraud may not work on the clone. | • Package name<br>• App name |
-| [Disable in-app popup upsells](#disable-in-app-popup-upsells) | Disables Meesho's InAppPopupActivity so full-screen promo/upsell popups never render. May break a flow that legitimately routes through it — verify first. |  |
-| [Disable reels autoplay](#disable-reels-autoplay) | Stops Meesho's reels from autoplaying muted previews. Opening a reel still plays normally. Heuristic — verify ExoPlayer anchors against the real APK. |  |
-| [Hide sponsored listings & ad slots](#hide-sponsored-listings-ad-slots) | Hides 'Ad'-labelled sponsored products in Meesho's search and feed by forcing app-side boolean ad gates to false. Heuristic — verify anchors against the real APK. Server still serves ads; only client rendering is affected. |  |
-| [Lock exported share-in / bank-link activities](#lock-exported-share-in-bank-link-activities) | Makes Meesho's exported SharedTextRedirectionActivity and MyBankActivity non-exported. Internal navigation still works; external apps/links can no longer start them. |  |
-| [Packaging toolkit (signature, install source, MicroG)](#packaging-toolkit-signature-install-source-microg) | Applies the shared signature, install-source and GmsCore/MicroG patches to Meesho in one step. Does not bypass Play Integrity, Shield or fix payments. |  |
-| [Prefer external browser over Custom Tabs](#prefer-external-browser-over-custom-tabs) | Removes Meesho's Custom Tabs service query so browser links can fall back to the normal external browser. No effect if Meesho launches Custom Tabs directly. |  |
-| [Remove dangerous permissions (keep storage & SMS)](#remove-dangerous-permissions-keep-storage-sms) | Removes contacts, phone-state, microphone, location, screen-capture detection and advertising-ID permissions from Meesho's manifest. Storage and SMS permissions are kept. Truecaller login, support voice calls and location-based address entry may degrade. |  |
-| [Stop pull-notification alarms (keep push)](#stop-pull-notification-alarms-keep-push) | Disables Meesho's alarm-based pull-notification receivers so the app is not periodically woken to fetch marketing notifications. FCM push keeps working. |  |
 
 </details>
 
@@ -268,7 +242,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 | [Disable Click Tracking](#disable-click-tracking) | Forces the outbound click-tracking account preference off at the Account deserialization choke point (local; server-side click analytics may still be recorded). Enabled by default. |  |
 | [Employee Debug Flags](#employee-debug-flags) | Spoofs is_employee locally at the Account JSON adapter, exposing Reddit's internal employee/debug UI menus (mostly non-functional without the employee backend, and a few may misbehave — enable for exploration only). Off by default. |  |
 | [Remove ads](#remove-ads) | Hides promoted posts in feeds and banner ads in comment threads. |  |
-| [Show deleted comments](#show-deleted-comments) | Shows the original text of comments deleted or removed on Reddit, restored at render time from the free Arctic Shift public archive (no API key; falls back to PullPush). Only the ids of deleted comments in the threads you open are sent, and restored text is prefixed with [archived]. Coverage depends on the archive; needs network. Off by default. |  |
+| [Show deleted comments](#show-deleted-comments) | Shows the original text of comments deleted or removed on Reddit, restored at render time from the free Arctic Shift archive (no API key; falls back to PullPush). Only the ids of deleted comments in the threads you open are sent, and restored text is prefixed with [archived]. Coverage depends on the archive; needs network. Off by default. |  |
 | [Unlock Account Entitlements](#unlock-account-entitlements) | Locally flips account-gating flags at the Account JSON adapter: can_create_subreddit, can_edit_name, password_set (kills the SSO 'set password' nag) and has_verified_email. Off by default; server entitlements still rule API actions. |  |
 | [Unlock Premium](#unlock-premium) | Flips the local isGold/has_gold_subscription account flags at the JSON adapter to enable Reddit Premium UI (custom icons, premium screens). Server-side perks cannot be unlocked. |  |
 
