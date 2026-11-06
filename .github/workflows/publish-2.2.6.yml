@@ -1,0 +1,118 @@
+name: Publish v2.2.6 (one-off)
+
+# One-off pre-release publish for v2.2.6 cut from this branch.
+# Builds the .mpp on a CI runner (JDK + full network), regenerates the patch
+# list / README, commits the metadata back to this branch, tags v2.2.6 and
+# creates the pre-release with the bundle attached. Not used by the normal
+# release pipeline (release.yml).
+on:
+  push:
+    branches:
+      - arena/4877b858-proteus-patches
+
+jobs:
+  publish:
+    name: Build and publish v2.2.6 pre-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Setup Java
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Run patch tests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew :patches:testPermissionRemoval :patches:testBravePrivacy
+
+      - name: Build patch list and bundle
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew generatePatchesList buildAndroid
+
+      - name: Normalize patch-list version
+        run: |
+          jq '.version="2.2.6"' patches-list.json > patches-list.json.tmp
+          mv patches-list.json.tmp patches-list.json
+
+      - name: Regenerate README patches section
+        run: python3 .github/scripts/generate_patches_readme.py ineednotitle/Proteus-Patches arena/4877b858-proteus-patches patches-list.json README.md
+
+      - name: Verify patch source metadata
+        run: python3 .github/scripts/verify_patch_source.py patches-bundle.json 2.2.6 --normalize
+
+      - name: Verify Android bundle
+        run: python3 .github/scripts/verify_android_bundle.py patches/build/libs/patches-2.2.6.mpp 2.2.6 --patch-list patches-list.json
+
+      - name: Commit regenerated metadata
+        run: |
+          git config user.name "ineednotitle"
+          git config user.email "100122698+ineednotitle@users.noreply.github.com"
+          git add patches-list.json README.md
+          if git diff --cached --quiet; then
+            echo "metadata already up to date"
+          else
+            git commit -m "chore: Release v2.2.6 [skip ci]"
+            git push origin HEAD:arena/4877b858-proteus-patches
+          fi
+
+      - name: Create v2.2.6 pre-release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          printf '%s\n' \
+            'Proteus Patches v2.2.6 (pre-release)' \
+            '' \
+            'What this pre-release fixes:' \
+            '' \
+            '- Brave: patched builds failed to install with' \
+            '  INSTALL_FAILED_NO_MATCHING_ABIS "Failed to extract native libraries, res=-113",' \
+            '  most visibly on 16 KB page-size Android 15/16 devices (e.g. realme RMX5110).' \
+            '  Root cause: the stock APK keeps its native libraries uncompressed at 16 KB zip' \
+            '  offsets (extractNativeLibs=false) and the patcher rewrites them at 4 KB offsets,' \
+            '  which a 16 KB page device cannot map. Every Brave patch in this bundle now' \
+            '  depends on an internal compatibility patch that sets android:extractNativeLibs=true,' \
+            '  so libraries are extracted to disk at install time instead. Harmless on 4 KB' \
+            '  devices. Re-patch with v2.2.6 to install on those devices.' \
+            '  The Brave patches remain experimental and default-off, as before.' \
+            '' \
+            'Included:' \
+            '' \
+            '- All v2.2.4/v2.2.5 patches (Brave experimental set; Reddit "Show deleted' \
+            '  comments", off by default; see docs/REDDIT-DELETED-COMMENTS.md).' \
+            '- Metadata regenerated from the actual bundle (see the v2.2.5 notes on the' \
+            '  dropped stale com.meesho.supply entries).' \
+            '' \
+            'Verification:' \
+            '' \
+            '- CI: patch tests pass; bundle builds from this branch; Android DEX bundle' \
+            '  integrity verified (verify_android_bundle.py); patch-list metadata verified' \
+            '  (verify_patch_source.py).' \
+            '' \
+            'Known limitations:' \
+            '' \
+            '- The Reddit restore path is static-verified only; enable it only if you are' \
+            '  comfortable with archive lookups of deleted-comment ids and with the' \
+            '  experimental status.' \
+            '- Brave patches are still unproven against the real APK on-device; enable' \
+            '  them only on a backup profile. Startup on 16 KB devices remains unverified.' \
+            '' \
+            'For automatic updates, add the GitHub repository as a remote source in Morphe' \
+            'rather than importing a local .mpp file.' \
+            > /tmp/notes.md
+          gh release create v2.2.6 \
+            --prerelease \
+            --target arena/4877b858-proteus-patches \
+            --title "Proteus Patches v2.2.6" \
+            --notes-file /tmp/notes.md \
+            patches/build/libs/patches-2.2.6.mpp
