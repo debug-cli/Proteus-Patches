@@ -87,3 +87,10 @@ blaming the patch:
    saw, how many ids the archive returned, and whether a hit could be written back into
    the model. Endpoint changes or rate limits are logged there, and the comment is left
    `[deleted]`.
+
+## Performance
+
+Repeated `Listing.getChildren()` reads on the UI thread no longer redo the archive
+placeholder scan: results are memoized per list identity (see
+`docs/REDDIT-PERFORMANCE.md` — it covers the jank/animation-lag report and why the
+patch-added cost disappeared without changing any behaviour).

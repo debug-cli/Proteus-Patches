@@ -118,12 +118,26 @@ public final class RedditDeletedCommentHelper {
      * Replaces {@code [deleted]} / {@code [removed]} comment bodies with the
      * archived original (prefixed with {@link #MARKER}) when the archive has
      * one.  Returns the input list unchanged when there is nothing to do.
+     *
+     * <p>Results are memoized per list identity (see {@link ProteusListMemo}):
+     * Compose reads {@code Listing.getChildren()} repeatedly on the UI path,
+     * and each read would otherwise redo the reflective placeholder scan.
+     * Output is unchanged on every pass of the same list instance.
      */
     public static List<?> undeleteComments(List<?> list) {
         if (list == null || list.isEmpty()) {
             return list;
         }
+        List<?> memoized = ProteusListMemo.get(list);
+        if (memoized != null) {
+            return memoized;
+        }
+        List<?> result = undeleteCommentsInner(list);
+        ProteusListMemo.put(list, result);
+        return result;
+    }
 
+    private static List<?> undeleteCommentsInner(List<?> list) {
         List<Pending> pending = null;
         for (Object item : list) {
             Object model = findModel(item);
@@ -492,6 +506,11 @@ public final class RedditDeletedCommentHelper {
     // ── Reflection plumbing ──────────────────────────────────────────────────
 
     private static Object findModel(Object value) {
+        // Fast path: rows that already are Reddit models skip the
+        // IdentityHashMap allocation and the recursive field walk entirely.
+        if (value != null && isRedditModel(value.getClass())) {
+            return value;
+        }
         return findModel(value, 0,
                 Collections.newSetFromMap(new IdentityHashMap<Object, Boolean>()));
     }

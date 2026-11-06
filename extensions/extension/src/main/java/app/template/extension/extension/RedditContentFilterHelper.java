@@ -118,11 +118,26 @@ public final class RedditContentFilterHelper {
      * Drops every comment-shaped row whose author is AutoModerator / AutoMod.
      * Post-shaped rows (kind "t3_*", or with a title getter) are deliberately
      * kept: weekly threads and other AutoModerator submissions are not comments.
+     *
+     * <p>Results are memoized per list identity (see {@link ProteusListMemo}):
+     * Compose re-reads {@code Listing.getChildren()} on the UI path, and each
+     * read would otherwise redo the reflective row scan.  Output is unchanged
+     * on every pass of the same list instance.
      */
     public static List<?> hideAutoModComments(List<?> list) {
         if (list == null || list.isEmpty()) {
             return list;
         }
+        List<?> memoized = ProteusListMemo.get(list);
+        if (memoized != null) {
+            return memoized;
+        }
+        List<?> result = hideAutoModCommentsInner(list);
+        ProteusListMemo.put(list, result);
+        return result;
+    }
+
+    private static List<?> hideAutoModCommentsInner(List<?> list) {
         if (!AUTO_MOD_PROBE_LOGGED.getAndSet(true)) {
             logAutoMod("filter is live (first pass over " + list.size() + " rows)");
         }
@@ -153,12 +168,26 @@ public final class RedditContentFilterHelper {
      * Applies the configured content rules.  Also clears local content gates on
      * kept items when "Bypass built-in content gates" is enabled.  This cannot
      * restore posts that Reddit never returned (server-side filtering).
+     *
+     * <p>Results are memoized per list identity (see {@link ProteusListMemo}):
+     * Compose reads the listing's {@code getChildren()} repeatedly, and each
+     * read would otherwise redo the reflective row scan.  Output is unchanged
+     * on every pass of the same list instance.
      */
     public static List<?> filterContent(List<?> list) {
         if (list == null || list.isEmpty()) {
             return list;
         }
+        List<?> memoized = ProteusListMemo.get(list);
+        if (memoized != null) {
+            return memoized;
+        }
+        List<?> result = filterContentInner(list);
+        ProteusListMemo.put(list, result);
+        return result;
+    }
 
+    private static List<?> filterContentInner(List<?> list) {
         Config config = config();
         if (!config.active()) {
             return list;
@@ -409,6 +438,11 @@ public final class RedditContentFilterHelper {
      * comment models (getAuthor/getBody/getParentId/...).
      */
     private static Object findModel(Object value) {
+        // Fast path: rows that already are Reddit models skip the
+        // IdentityHashMap allocation and the recursive field walk entirely.
+        if (value != null && isRedditModel(value.getClass())) {
+            return value;
+        }
         return findModel(value, 0, Collections.newSetFromMap(new IdentityHashMap<Object, Boolean>()));
     }
 
