@@ -29,10 +29,10 @@ final class ProteusListMemo {
 
     private static final int CAPACITY = 16;
 
-    private static final LinkedHashMap<Key, Entry> MEMO =
-            new LinkedHashMap<Key, Entry>(2 * CAPACITY, 0.75f, true) {
+    private static final LinkedHashMap<Key, MemoEntry> MEMO =
+            new LinkedHashMap<Key, MemoEntry>(2 * CAPACITY, 0.75f, true) {
                 @Override
-                protected boolean removeEldestEntry(Map.Entry<Key, Entry> eldest) {
+                protected boolean removeEldestEntry(Map.Entry<Key, MemoEntry> eldest) {
                     return size() > CAPACITY;
                 }
             };
@@ -55,11 +55,11 @@ final class ProteusListMemo {
         }
     }
 
-    private static final class Entry {
+    private static final class MemoEntry {
         private final int size;
         private final List<?> output;
 
-        private Entry(int size, List<?> output) {
+        private MemoEntry(int size, List<?> output) {
             this.size = size;
             this.output = output;
         }
@@ -76,7 +76,7 @@ final class ProteusListMemo {
     static List<?> get(List<?> list) {
         synchronized (MEMO) {
             Key key = new Key(list);
-            Entry entry = MEMO.get(key);
+            MemoEntry entry = MEMO.get(key);
             if (entry == null) {
                 return null;
             }
@@ -91,7 +91,7 @@ final class ProteusListMemo {
     /** Records that processing {@code input} produced {@code output}. */
     static void put(List<?> input, List<?> output) {
         synchronized (MEMO) {
-            MEMO.put(new Key(input), new Entry(input.size(), output));
+            MEMO.put(new Key(input), new MemoEntry(input.size(), output));
         }
     }
 }
