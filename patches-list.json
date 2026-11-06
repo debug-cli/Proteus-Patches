@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "patches": [
     {
       "name": "AMOLED dark theme",
@@ -2313,7 +2313,7 @@
     },
     {
       "name": "Enable media downloads",
-      "description": "Forces the pin-level download eligibility flag so the Download action is available on every Pin (images and videos).",
+      "description": "Enables the pin-level image download eligibility flag. Use the separate experimental video download patch for supported video Pins.",
       "default": true,
       "dependencies": [],
       "compatiblePackages": [
@@ -2377,6 +2377,40 @@
                 "ARMEABI_V7A": 29145545,
                 "X86_64": 29145545,
                 "X86": 29145545
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Enable video download",
+      "description": "Experimental: enables the download row on video Pins and saves an available MP4. Streaming-only or unavailable videos are reported instead of saved as images.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch",
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.pinterest",
+          "name": "Pinterest",
+          "description": null,
+          "apkFileType": "APK",
+          "appIconColor": "#E60023",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "14.41.0",
+              "versionCodes": {
+                "ARM64_V8A": 14418020,
+                "ARMEABI_V7A": 14418020,
+                "X86_64": 14418020,
+                "X86": 14418020
               },
               "isExperimental": false,
               "minSdk": null,

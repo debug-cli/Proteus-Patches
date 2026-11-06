@@ -49,7 +49,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 > if you need the full app set.
 
 <!-- PATCHES_START EXPANDED -->
-> **[v2.2.2](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.2)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/e51b332d-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;157 patches total
+> **[v2.2.3](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.3)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/e51b332d-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;158 patches total
 <details open>
 <summary>📦 Google Photos&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
 <br>
@@ -72,7 +72,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 </details>
 
 <details open>
-<summary>📦 Pinterest&nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
+<summary>📦 Pinterest&nbsp;&nbsp;•&nbsp;&nbsp;4 patches</summary>
 <br>
 
 **🎯 Supported versions:**
@@ -84,7 +84,8 @@ For configuration advice, limitations, and permission-patch examples, see the
 |----------|----------------|-----------|
 | [Ad-free feed (remove promoted Pins)](#ad-free-feed-remove-promoted-pins) | Removes promoted/sponsored Pins from every feed, search result, and board list during deserialization, so they never render. Organic pinning, boards and saving are unaffected. |  |
 | [Block analytics and data collection](#block-analytics-and-data-collection) | No-ops Firebase screen/event tracking and AppsFlyer attribution + event logging (concrete SDK entry points, verified in 14.41.0). Push notifications keep working; Pinterest features are untouched. |  |
-| [Enable media downloads](#enable-media-downloads) | Forces the pin-level download eligibility flag so the Download action is available on every Pin (images and videos). |  |
+| [Enable media downloads](#enable-media-downloads) | Enables the pin-level image download eligibility flag. Use the separate experimental video download patch for supported video Pins. |  |
+| [Enable video download](#enable-video-download) | Experimental: enables the download row on video Pins and saves an available MP4. Streaming-only or unavailable videos are reported instead of saved as images. |  |
 
 </details>
 
