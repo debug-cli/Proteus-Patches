@@ -1539,6 +1539,18 @@ val FIREFOX_COMPATIBILITY = Compatibility(
         targets = listOf(AppTarget(version = "158.0.2", versionCode = 2016191575))
     )
 
+val BRAVE_COMPATIBILITY = Compatibility(
+        name = "Brave Browser",
+        packageName = "com.brave.browser",
+        apkFileType = ApkFileType.APK,
+        appIconColor = 0xFF4500,
+        targets = listOf(AppTarget(
+            version = "1.98.63",
+            isExperimental = true,
+            description = "Unverified standalone Brave 1.98.63 ARM APK; other variants are unverified."
+        ))
+    )
+
 val PINTEREST_COMPATIBILITY = Compatibility(
         name = "Pinterest",
         packageName = "com.pinterest",

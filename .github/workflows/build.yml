@@ -40,6 +40,27 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Test Pinterest video URLs
+        run: bash .github/scripts/test_pinterest_video_urls.sh
+
+      - name: Test permission removal and Brave helpers
+        run: ./gradlew :patches:testPermissionRemoval :patches:testBravePrivacy --stacktrace
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Exercise the same build-then-metadata sequence used by releases. The
+      # metadata task must not leave a JVM-only archive in place of the MPP.
+      - name: Generate patch metadata
+        run: ./gradlew generatePatchesList --stacktrace
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify Android bundle
+        run: |
+          python3 -m unittest discover -s .github/scripts -p 'test_verify_android_bundle.py'
+          VERSION=$(sed -n 's/^version[[:space:]]*=[[:space:]]*//p' gradle.properties)
+          python3 .github/scripts/verify_android_bundle.py "patches/build/libs/patches-${VERSION}.mpp" "$VERSION"
+
       - name: Upload .mpp artifact
         if: success()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.7.0
