@@ -30,6 +30,13 @@ jobs:
           chmod +x gradlew
           ./gradlew :patches:testPermissionRemoval :extensions:extension:testReleaseUnitTest generatePatchesList --stacktrace > build.log 2>&1 || {
             tail -160 build.log
+            python3 - <<'PY'
+          from pathlib import Path
+          lines = Path('build.log').read_text(errors='replace').splitlines()
+          important = [line for line in lines if any(token in line.lower() for token in ('error', 'failed', 'exception', 'could not', 'what went wrong', 'unresolved reference'))]
+          for line in important[:30]:
+              print('::error::' + line.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A'))
+          PY
             exit 1
           }
           tail -25 build.log
