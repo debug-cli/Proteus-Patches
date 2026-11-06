@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "2.2.5",
+  "version": "2.2.6",
   "patches": [
     {
       "name": "AMOLED dark theme",
@@ -475,7 +475,9 @@
       "name": "Block Motion Sensors",
       "description": "Attempts to disable Chromium's Android sensor provider; may also block ambient sensors. Requires device validation.",
       "default": false,
-      "dependencies": [],
+      "dependencies": [
+        "ResourcePatch"
+      ],
       "compatiblePackages": [
         {
           "packageName": "com.brave.browser",
@@ -501,7 +503,9 @@
       "name": "Block Popups & Ratings",
       "description": "Disables the identified rating and Brave Ads signup eligibility checks; other dialogs can still appear.",
       "default": false,
-      "dependencies": [],
+      "dependencies": [
+        "ResourcePatch"
+      ],
       "compatiblePackages": [
         {
           "packageName": "com.brave.browser",
@@ -2999,7 +3003,9 @@
       "name": "Preserve last active tab",
       "description": "Disables the identified new-tab opening-screen override after inactivity. Does not prevent tab unloading under memory pressure.",
       "default": false,
-      "dependencies": [],
+      "dependencies": [
+        "ResourcePatch"
+      ],
       "compatiblePackages": [
         {
           "packageName": "com.brave.browser",
@@ -3348,7 +3354,9 @@
       "name": "Remove Extra Languages",
       "description": "Replaces larger unselected Chromium locale PAKs with the English fallback; gender variants and Android resources are not removed.",
       "default": false,
-      "dependencies": [],
+      "dependencies": [
+        "ResourcePatch"
+      ],
       "compatiblePackages": [
         {
           "packageName": "com.brave.browser",
@@ -3948,7 +3956,9 @@
       "name": "Skip Welcome Screens",
       "description": "Reports the first-run flow complete; may skip essential consent, search or setup screens.",
       "default": false,
-      "dependencies": [],
+      "dependencies": [
+        "ResourcePatch"
+      ],
       "compatiblePackages": [
         {
           "packageName": "com.brave.browser",
@@ -4278,7 +4288,9 @@
       "name": "Stop Background Wakeups",
       "description": "Disables the identified Chromium background-sync scheduler gate; other wakeups remain and site background sync can break.",
       "default": false,
-      "dependencies": [],
+      "dependencies": [
+        "ResourcePatch"
+      ],
       "compatiblePackages": [
         {
           "packageName": "com.brave.browser",
@@ -4304,7 +4316,9 @@
       "name": "Stop Promo Notifications",
       "description": "Disables identified Chromium tips and retention notification entry points; other notifications may remain.",
       "default": false,
-      "dependencies": [],
+      "dependencies": [
+        "ResourcePatch"
+      ],
       "compatiblePackages": [
         {
           "packageName": "com.brave.browser",
@@ -4330,7 +4344,9 @@
       "name": "Stop Text Sharing with System",
       "description": "Disables Chromium's OnscreenContentProvider content-capture gate, not every possible text-sharing mechanism.",
       "default": false,
-      "dependencies": [],
+      "dependencies": [
+        "ResourcePatch"
+      ],
       "compatiblePackages": [
         {
           "packageName": "com.brave.browser",

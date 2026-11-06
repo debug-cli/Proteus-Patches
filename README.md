@@ -53,7 +53,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 > if you need the full app set.
 
 <!-- PATCHES_START EXPANDED -->
-> **[v2.2.5](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.5)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/4877b858-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;155 patches total
+> **[v2.2.6](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.6)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/4877b858-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;155 patches total
 <details open>
 <summary>📦 Google Photos&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
 <br>
