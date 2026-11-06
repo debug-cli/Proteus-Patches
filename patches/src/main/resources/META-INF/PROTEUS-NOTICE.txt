@@ -9,6 +9,6 @@ https://github.com/archivesteak/Quest, revision
 64a9275fb2f27062d7fc2a170200cd73f6afc888 (GPL-3.0). See
 https://github.com/ineednotitle/Proteus-Patches/blob/main/docs/PINTEREST-VIDEO.md.
 
-The project root MIT license is reproduced at proteus/mit.txt. The combined
-bundle includes GPL-licensed material and must be distributed under compatible
-GPL terms.
+The project and combined bundle are licensed under GPL-3.0-only. The full
+license is reproduced at proteus/gpl-3.0.txt. Third-party attribution notices
+are retained even though the project license has changed.

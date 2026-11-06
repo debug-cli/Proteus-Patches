@@ -8,7 +8,7 @@ patches {
         author = "ineednotitle"
         contact = "https://github.com/ineednotitle"
         website = "https://morphe.software/add-source?github=ineednotitle/proteus-patches"
-        license = "GPLv3"
+        license = "GPL-3.0-only"
     }
 }
 

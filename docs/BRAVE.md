@@ -70,7 +70,6 @@ fingerprints against Brave or establish ART/runtime behavior.
 The Brave target fingerprints and locale fallback approach were adapted from
 [kveld9/kveld-morphe-patches](https://github.com/kveld9/kveld-morphe-patches),
 revision `8afd78f0b57964b9ae9a0a387bdd4ae157345707`, GPL-3.0. The Brave patch
-source files are GPL-3.0-only; see `LICENSES/GPL-3.0.txt`. The root MIT license
-continues to apply to the rest of this repository as stated there. A bundle
-combining these GPL files must be distributed under compatible GPL terms; this
-note is not a substitute for a distribution/license review.
+source files and the project as a whole are GPL-3.0-only; see
+`LICENSES/GPL-3.0.txt`. This note is not a substitute for the full license or
+the third-party attribution notices.
