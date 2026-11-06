@@ -1,0 +1,57 @@
+name: Build MPP (one-off)
+
+# One-off manual bundle build for cutting a pre-release from this branch.
+# Not used by the release pipeline (that lives in release.yml) — this exists so
+# the .mpp can be produced on CI runners with a JDK and full network access.
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build bundle
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Setup Java
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Run patch tests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew :patches:testPermissionRemoval :patches:testBravePrivacy
+
+      - name: Build patch list and bundle
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew generatePatchesList buildAndroid
+
+      - name: Normalize patch-list version
+        run: |
+          jq '.version="2.2.5"' patches-list.json > patches-list.json.tmp
+          mv patches-list.json.tmp patches-list.json
+
+      - name: Verify patch source metadata
+        run: python3 .github/scripts/verify_patch_source.py patches-bundle.json 2.2.5 --normalize
+
+      - name: Verify Android bundle
+        run: python3 .github/scripts/verify_android_bundle.py patches/build/libs/patches-2.2.5.mpp 2.2.5 --patch-list patches-list.json
+
+      - name: Upload bundle and patch list
+        uses: actions/upload-artifact@v4
+        with:
+          name: v2.2.5-build
+          path: |
+            patches/build/libs/patches-2.2.5.mpp
+            patches-list.json
+          retention-days: 7
