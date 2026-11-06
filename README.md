@@ -11,7 +11,7 @@
 ads, annoyances and risky defaults from popular Android apps — plus a set of
 **universal patches** that apply to any app.
 
-- **[v2.2.4](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.4)** — experimental, default-off Brave patches; see [limitations](docs/BRAVE.md)
+- **[v2.2.3](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.3)** — experimental, default-off Brave patches; see [limitations](docs/BRAVE.md)
 - Built and verified with the Morphe Manager v2.3.0 patcher (`patches-list.json` regenerated, zip integrity checked)
 
 [![Add to Morphe](https://img.shields.io/badge/Add_to-Morphe-1f6feb?style=for-the-badge)](https://morphe.software/add-source?github=ineednotitle/Proteus-Patches)
