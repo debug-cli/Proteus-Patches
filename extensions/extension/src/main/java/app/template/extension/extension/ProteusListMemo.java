@@ -30,7 +30,7 @@ final class ProteusListMemo {
     private static final int CAPACITY = 16;
 
     private static final LinkedHashMap<Key, Entry> MEMO =
-            new LinkedHashMap<>(2 * CAPACITY, 0.75f, true) {
+            new LinkedHashMap<Key, Entry>(2 * CAPACITY, 0.75f, true) {
                 @Override
                 protected boolean removeEldestEntry(Map.Entry<Key, Entry> eldest) {
                     return size() > CAPACITY;
