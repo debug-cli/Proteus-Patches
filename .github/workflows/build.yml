@@ -29,14 +29,19 @@ jobs:
       - name: Build Android patch bundle
         run: |
           ./gradlew buildAndroid --stacktrace > build.log 2>&1 && tail -5 build.log && exit 0
-          echo "=== LAST 40 LINES OF GRADLE LOG (annotated) ==="
-          tail -n 40 build.log | while IFS= read -r line; do
+          echo "=== GREP: exception headers ==="
+          grep -n -m 12 -E "What went wrong|FAILURE:|Caused by|Exception|Error|Killed|No space|OutOfMemory|ExceptionInInitializerError|AssertionError" build.log | while IFS= read -r line; do
             echo "::error::$line"
             echo "$line"
           done
-          echo "=== GREP: likely root cause ==="
-          grep -nE "What went wrong|FAILURE:|e: |error: |Exception|Caused by|Could not|Failed to|Unresolved|Killed|OOM|out of memory" build.log | head -25 | while IFS= read -r line; do
-            echo "::error::$line"
+          echo "=== CONTEXT: around 'What went wrong' (if any) ==="
+          grep -n -m 1 -A8 "What went wrong" build.log | while IFS= read -r line; do
+            echo "::warning::$line"
+            echo "$line"
+          done
+          echo "=== LAST 12 RAW LINES ==="
+          tail -n 12 build.log | while IFS= read -r line; do
+            echo "::warning::$line"
             echo "$line"
           done
           exit 1
