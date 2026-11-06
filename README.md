@@ -2,7 +2,7 @@
 
 > *One bundle, patches everywhere. A curated [Morphe](https://github.com/MorpheApp/Morphe) patch suite for Android.*
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](#license)
+[![License: mixed](https://img.shields.io/badge/License-MIT%20%2B%20GPL--3.0-green.svg)](#license)
 [![Patches](https://img.shields.io/badge/patches-157-blue.svg)](#whats-inside)
 [![Universal patches](https://img.shields.io/badge/universal-24-purple.svg)](#universal-patches)
 [![Apps](https://img.shields.io/badge/apps-23-orange.svg)](#supported-apps)
@@ -11,7 +11,7 @@
 ads, annoyances and risky defaults from popular Android apps — plus a set of
 **universal patches** that apply to any app.
 
-- **v2.2.2** — curated release with improved universal patch options and permission controls
+- **[v2.2.4](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.4)** — experimental, default-off Brave patches; see [limitations](docs/BRAVE.md)
 - Built and verified with the Morphe Manager v2.3.0 patcher (`patches-list.json` regenerated, zip integrity checked)
 
 [![Add to Morphe](https://img.shields.io/badge/Add_to-Morphe-1f6feb?style=for-the-badge)](https://morphe.software/add-source?github=ineednotitle/Proteus-Patches)
@@ -26,6 +26,10 @@ Patch source URL (to add manually in Morphe Manager → Sources):
 https://github.com/ineednotitle/Proteus-Patches
 ```
 
+Use the remote repository source for updates. Morphe checks enabled remote sources
+on launch (subject to network and Manager settings); locally imported `.mpp` files
+must be updated manually.
+
 ---
 
 For configuration advice, limitations, and permission-patch examples, see the
@@ -37,7 +41,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 2. Easiest: tap the **Add to Morphe** button above, or add
    `https://github.com/ineednotitle/Proteus-Patches` as a patch source.
 3. Or download the latest bundle from **[Releases](https://github.com/ineednotitle/Proteus-Patches/releases)**
-   (`patches-2.2.2.mpp`) and use **Settings → Patches → Import patches** in the Manager.
+   (`patches-2.2.4.mpp`) and use **Settings → Patches → Import patches** in the Manager.
 4. Pick the apps you patch, choose your patches, and patch.
 
 > If you installed the withdrawn v2.2.2 bundle, refresh the source in Morphe
@@ -658,5 +662,4 @@ The Project created becoz I am a big fan of Morphe Project & I Love my Privacy a
 
 ## ⚖️ License
 
-[MIT](LICENSE). Patches modify third-party apps at your own risk — use only on
-APKs whose signature you trust.
+The project root is [MIT](LICENSE); the Brave patch files are [GPL-3.0-only](LICENSES/GPL-3.0.txt), and the bundle includes other GPL-derived work. See [Brave](docs/BRAVE.md) and [Pinterest](docs/PINTEREST-VIDEO.md) attribution. Patches modify third-party apps at your own risk — use only on APKs whose signature you trust.

@@ -86,8 +86,16 @@ tasks {
         mainClass.set("app.template.patches.shared.manifest.PermissionRemovalTest")
     }
 
+    val testBravePrivacy by registering(JavaExec::class) {
+        description = "Test Brave return hooks and locale selection"
+        group = "verification"
+        dependsOn(testClasses)
+        classpath = sourceSets["test"].runtimeClasspath
+        mainClass.set("app.template.patches.brave.BravePrivacyTest")
+    }
+
     check {
-        dependsOn(testPermissionRemoval)
+        dependsOn(testPermissionRemoval, testBravePrivacy)
     }
 
     // Used by gradle-semantic-release-plugin.

@@ -43,8 +43,8 @@ jobs:
       - name: Test Pinterest video URLs
         run: bash .github/scripts/test_pinterest_video_urls.sh
 
-      - name: Test permission removal
-        run: ./gradlew :patches:testPermissionRemoval --stacktrace
+      - name: Test permission removal and Brave helpers
+        run: ./gradlew :patches:testPermissionRemoval :patches:testBravePrivacy --stacktrace
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

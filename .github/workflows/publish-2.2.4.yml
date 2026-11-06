@@ -1,0 +1,101 @@
+name: Publish v2.2.4
+
+on:
+  push:
+    branches:
+      - arena/e51b332d-proteus-patches
+
+permissions:
+  contents: write
+  packages: read
+
+jobs:
+  publish:
+    name: Verify and publish v2.2.4
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+      - name: Setup Java
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Test and build Android bundle
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x gradlew
+          bash .github/scripts/test_pinterest_video_urls.sh
+          ./gradlew :patches:testPermissionRemoval :patches:testBravePrivacy generatePatchesList --stacktrace > build.log 2>&1 || {
+            tail -160 build.log
+            python3 - <<'PY'
+          from pathlib import Path
+          lines = Path('build.log').read_text(errors='replace').splitlines()
+          important = [line for line in lines if any(token in line.lower() for token in ('error', 'failed', 'exception', 'could not', 'what went wrong', 'unresolved reference'))]
+          for line in important[:30]:
+              print('::error::' + line.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A'))
+          PY
+            exit 1
+          }
+          tail -25 build.log
+          jq '.version="2.2.4"' patches-list.json > patches-list.json.tmp
+          mv patches-list.json.tmp patches-list.json
+          python3 -m unittest discover -s .github/scripts -p 'test_verify_android_bundle.py'
+          python3 .github/scripts/verify_android_bundle.py patches/build/libs/patches-2.2.4.mpp 2.2.4 --patch-list patches-list.json
+          python3 - <<'PY'
+          import json, zipfile
+          data = json.load(open('patches-list.json'))
+          brave = [p for p in data['patches'] if any(pkg['packageName'] == 'com.brave.browser' for pkg in (p.get('compatiblePackages') or []))]
+          names = {'Block Motion Sensors', 'Stop Text Sharing with System', 'Block Popups & Ratings', 'Stop Promo Notifications', 'Skip Welcome Screens', 'Stop Background Wakeups', 'Preserve last active tab', 'Remove Extra Languages'}
+          assert {p['name'] for p in brave} == names, brave
+          assert all(p['default'] is False for p in brave)
+          assert all(any(t['version'] == '1.98.63' and t['isExperimental'] for pkg in p['compatiblePackages'] if pkg['packageName'] == 'com.brave.browser' for t in pkg['targets']) for p in brave)
+          with zipfile.ZipFile('patches/build/libs/patches-2.2.4.mpp') as bundle:
+              assert {'META-INF/LICENSES/GPL-3.0.txt', 'META-INF/LICENSES/MIT.txt', 'META-INF/PROTEUS-NOTICE.txt'} <= set(bundle.namelist())
+          print('Eight experimental, default-off Brave patches and license notices verified')
+          PY
+      - name: Update release metadata
+        run: |
+          python3 - <<'PY'
+          import datetime, json
+          from pathlib import Path
+          Path('patches-bundle.json').write_text(json.dumps({
+              'created_at': datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z'),
+              'description': 'v2.2.4: experimental, default-off Brave patches; incomplete and untested against the APK.',
+              'download_url': 'https://github.com/ineednotitle/Proteus-Patches/releases/download/v2.2.4/patches-2.2.4.mpp',
+              'signature_download_url': '',
+              'version': '2.2.4',
+          }, indent=2) + '\n')
+          PY
+          python3 .github/scripts/generate_patches_readme.py "$GITHUB_REPOSITORY" "$GITHUB_REF_NAME" patches-list.json README.md
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add patches-bundle.json patches-list.json README.md
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore: generate v2.2.4 metadata [skip ci]'
+            git push origin HEAD:arena/e51b332d-proteus-patches
+          fi
+          echo "RELEASE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/v2.2.4" >/dev/null 2>&1; then
+            echo 'v2.2.4 tag already exists; refusing to overwrite it.' >&2
+            exit 1
+          fi
+          gh api --method POST "repos/$GITHUB_REPOSITORY/git/refs" -f ref=refs/tags/v2.2.4 -f sha="$RELEASE_SHA" > /dev/null
+          cat > release-notes.md <<'EOF'
+          ## Brave patches (experimental)
+
+          This release adds eight default-off Brave patches and targets Brave 1.98.63 experimentally. They have not been tested on the actual Brave APK or an Android device. They can fail to apply, break functionality, or cover fewer paths than their names suggest. They are not the full requested Brave suite. Read [the detailed limitations](https://github.com/ineednotitle/Proteus-Patches/blob/v2.2.4/docs/BRAVE.md) before use.
+
+          The tests exercise the return hooks and locale selection on synthetic data; they do not establish Brave compatibility. The separate unreleased Mereframe changes are not included.
+
+          For automatic updates, add the GitHub repository as a remote source in Morphe rather than importing a local .mpp file. Enabled remote sources are checked on launch, subject to network and Manager settings.
+          EOF
+          gh release create v2.2.4 --verify-tag --latest --title 'Proteus Patches v2.2.4' --notes-file release-notes.md patches/build/libs/patches-2.2.4.mpp
