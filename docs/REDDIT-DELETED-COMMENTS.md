@@ -49,11 +49,28 @@ what it restored.
   the batched request (≤ 100 ids per call, 2.5 s connect / 4 s read timeout) adds
   latency there, not on the UI thread. Misses are cached for the process lifetime.
 
+## Checking archive coverage manually
+
+Coverage is the whole game for fresh deletions, and you can check it yourself before
+blaming the patch:
+
+1. Open the Arctic Shift search UI: <https://arctic-shift.photon-reddit.com/search>
+2. Search the comment id (the part after `t1_` in any fullname) or paste the comment
+   link. The endpoint the patch uses is the same service:
+   `GET /api/comments/ids?ids=<id>&fields=id,body` (verified 2026-11-06 against the
+   [official API docs](https://github.com/ArthurHeitmann/arctic_shift/blob/master/api/README.md),
+   comma-separated ids, `fields` parameter supported; see the status page at
+   <https://status.arctic-shift.photon-reddit.com/> if it misbehaves).
+3. If the search shows the comment's body, a re-patched build with this patch enabled
+   will restore it. If it shows nothing — typical for deletions less than days old —
+   the row will stay `[deleted]` everywhere, permanently. That is not a bug.
+
 ## Verification status
 
-- Archive endpoints verified directly on 2026-11-06 (HTTP 200, `{"data":[…]}` envelope).
-- The bytecode injection rides the `Listing.children` anchor already verified on Reddit
-  2026.42.0 by "Block AutoMod comments".
+- Arctic Shift API contract verified against the official API documentation on
+  2026-11-06 (endpoint path, `ids` limit 500, `fields` parameter, response envelope).
+- The bytecode injection rides the `Listing.children` anchor used by the existing
+  "Remove ads" patch on Reddit 2026.42.0 (static match only, not exercised on-device).
 - The runtime restore path (reflection into the comment model) has **not** been
   exercised on-device. It fails safe: any exception, missing setter, or field-layout
   drift leaves the stock `[deleted]` row intact and logs to stdout.
@@ -66,5 +83,7 @@ what it restored.
    same constructor writes (see `reddit/shared/RedditListingChildren.kt` header).
 2. Confirm comment rows flow through that container (they did on 2026.42.0).
 3. If the archive lookup fails silently on-device, check `adb logcat` for
-   `[Proteus] Show deleted comments:` lines — endpoint changes or rate limits are
-   logged there, and the comment is left `[deleted]`.
+   `[Proteus] Show deleted comments:` lines — the helper logs how many deleted rows it
+   saw, how many ids the archive returned, and whether a hit could be written back into
+   the model. Endpoint changes or rate limits are logged there, and the comment is left
+   `[deleted]`.

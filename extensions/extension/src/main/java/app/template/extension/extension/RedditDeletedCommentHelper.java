@@ -149,6 +149,7 @@ public final class RedditDeletedCommentHelper {
             // No deleted comments in this listing: no network traffic at all.
             return list;
         }
+        log("found " + pending.size() + " deleted/removed comment row(s); querying archive");
 
         List<String> ids = new ArrayList<>(pending.size());
         for (Pending entry : pending) {
@@ -163,6 +164,15 @@ public final class RedditDeletedCommentHelper {
             return list;
         }
 
+        int hits = 0;
+        for (Pending entry : pending) {
+            String archived = resolved.get(entry.id);
+            if (archived != null && !archived.isEmpty()) {
+                hits++;
+            }
+        }
+        log("archive returned bodies for " + hits + " of " + pending.size() + " id(s)");
+
         int restored = 0;
         for (Pending entry : pending) {
             String archived = resolved.get(entry.id);
@@ -175,6 +185,12 @@ public final class RedditDeletedCommentHelper {
         }
         if (restored > 0) {
             log("restored " + restored + " archived comment(s)");
+        } else if (hits > 0) {
+            log("archive had bodies but no comment model could be rewritten "
+                    + "(setter missing or model layout drift); staying [deleted]");
+        } else {
+            log("no archived copies found; very recent deletions are often not "
+                    + "tracked yet; staying [deleted]");
         }
         return list;
     }
