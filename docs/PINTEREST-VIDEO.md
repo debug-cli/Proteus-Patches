@@ -21,4 +21,4 @@ Video detection and download-hook design are adapted from the GPL-3.0-licensed
 revision `64a9275fb2f27062d7fc2a170200cd73f6afc888` (targeted at Pinterest
 14.39.0). No claim of 14.41.0 compatibility or Android runtime success is made
 until the actual APK is patched and tested. URL-selection unit tests can be run
-with `./gradlew :extensions:extension:testReleaseUnitTest`.
+with `bash .github/scripts/test_pinterest_video_urls.sh` (JDK required).

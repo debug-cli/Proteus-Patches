@@ -28,7 +28,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           chmod +x gradlew
-          ./gradlew :patches:testPermissionRemoval :extensions:extension:testReleaseUnitTest generatePatchesList --stacktrace > build.log 2>&1 || {
+          bash .github/scripts/test_pinterest_video_urls.sh
+          ./gradlew :patches:testPermissionRemoval generatePatchesList --stacktrace > build.log 2>&1 || {
             tail -160 build.log
             python3 - <<'PY'
           from pathlib import Path
