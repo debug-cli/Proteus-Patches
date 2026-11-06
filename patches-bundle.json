@@ -1,7 +1,7 @@
 {
-  "created_at": "2026-11-06T11:28:12",
-  "description": "v2.2.5: adds an experimental Reddit 'Show deleted comments' patch (archive-restored text, off by default, runtime path not yet on-device verified). Brave patches remain experimental and default-off.",
-  "download_url": "https://github.com/ineednotitle/Proteus-Patches/releases/download/v2.2.5/patches-2.2.5.mpp",
+  "created_at": "2026-11-06T11:55:41",
+  "description": "v2.2.6: fixes the Brave INSTALL_FAILED_NO_MATCHING_ABIS install failure on 16 KB page-size devices (android:extractNativeLibs=true, applied as a dependency of every Brave patch). Brave patches remain experimental and default-off; Reddit 'Show deleted comments' unchanged.",
+  "download_url": "https://github.com/ineednotitle/Proteus-Patches/releases/download/v2.2.6/patches-2.2.6.mpp",
   "signature_download_url": "",
-  "version": "2.2.5"
+  "version": "2.2.6"
 }
