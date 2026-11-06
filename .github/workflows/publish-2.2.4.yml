@@ -55,7 +55,7 @@ jobs:
               assert all(p['default'] is False for p in brave), 'Brave patch defaults'
               assert all(any(t['version'] == '1.98.63' and t['isExperimental'] for pkg in p['compatiblePackages'] if pkg['packageName'] == 'com.brave.browser' for t in pkg['targets']) for p in brave), 'Brave target flags'
               with zipfile.ZipFile('patches/build/libs/patches-2.2.4.mpp') as bundle:
-                  needed = {'META-INF/LICENSES/GPL-3.0.txt', 'META-INF/LICENSES/MIT.txt', 'META-INF/PROTEUS-NOTICE.txt'}
+                  needed = {'META-INF/proteus/gpl-3.0.txt', 'META-INF/proteus/mit.txt', 'META-INF/PROTEUS-NOTICE.txt'}
                   assert needed <= set(bundle.namelist()), f'missing notices: {needed - set(bundle.namelist())}'
           except Exception as error:
               print(f'::error::Brave metadata/license verification failed: {type(error).__name__}: {error}')
