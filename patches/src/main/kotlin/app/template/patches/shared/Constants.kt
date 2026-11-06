@@ -2076,4 +2076,25 @@ val LEAP_FITNESS_ALL = arrayOf(
             AppTarget(version = "99.1", versionCode = 29145545),
         )
     )
+
+val MINT_COMPATIBILITY = Compatibility(
+        name = "Mint",
+        packageName = "com.htmedia.mint",
+        appIconColor = 0xE01F26,
+        targets = listOf(
+            // store versions observed 2026-11-06 (APKCombo/Uptodown listings)
+            AppTarget(version = "5.7.5"),
+            AppTarget(version = "5.8.4"),
+        )
+    )
+
+val HINDUSTAN_TIMES_COMPATIBILITY = Compatibility(
+        name = "Hindustan Times",
+        packageName = "com.ht.news",
+        appIconColor = 0x0C5594,
+        targets = listOf(
+            // store version observed 2026-11-06 (APKCombo/Uptodown listings)
+            AppTarget(version = "4.9.16"),
+        )
+    )
 }

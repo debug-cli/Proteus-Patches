@@ -3,7 +3,7 @@
 > *One bundle, patches everywhere. A curated [Morphe](https://github.com/MorpheApp/Morphe) patch suite for Android.*
 
 [![License: GPL-3.0-only](https://img.shields.io/badge/License-GPL--3.0--only-green.svg)](#license)
-[![Patches](https://img.shields.io/badge/patches-161-blue.svg)](#whats-inside)
+[![Patches](https://img.shields.io/badge/patches-163-blue.svg)](#whats-inside)
 [![Universal patches](https://img.shields.io/badge/universal-24-purple.svg)](#universal-patches)
 [![Apps](https://img.shields.io/badge/apps-28-orange.svg)](#supported-apps)
 
@@ -11,7 +11,7 @@
 ads, annoyances and risky defaults from popular Android apps — plus a set of
 **universal patches** that apply to any app.
 
-- **[v2.2.8](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.8)** — pre-release: v2.2.7 contents (six experimental, off-by-default Brave patches adapted from kveld9/kveld-morphe-patches, Reddit AutoMod/show-deleted-comments fixes, Amazon AMOLED dark, listing performance fix) plus a broader universal "Block analytics & tracking SDKs" marker list (WebEngage, CleverTap, Flurry, Branch, Kochava) and a Mint & Hindustan Times analysis. No Mint/HT-specific patches yet — they need the APKs. See [the Brave doc](docs/BRAVE.md), [the Reddit doc](docs/REDDIT-DELETED-COMMENTS.md) and [docs/HT-NEWS-APPS.md](docs/HT-NEWS-APPS.md)
+- **[v2.2.8](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.8)** — pre-release: v2.2.7 contents (six experimental, off-by-default Brave patches adapted from kveld9/kveld-morphe-patches, Reddit AutoMod/show-deleted-comments fixes, Amazon AMOLED dark, listing performance fix) plus a broader universal "Block analytics & tracking SDKs" marker list (WebEngage, CleverTap, Flurry, Branch, Kochava), two app-scoped variants — "Mint: Block analytics & tracking SDKs" and "Hindustan Times: Block analytics & tracking SDKs" (same universal heuristic, off by default, unverified on device) — and a Mint & Hindustan Times analysis. No APK was decompiled; no binary-specific Mint/HT patches exist yet. See [the Brave doc](docs/BRAVE.md), [the Reddit doc](docs/REDDIT-DELETED-COMMENTS.md) and [docs/HT-NEWS-APPS.md](docs/HT-NEWS-APPS.md)
 - Built and verified with the Morphe Manager v2.3.0 patcher (`patches-list.json` regenerated, zip integrity checked)
 
 [![Add to Morphe](https://img.shields.io/badge/Add_to-Morphe-1f6feb?style=for-the-badge)](https://morphe.software/add-source?github=ineednotitle/Proteus-Patches)
@@ -63,7 +63,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 > if you need the full app set.
 
 <!-- PATCHES_START EXPANDED -->
-> **[v2.2.7](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.7)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;161 patches total
+> **[v2.2.8](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.8)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;163 patches total
 <details open>
 <summary>📦 Google Photos&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
 <br>
@@ -590,6 +590,36 @@ For configuration advice, limitations, and permission-patch examples, see the
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
 |----------|----------------|-----------|
 | [Unlock Word](#unlock-word) | Removes login requirement, unlocks premium, blocks ads, bypasses signature and code transparency checks. |  |
+
+</details>
+
+<details open>
+<summary>📦 Mint&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
+<br>
+
+**🎯 Supported versions:**
+
+| 5.7.5 | 5.8.4 |
+| :---: | :---: |
+
+| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
+|----------|----------------|-----------|
+| [Mint: Block analytics & tracking SDKs](#mint-block-analytics-tracking-sdks) | Blocks Mint's analytics & tracking SDKs (Firebase Analytics, AppsFlyer, Adjust,<br>WebEngage, CleverTap and similar) using the same universal heuristic as<br>'Block analytics & tracking SDKs'.<br><br>Applies to com.htmedia.mint only. Heuristic; obfuscated or reflection-based<br>reporting is not covered. Unverified on device. |  |
+
+</details>
+
+<details open>
+<summary>📦 Hindustan Times&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
+<br>
+
+**🎯 Supported versions:**
+
+| 4.9.16 |
+| :---: |
+
+| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
+|----------|----------------|-----------|
+| [Hindustan Times: Block analytics & tracking SDKs](#hindustan-times-block-analytics-tracking-sdks) | Blocks Hindustan Times' analytics & tracking SDKs (Firebase Analytics,<br>AppsFlyer, Adjust, WebEngage, CleverTap and similar) using the same universal<br>heuristic as 'Block analytics & tracking SDKs'.<br><br>Applies to com.ht.news only. Heuristic; obfuscated or reflection-based<br>reporting is not covered. Unverified on device. |  |
 
 </details>
 

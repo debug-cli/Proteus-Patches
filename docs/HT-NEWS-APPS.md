@@ -15,8 +15,8 @@ real install.
 
 | App | Package | Developer | Latest seen | Notes |
 |---|---|---|---|---|
-| Mint | `com.htmedia.mint` | HT Media Ltd | 5.7.5 / 5.8.4 | Business & markets focus |
-| Hindustan Times | `com.ht.news` | HT Media Ltd | 4.9.16–4.9.17 (Oct 2026) | News + ePaper, English, target API 36 |
+| Mint | `com.htmedia.mint` | HT Media Ltd | 5.7.5 (Aug 2025), 5.8.4 | Business & markets focus |
+| Hindustan Times | `com.ht.news` | HT Media Ltd | 4.9.16 (Oct 2026), target API 36 | News + ePaper, English |
 
 Both are first-party HT Media apps, very likely sharing UI stack, analytics
 and ad rails — one decompile probably covers both.
@@ -77,10 +77,32 @@ EOF
 Only after this dump do fingerprints get written, via the usual repo QC:
 CI build + `:patches:test*` + the same review the Brave patches received.
 
-## Recommended v2.2.8 contents
+## What the v2.2.8 re-cut ships for these apps (and what it does not)
 
-1. Universal Block-analytics marker extension (shipped — no app work needed).
-2. This analysis.
-3. NOT included: any app-specific fingerprint for either app (needs the APK).
+The re-cut **v2.2.8** (same release number; the pre-existing v2.2.8 build was
+deleted and re-created from the updated commit) includes:
 
-If an APK is provided, targets 1–5 above are the first batch for v2.2.9+.
+1. **Mint: Block analytics & tracking SDKs** — scoped entry visible under
+   `com.htmedia.mint` in the patcher. Applies the *same universal heuristic*
+   as the universal patch (marker list extended to WebEngage / CleverTap /
+   Flurry / Branch / Kochava). `compatibleWith` lists Mint 5.7.5 and 5.8.4 —
+   the versions observed on store listings on 2026-11-06. Nothing was
+   decompiled or fingerprinted; there is no app-specific bytecode in the bundle.
+2. **Hindustan Times: Block analytics & tracking SDKs** — same, scoped to
+   `com.ht.news` (target 4.9.16).
+3. The universal Block-analytics marker extension + this analysis.
+4. All v2.2.7 content.
+
+What it does **not** include, and why:
+
+- **No bytecode fingerprints** — autoplay, sponsored-row suppression, ePaper
+  ad cleanup, ReviewManager nag removal, forced AMOLED themes. All of these
+  need the APK in hand; none was written.
+- **No premium unlock** — "Mint Premium" / "HT Premium" are server-side
+  entitlements; a client patch cannot bypass them.
+- **Version targets are listing-observed only** — the `compatibleWith` lists
+  are the store versions seen on 2026-11-06; other builds will not be offered
+  the patch until the lists are extended.
+
+To implement targets 1–5 from the table above, provide the APKs (see the
+`adb` section); they would land in a new release.
