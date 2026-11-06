@@ -69,10 +69,25 @@ tasks {
     register<JavaExec>("generatePatchesList") {
         description = "Build patch with patch list"
 
-        dependsOn(build)
+        // buildAndroid adds DEX to the same archive produced by jar. A later
+        // Gradle invocation of build can recreate that archive without DEX, so
+        // regenerate the Android bundle in the same invocation as the list.
+        dependsOn("buildAndroid")
 
         classpath = sourceSets["main"].runtimeClasspath + patchListGeneratorClasspath
         mainClass.set("app.morphe.util.PatchListGeneratorKt")
+    }
+
+    val testPermissionRemoval by registering(JavaExec::class) {
+        description = "Test permission options and manifest removal"
+        group = "verification"
+        dependsOn(testClasses)
+        classpath = sourceSets["test"].runtimeClasspath
+        mainClass.set("app.template.patches.shared.manifest.PermissionRemovalTest")
+    }
+
+    check {
+        dependsOn(testPermissionRemoval)
     }
 
     // Used by gradle-semantic-release-plugin.

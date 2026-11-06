@@ -45,9 +45,10 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "./gradlew generatePatchesList \
+        "prepareCmd": "./gradlew :patches:testPermissionRemoval generatePatchesList \
           && jq '.version=\"${nextRelease.version}\"' patches-list.json > patches-list.json.tmp && mv patches-list.json.tmp patches-list.json \
-          && python3 .github/scripts/generate_patches_readme.py $GITHUB_REPOSITORY $GITHUB_REF_NAME patches-list.json README.md"
+          && python3 .github/scripts/generate_patches_readme.py $GITHUB_REPOSITORY $GITHUB_REF_NAME patches-list.json README.md \
+          && python3 .github/scripts/verify_android_bundle.py patches/build/libs/patches-${nextRelease.version}.mpp ${nextRelease.version} --patch-list patches-list.json"
       }
     ],
     [
