@@ -2,7 +2,7 @@
 
 > *One bundle, patches everywhere. A curated [Morphe](https://github.com/MorpheApp/Morphe) patch suite for Android.*
 
-[![License: mixed](https://img.shields.io/badge/License-MIT%20%2B%20GPL--3.0-green.svg)](#license)
+[![License: GPL-3.0-only](https://img.shields.io/badge/License-GPL--3.0--only-green.svg)](#license)
 [![Patches](https://img.shields.io/badge/patches-157-blue.svg)](#whats-inside)
 [![Universal patches](https://img.shields.io/badge/universal-24-purple.svg)](#universal-patches)
 [![Apps](https://img.shields.io/badge/apps-23-orange.svg)](#supported-apps)
@@ -684,4 +684,4 @@ The Project created becoz I am a big fan of Morphe Project & I Love my Privacy a
 
 ## ⚖️ License
 
-The project root is [MIT](LICENSE); the Brave patch files are [GPL-3.0-only](LICENSES/GPL-3.0.txt), and the bundle includes other GPL-derived work. See [Brave](docs/BRAVE.md) and [Pinterest](docs/PINTEREST-VIDEO.md) attribution. Patches modify third-party apps at your own risk — use only on APKs whose signature you trust.
+Proteus Patches is licensed under [GPL-3.0-only](LICENSE). The full license is also included in the patch bundle. Third-party GPL-derived works and their attribution notices remain covered by their respective notices; see [Brave](docs/BRAVE.md) and [Pinterest](docs/PINTEREST-VIDEO.md). Patches modify third-party apps at your own risk — use only on APKs whose signature you trust.
