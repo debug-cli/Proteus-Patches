@@ -1,0 +1,59 @@
+name: Publish v2.2.7 pre-release (replace)
+on:
+  push:
+    branches:
+      - arena/c9b6136c-proteus-patches
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Run unit tests
+        run: chmod +x gradlew && ./gradlew :patches:testPermissionRemoval :patches:testBravePrivacy --stacktrace
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build .mpp
+        run: ./gradlew generatePatchesList buildAndroid --stacktrace
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify .mpp and patch bundle metadata
+        run: |
+          set -e
+          VERSION=$(sed -n 's/^version[[:space:]]*=[[:space:]]*//p' gradle.properties)
+          echo "gradle.properties version: $VERSION"
+          test "$VERSION" = "2.2.7"
+          ARTIFACT="patches/build/libs/patches-$VERSION.mpp"
+          ls -la "$ARTIFACT"
+          python3 .github/scripts/verify_patch_source.py patches-bundle.json "$VERSION"
+          python3 .github/scripts/verify_android_bundle.py "$ARTIFACT" "$VERSION" --patch-list patches-list.json
+          sha256sum "$ARTIFACT"
+
+      - name: Delete the old v2.2.7 pre-release and its tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release delete v2.2.7 --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag
+
+      - name: Create the replacement v2.2.7 pre-release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          gh release create v2.2.7 \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "Proteus Patches v2.2.7" \
+            --notes-file .github/release-notes-v2.2.7-replace.md \
+            --prerelease \
+            patches/build/libs/patches-2.2.7.mpp
