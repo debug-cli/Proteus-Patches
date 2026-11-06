@@ -55,11 +55,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Verify Android bundle
+      - name: Verify Android bundle and remote source metadata
         run: |
-          python3 -m unittest discover -s .github/scripts -p 'test_verify_android_bundle.py'
+          python3 -m unittest discover -s .github/scripts -p 'test_*.py'
           VERSION=$(sed -n 's/^version[[:space:]]*=[[:space:]]*//p' gradle.properties)
           python3 .github/scripts/verify_android_bundle.py "patches/build/libs/patches-${VERSION}.mpp" "$VERSION"
+          python3 .github/scripts/verify_patch_source.py patches-bundle.json "$VERSION"
 
       - name: Upload .mpp artifact
         if: success()
