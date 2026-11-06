@@ -30,6 +30,7 @@ val braveRemoveExtraLanguagesPatch = rawResourcePatch(
     default = false,
 ) {
     compatibleWith(BRAVE_COMPATIBILITY)
+    dependsOn(braveNativeExtractionDependency())
     val locales by stringOption(
         key = "locales", title = "Languages to keep",
         description = "Comma-separated language codes such as en-US, fr, hi. English is always kept; choosing a language keeps all its regions.",

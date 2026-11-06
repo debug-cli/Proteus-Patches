@@ -40,6 +40,7 @@ val braveBlockMotionSensorsPatch = bytecodePatch(
     default = false,
 ) {
     compatibleWith(BRAVE_COMPATIBILITY)
+    dependsOn(braveNativeExtractionDependency())
     execute {
         val availability = Fingerprint(
             definingClass = "Lorg/chromium/device/sensors/PlatformSensorProvider;",
@@ -63,6 +64,7 @@ val braveStopContentCapturePatch = bytecodePatch(
     default = false,
 ) {
     compatibleWith(BRAVE_COMPATIBILITY)
+    dependsOn(braveNativeExtractionDependency())
     execute {
         Fingerprint(
             definingClass = "Lorg/chromium/components/content_capture/OnscreenContentProvider;",
@@ -78,6 +80,7 @@ val braveBlockRatingsPatch = bytecodePatch(
     default = false,
 ) {
     compatibleWith(BRAVE_COMPATIBILITY)
+    dependsOn(braveNativeExtractionDependency())
     execute {
         val rating = Fingerprint(returnType = "Z", strings = listOf("brave_rate_dont_show_again", "qa_force_rate_dialog")).methodOrNull
         val ads = Fingerprint(
@@ -97,6 +100,7 @@ val braveStopPromoNotificationsPatch = bytecodePatch(
     default = false,
 ) {
     compatibleWith(BRAVE_COMPATIBILITY)
+    dependsOn(braveNativeExtractionDependency())
     execute {
         val tips = Fingerprint(
             definingClass = "Lorg/chromium/chrome/browser/notifications/scheduler/NotificationSchedulerTask;",
@@ -119,6 +123,7 @@ val braveSkipWelcomePatch = bytecodePatch(
     default = false,
 ) {
     compatibleWith(BRAVE_COMPATIBILITY)
+    dependsOn(braveNativeExtractionDependency())
     execute {
         Fingerprint(returnType = "Z", parameters = emptyList(), strings = listOf("first_run_flow"))
             .method.braveReturnBoolean(true)
@@ -132,6 +137,7 @@ val braveStopBackgroundSyncPatch = bytecodePatch(
     default = false,
 ) {
     compatibleWith(BRAVE_COMPATIBILITY)
+    dependsOn(braveNativeExtractionDependency())
     execute {
         Fingerprint(returnType = "Z", parameters = emptyList(), strings = listOf("BackgroundSync.LaunchTask.PlayServicesAvailable"))
             .method.braveReturnBoolean(true)
@@ -145,6 +151,7 @@ val bravePreserveLastTabPatch = bytecodePatch(
     default = false,
 ) {
     compatibleWith(BRAVE_COMPATIBILITY)
+    dependsOn(braveNativeExtractionDependency())
     execute {
         Fingerprint(
             definingClass = "Lorg/chromium/chrome/browser/ChromeTabbedActivity;", returnType = "Z",

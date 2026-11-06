@@ -3,15 +3,15 @@
 > *One bundle, patches everywhere. A curated [Morphe](https://github.com/MorpheApp/Morphe) patch suite for Android.*
 
 [![License: GPL-3.0-only](https://img.shields.io/badge/License-GPL--3.0--only-green.svg)](#license)
-[![Patches](https://img.shields.io/badge/patches-157-blue.svg)](#whats-inside)
+[![Patches](https://img.shields.io/badge/patches-155-blue.svg)](#whats-inside)
 [![Universal patches](https://img.shields.io/badge/universal-24-purple.svg)](#universal-patches)
-[![Apps](https://img.shields.io/badge/apps-23-orange.svg)](#supported-apps)
+[![Apps](https://img.shields.io/badge/apps-28-orange.svg)](#supported-apps)
 
 **Proteus Patches** is a Morphe patch bundle (`.mpp`) that removes tracking,
 ads, annoyances and risky defaults from popular Android apps — plus a set of
 **universal patches** that apply to any app.
 
-- **[v2.2.3](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.3)** — experimental, default-off Brave patches; see [limitations](docs/BRAVE.md)
+- **[v2.2.6](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.6)** — pre-release: fixes the Brave `INSTALL_FAILED_NO_MATCHING_ABIS` install failure on 16 KB devices (`extractNativeLibs=true`); includes the Reddit "Show deleted comments" patch; see [limitations](docs/BRAVE.md) and [the Reddit doc](docs/REDDIT-DELETED-COMMENTS.md)
 - Built and verified with the Morphe Manager v2.3.0 patcher (`patches-list.json` regenerated, zip integrity checked)
 
 [![Add to Morphe](https://img.shields.io/badge/Add_to-Morphe-1f6feb?style=for-the-badge)](https://morphe.software/add-source?github=ineednotitle/Proteus-Patches)
@@ -41,19 +41,29 @@ For configuration advice, limitations, and permission-patch examples, see the
 2. Easiest: tap the **Add to Morphe** button above, or add
    `https://github.com/ineednotitle/Proteus-Patches` as a patch source.
 3. Or download the latest bundle from **[Releases](https://github.com/ineednotitle/Proteus-Patches/releases)**
-   (`patches-2.2.4.mpp`) and use **Settings → Patches → Import patches** in the Manager.
+   (`patches-2.2.6.mpp`) and use **Settings → Patches → Import patches** in the Manager.
 4. Pick the apps you patch, choose your patches, and patch.
 
 > If you installed the withdrawn v2.2.2 bundle, refresh the source in Morphe
 > Manager after the replacement release is published. If it still fails, remove
 > and re-add the remote source or import the replacement bundle from Releases.
 
+> ⚠️ **Installing patched Brave?** If patching succeeds but Android refuses to
+> install with `INSTALL_FAILED_NO_MATCHING_ABIS … Failed to extract native
+> libraries (res=-113)` — most visible on 16 KB page-size devices (e.g. Android 16
+> / realme RMX5110) — the bundle used didn't carry the extraction fix. Re-patch
+> with **v2.2.6 or newer** (every Brave patch in it sets `extractNativeLibs=true`,
+> so the libraries are extracted to disk at install time) using the standalone
+> ARM64 `BraveMonoarm64.apk`, and install that APK. The Brave patches remain
+> experimental; on-device startup is still unverified. See
+> [docs/BRAVE.md](docs/BRAVE.md#install-troubleshooting) for details.
+
 > ⚠️ v2.0.0 is a **breaking, curated** release — patches for apps outside the
 > list below were removed from this bundle. Use `patches-1.19.0.mpp` (or earlier)
 > if you need the full app set.
 
 <!-- PATCHES_START EXPANDED -->
-> **[v2.2.4](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.4)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/e51b332d-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;166 patches total
+> **[v2.2.6](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.6)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/4877b858-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;155 patches total
 <details open>
 <summary>📦 Google Photos&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
 <br>
@@ -108,32 +118,6 @@ For configuration advice, limitations, and permission-patch examples, see the
 | [Bypass native integrity checks](#bypass-native-integrity-checks) | libunnamed_raw.so JNI-throws 'app integrity check failed' on re-signed builds, killing camera session start (preview) - observed via diagnostic crash log. This patch catches the throw at the session-opening wrapper and substitutes a valid session result. Required together with 'Allow re-signed/sideloaded installs'. |  |
 | [Diagnostic crash log](#diagnostic-crash-log) | DIAGNOSTIC ONLY - writes the full stack trace to Downloads/mereframe-crash-*.txt when the app crashes, for remote diagnosis. Off by default; enable when asked to produce a crash log. Chain-forwards to the original crash handler. |  |
 | [Unlock Pro features](#unlock-pro-features) | Includes every registered feature in the resolved feature set by dropping the ownership check at the entitlement resolver (nv.e). LOCAL client-side effect only. WARNING (kept off by default): on at least one device (realme/Android 16) enabling the single registered Pro feature crashes capture - the Pro pipeline path is gated by this flag and we cannot verify its safety side. Enable only if you specifically want the Pro toolset; the app works fully (RAW capture incl.) with just 'Allow re-signed installs'. |  |
-
-</details>
-
-<details open>
-<summary>📦 Meesho&nbsp;&nbsp;•&nbsp;&nbsp;12 patches</summary>
-<br>
-
-**🎯 Supported versions:**
-
-| 29.7 | 29.6 |
-| :---: | :---: |
-
-| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
-|----------|----------------|-----------|
-| [Allow screenshots & screen recording](#allow-screenshots-screen-recording) | Removes FLAG_SECURE and secure-surface flags from Meesho's windows so screenshots and screen recording work. Payment screens may still capture black. |  |
-| [Block analytics & tracking](#block-analytics-tracking) | No-ops AppsFlyer, Mixpanel, Facebook App Events, Firebase Analytics, GMS AppMeasurement and Crashlytics logging in Meesho. Push notifications and login/payments keep working. |  |
-| [Bypass forced update](#bypass-forced-update) | Neutralizes Play Core's update-availability checks so Meesho does not block usage on a newer version. Running an outdated build may break. |  |
-| [Change package name](#change-package-name) | Installs Meesho beside the official app by changing the package, permission names, provider authorities and launcher label. Payments (JusPay), Truecaller/Otpless login, Google sign-in and Shield anti-fraud may not work on the clone. | • Package name<br>• App name |
-| [Disable in-app popup upsells](#disable-in-app-popup-upsells) | Disables Meesho's InAppPopupActivity so full-screen promo/upsell popups never render. May break a flow that legitimately routes through it — verify first. |  |
-| [Disable reels autoplay](#disable-reels-autoplay) | Stops Meesho's reels from autoplaying muted previews. Opening a reel still plays normally. Heuristic — verify ExoPlayer anchors against the real APK. |  |
-| [Hide sponsored listings & ad slots](#hide-sponsored-listings-ad-slots) | Hides 'Ad'-labelled sponsored products in Meesho's search and feed by forcing app-side boolean ad gates to false. Heuristic — verify anchors against the real APK. Server still serves ads; only client rendering is affected. |  |
-| [Lock exported share-in / bank-link activities](#lock-exported-share-in-bank-link-activities) | Makes Meesho's exported SharedTextRedirectionActivity and MyBankActivity non-exported. Internal navigation still works; external apps/links can no longer start them. |  |
-| [Packaging toolkit (signature, install source, MicroG)](#packaging-toolkit-signature-install-source-microg) | Applies the shared signature, install-source and GmsCore/MicroG patches to Meesho in one step. Does not bypass Play Integrity, Shield or fix payments. |  |
-| [Prefer external browser over Custom Tabs](#prefer-external-browser-over-custom-tabs) | Removes Meesho's Custom Tabs service query so browser links can fall back to the normal external browser. No effect if Meesho launches Custom Tabs directly. |  |
-| [Remove dangerous permissions (keep storage & SMS)](#remove-dangerous-permissions-keep-storage-sms) | Removes contacts, phone-state, microphone, location, screen-capture detection and advertising-ID permissions from Meesho's manifest. Storage and SMS permissions are kept. Truecaller login, support voice calls and location-based address entry may degrade. |  |
-| [Stop pull-notification alarms (keep push)](#stop-pull-notification-alarms-keep-push) | Disables Meesho's alarm-based pull-notification receivers so the app is not periodically woken to fetch marketing notifications. FCM push keeps working. |  |
 
 </details>
 
@@ -253,7 +237,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 </details>
 
 <details open>
-<summary>📦 Reddit&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
+<summary>📦 Reddit&nbsp;&nbsp;•&nbsp;&nbsp;8 patches</summary>
 <br>
 
 **🎯 Supported versions:**
@@ -268,6 +252,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 | [Disable Click Tracking](#disable-click-tracking) | Forces the outbound click-tracking account preference off at the Account deserialization choke point (local; server-side click analytics may still be recorded). Enabled by default. |  |
 | [Employee Debug Flags](#employee-debug-flags) | Spoofs is_employee locally at the Account JSON adapter, exposing Reddit's internal employee/debug UI menus (mostly non-functional without the employee backend, and a few may misbehave — enable for exploration only). Off by default. |  |
 | [Remove ads](#remove-ads) | Hides promoted posts in feeds and banner ads in comment threads. |  |
+| [Show deleted comments](#show-deleted-comments) | Shows the original text of comments deleted or removed on Reddit, restored at render time from the free Arctic Shift archive (no API key; falls back to PullPush). Only the ids of deleted comments in the threads you open are sent, and restored text is prefixed with [archived]. Coverage depends on the archive; needs network. Off by default. |  |
 | [Unlock Account Entitlements](#unlock-account-entitlements) | Locally flips account-gating flags at the Account JSON adapter: can_create_subreddit, can_edit_name, password_set (kills the SSO 'set password' nag) and has_verified_email. Off by default; server entitlements still rule API actions. |  |
 | [Unlock Premium](#unlock-premium) | Flips the local isGold/has_gold_subscription account flags at the JSON adapter to enable Reddit Premium UI (custom icons, premium screens). Server-side perks cannot be unlocked. |  |
 
@@ -647,8 +632,10 @@ Every patch follows a fail-safe design (details:
   sites are skipped, never guessed at, and component class names are never renamed
 - No payment, purchase or account bypasses. The PairIP and DRM patches only disable
   local client-side checks; they do not defeat server-side billing or attestation
-- No network calls, no exec, no secrets in the bundle
-- Meesho's patch set deliberately **keeps storage and SMS permissions**
+- No network calls, no exec, no secrets in the bundle — with one opt-in exception: the Reddit
+  "[Show deleted comments](#show-deleted-comments)" patch contacts the Arctic Shift archive
+  (PullPush fallback) at view time while enabled, and only for deleted comments in the threads
+  you open
 
 Understand the risk classes before enabling signature/integrity-related
 patches on apps you don't trust — see the audit for details.
@@ -674,7 +661,9 @@ Releases are versioned by semantic-release (conventional commits); CI builds the
 
 ## 📄 Docs
 
+- [docs/BRAVE.md](docs/BRAVE.md) — Brave patch status, the v2.2.6 `res=-113` fix and install troubleshooting
 - [UNIVERSAL_PATCH_AUDIT.md](UNIVERSAL_PATCH_AUDIT.md) — per-patch correctness & UX audit
+- [docs/REDDIT-DELETED-COMMENTS.md](docs/REDDIT-DELETED-COMMENTS.md) — how the "Show deleted comments" patch works, limits and privacy notes
 - [CHANGELOG.md](CHANGELOG.md) — release history
 - [docs/COMMUNITY-LISTING.md](docs/COMMUNITY-LISTING.md) — patch listing for community indexes
 

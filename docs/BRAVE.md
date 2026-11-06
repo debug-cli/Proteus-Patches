@@ -12,10 +12,26 @@ builds. Release assets:
 [ARM64](https://github.com/brave/brave-browser/releases/download/v1.98.63/BraveMonoarm64.apk),
 [ARM32](https://github.com/brave/brave-browser/releases/download/v1.98.63/BraveMonoarm.apk).
 
-The reference project also reports a potential native-library alignment issue on
-16 KB page-size devices when APKs are repacked. This implementation does **not**
-automatically alter `extractNativeLibs`; installation and startup on those
-devices are unverified.
+The stock APK stores its native libraries uncompressed at 16 KB zip offsets
+(`android:extractNativeLibs="false"`); the patcher re-creates the APK with the
+libraries at 4 KB offsets, which 16 KB page-size devices cannot map. Every
+Brave patch in this bundle therefore depends on an internal compatibility patch
+that enforces `android:extractNativeLibs="true"` in the manifest (libraries are
+extracted to disk at install time instead of mapped from the APK). This fixes
+the `INSTALL_FAILED_NO_MATCHING_ABIS: Failed to extract native libraries,
+res=-113` install failure on Android 15/16 16 KB devices (including the
+realme RMX5110). It is harmless on 4 KB devices. Installation is expected to
+work from v2.2.6 onward; startup on those devices remains unverified.
+
+### Install troubleshooting
+
+- **`INSTALL_FAILED_NO_MATCHING_ABIS … res=-113`** — you patched an older
+  bundle, or the extraction compatibility patch did not run. Re-patch with a
+  bundle that includes it (v2.2.6+); any Brave patch selection is sufficient,
+  because the fix rides along as a dependency.
+- Use the **standalone ARM64 APK** (`BraveMonoarm64.apk`) on arm64 devices
+  (and `BraveMonoarm.apk` on arm32-only devices). Universal or
+  split-build APKs are unsupported.
 
 ## Implemented so far
 
