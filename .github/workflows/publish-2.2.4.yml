@@ -43,18 +43,23 @@ jobs:
           tail -25 build.log
           jq '.version="2.2.4"' patches-list.json > patches-list.json.tmp
           mv patches-list.json.tmp patches-list.json
-          python3 -m unittest discover -s .github/scripts -p 'test_verify_android_bundle.py'
-          python3 .github/scripts/verify_android_bundle.py patches/build/libs/patches-2.2.4.mpp 2.2.4 --patch-list patches-list.json
+          python3 -m unittest discover -s .github/scripts -p 'test_verify_android_bundle.py' || { echo '::error::Bundle verifier unit tests failed'; exit 1; }
+          python3 .github/scripts/verify_android_bundle.py patches/build/libs/patches-2.2.4.mpp 2.2.4 --patch-list patches-list.json || { echo '::error::Bundle structure verification failed'; exit 1; }
           python3 - <<'PY'
-          import json, zipfile
-          data = json.load(open('patches-list.json'))
-          brave = [p for p in data['patches'] if any(pkg['packageName'] == 'com.brave.browser' for pkg in (p.get('compatiblePackages') or []))]
-          names = {'Block Motion Sensors', 'Stop Text Sharing with System', 'Block Popups & Ratings', 'Stop Promo Notifications', 'Skip Welcome Screens', 'Stop Background Wakeups', 'Preserve last active tab', 'Remove Extra Languages'}
-          assert {p['name'] for p in brave} == names, brave
-          assert all(p['default'] is False for p in brave)
-          assert all(any(t['version'] == '1.98.63' and t['isExperimental'] for pkg in p['compatiblePackages'] if pkg['packageName'] == 'com.brave.browser' for t in pkg['targets']) for p in brave)
-          with zipfile.ZipFile('patches/build/libs/patches-2.2.4.mpp') as bundle:
-              assert {'META-INF/LICENSES/GPL-3.0.txt', 'META-INF/LICENSES/MIT.txt', 'META-INF/PROTEUS-NOTICE.txt'} <= set(bundle.namelist())
+          import json, zipfile, sys
+          try:
+              data = json.load(open('patches-list.json'))
+              brave = [p for p in data['patches'] if any(pkg['packageName'] == 'com.brave.browser' for pkg in (p.get('compatiblePackages') or []))]
+              names = {'Block Motion Sensors', 'Stop Text Sharing with System', 'Block Popups & Ratings', 'Stop Promo Notifications', 'Skip Welcome Screens', 'Stop Background Wakeups', 'Preserve last active tab', 'Remove Extra Languages'}
+              assert {p['name'] for p in brave} == names, f"Brave patch names: {[p['name'] for p in brave]}"
+              assert all(p['default'] is False for p in brave), 'Brave patch defaults'
+              assert all(any(t['version'] == '1.98.63' and t['isExperimental'] for pkg in p['compatiblePackages'] if pkg['packageName'] == 'com.brave.browser' for t in pkg['targets']) for p in brave), 'Brave target flags'
+              with zipfile.ZipFile('patches/build/libs/patches-2.2.4.mpp') as bundle:
+                  needed = {'META-INF/LICENSES/GPL-3.0.txt', 'META-INF/LICENSES/MIT.txt', 'META-INF/PROTEUS-NOTICE.txt'}
+                  assert needed <= set(bundle.namelist()), f'missing notices: {needed - set(bundle.namelist())}'
+          except Exception as error:
+              print(f'::error::Brave metadata/license verification failed: {type(error).__name__}: {error}')
+              sys.exit(1)
           print('Eight experimental, default-off Brave patches and license notices verified')
           PY
       - name: Update release metadata
