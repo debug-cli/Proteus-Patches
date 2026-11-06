@@ -3,8 +3,11 @@ name: Build MPP (one-off)
 # One-off manual bundle build for cutting a pre-release from this branch.
 # Not used by the release pipeline (that lives in release.yml) — this exists so
 # the .mpp can be produced on CI runners with a JDK and full network access.
+# Triggers on push to this branch only.
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - arena/4877b858-proteus-patches
 
 jobs:
   build:
