@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "patches": [
     {
       "name": "AMOLED dark theme",
@@ -173,7 +173,7 @@
     },
     {
       "name": "Allow screenshots & screen recording",
-      "description": "Removes FLAG_SECURE from the app's windows so screenshots and screen\nrecordings work. Payment/banking screens may still capture black.\n\nApplies to any app. Inverse of \"Block screenshots & screen recording\".",
+      "description": "Attempts to remove recognizable FLAG_SECURE and secure SurfaceView settings\nso screenshots and screen recordings can work. Some screens or protection\nmethods may still block capture, including payment or banking screens.\n\nApplies to any app. Do not combine with \"Block screenshots & screen recording\".",
       "default": false,
       "dependencies": [],
       "compatiblePackages": null,
@@ -759,7 +759,7 @@
     },
     {
       "name": "Block screenshots & screen recording",
-      "description": "Sets FLAG_SECURE on all activity windows so screenshots, screen recorders,\noverlay apps and accessibility services cannot capture the app's content\n(they see a black surface).\n\nApplies to any app. Does not remove existing protections - it adds them.",
+      "description": "Attempts to add FLAG_SECURE to activity windows and secure SurfaceViews.\nThis can make screenshots and screen recordings show a black surface.\nOnly recognizable code with available registers can be changed, so this\nis not a guarantee that all screens or capture methods are protected.\n\nApplies to any app. Do not combine with \"Allow screenshots & screen recording\".",
       "default": false,
       "dependencies": [],
       "compatiblePackages": null,
@@ -3792,18 +3792,180 @@
     },
     {
       "name": "Remove dangerous permissions",
-      "description": "Removes privacy-invasive permissions (package visibility, phone state, accounts,\nlocation, contacts, microphone, screen-capture detection, advertising ID) from any\napp's manifest. Storage and SMS permissions are kept by default.\n\nThe removal list is configurable. Removing a permission the app actually needs can\nbreak features (login, calls, address auto-detect).",
+      "description": "Removes selected permission declarations from an app's manifest. The patch\nis off by default. When enabled, all category switches start ON, including\ncamera, storage, SMS and notifications. Turn off categories the app needs.\n\nPermissions to keep always wins. Extra permissions are added to the selected\ncategories. A non-empty advanced list replaces the category selections,\nexcept that AdServices remains controlled by its own switch.\n\nRemoving permissions can break features or prevent an app from starting.\nThis does not block every way an app may collect data.",
       "default": false,
       "dependencies": [],
       "compatiblePackages": null,
       "options": [
         {
-          "key": "permissionsToRemove",
-          "title": "Permissions to remove",
-          "description": "Comma-separated list of permission names to strip from the manifest.",
+          "key": "permPackageVisibility",
+          "title": "Package visibility",
+          "description": "Remove QUERY_ALL_PACKAGES (app can no longer enumerate every installed app).",
+          "required": false,
+          "type": "kotlin.Boolean",
+          "default": true,
+          "values": null
+        },
+        {
+          "key": "permPhone",
+          "title": "Phone state & numbers",
+          "description": "Remove phone state, phone numbers and calling permissions. Calls or sign-in may stop working.",
+          "required": false,
+          "type": "kotlin.Boolean",
+          "default": true,
+          "values": null
+        },
+        {
+          "key": "permAccounts",
+          "title": "Accounts",
+          "description": "Remove GET_ACCOUNTS. Account discovery or sign-in may stop working.",
+          "required": false,
+          "type": "kotlin.Boolean",
+          "default": true,
+          "values": null
+        },
+        {
+          "key": "permLocation",
+          "title": "Location",
+          "description": "Remove fine, coarse and background location. Maps or location features may stop working.",
+          "required": false,
+          "type": "kotlin.Boolean",
+          "default": true,
+          "values": null
+        },
+        {
+          "key": "permContacts",
+          "title": "Contacts",
+          "description": "Remove read/write contacts. Contact sync and sharing may stop working.",
+          "required": false,
+          "type": "kotlin.Boolean",
+          "default": true,
+          "values": null
+        },
+        {
+          "key": "permMicrophone",
+          "title": "Microphone",
+          "description": "Remove RECORD_AUDIO. Voice messages, calls and recording may stop working.",
+          "required": false,
+          "type": "kotlin.Boolean",
+          "default": true,
+          "values": null
+        },
+        {
+          "key": "permCamera",
+          "title": "Camera",
+          "description": "Remove CAMERA. Disable this if the app needs to take photos or scan QR codes.",
+          "required": false,
+          "type": "kotlin.Boolean",
+          "default": true,
+          "values": null
+        },
+        {
+          "key": "permStorage",
+          "title": "Storage & media",
+          "description": "Remove storage and media permissions. File access and media features may stop working.",
+          "required": false,
+          "type": "kotlin.Boolean",
+          "default": true,
+          "values": null
+        },
+        {
+          "key": "permSms",
+          "title": "SMS",
+          "description": "Remove SMS permissions. Messaging or automatic verification may stop working.",
+          "required": false,
+          "type": "kotlin.Boolean",
+          "default": true,
+          "values": null
+        },
+        {
+          "key": "permCalendar",
+          "title": "Calendar",
+          "description": "Remove read/write calendar permissions. Calendar integration may stop working.",
+          "required": false,
+          "type": "kotlin.Boolean",
+          "default": true,
+          "values": null
+        },
+        {
+          "key": "permSensors",
+          "title": "Sensors & activity",
+          "description": "Remove BODY_SENSORS and ACTIVITY_RECOGNITION. Fitness features may stop working.",
+          "required": false,
+          "type": "kotlin.Boolean",
+          "default": true,
+          "values": null
+        },
+        {
+          "key": "permNearbyDevices",
+          "title": "Nearby devices",
+          "description": "Remove Bluetooth and nearby Wi-Fi permissions. Device pairing may stop working.",
+          "required": false,
+          "type": "kotlin.Boolean",
+          "default": true,
+          "values": null
+        },
+        {
+          "key": "permScreenCaptureDetection",
+          "title": "Screen-capture detection",
+          "description": "Remove DETECT_SCREEN_CAPTURE (Android 14+ screenshot detection).",
+          "required": false,
+          "type": "kotlin.Boolean",
+          "default": true,
+          "values": null
+        },
+        {
+          "key": "permAdId",
+          "title": "Advertising ID",
+          "description": "Remove com.google.android.gms.permission.AD_ID.",
+          "required": false,
+          "type": "kotlin.Boolean",
+          "default": true,
+          "values": null
+        },
+        {
+          "key": "permAdServices",
+          "title": "AdServices permissions",
+          "description": "Remove every android.permission.ACCESS_ADSERVICES_* entry.",
+          "required": false,
+          "type": "kotlin.Boolean",
+          "default": true,
+          "values": null
+        },
+        {
+          "key": "permNotifications",
+          "title": "Notifications",
+          "description": "Remove POST_NOTIFICATIONS. Disable this if you still want app notifications.",
+          "required": false,
+          "type": "kotlin.Boolean",
+          "default": true,
+          "values": null
+        },
+        {
+          "key": "permissionsToKeep",
+          "title": "Permissions to keep",
+          "description": "Always keep these permissions, even if a category, extra list or AdServices would remove them. Use commas, semicolons or new lines; e.g. CAMERA, POST_NOTIFICATIONS.",
           "required": false,
           "type": "kotlin.String",
-          "default": "android.permission.QUERY_ALL_PACKAGES,android.permission.READ_PHONE_STATE,android.permission.READ_BASIC_PHONE_STATE,android.permission.READ_PHONE_NUMBERS,android.permission.GET_ACCOUNTS,android.permission.ACCESS_FINE_LOCATION,android.permission.ACCESS_COARSE_LOCATION,android.permission.ACCESS_BACKGROUND_LOCATION,android.permission.READ_CONTACTS,android.permission.WRITE_CONTACTS,android.permission.RECORD_AUDIO,android.permission.DETECT_SCREEN_CAPTURE,com.google.android.gms.permission.AD_ID",
+          "default": "",
+          "values": null
+        },
+        {
+          "key": "extraPermissionsToRemove",
+          "title": "Extra permissions to remove",
+          "description": "Add permissions to remove. Use commas, semicolons or new lines; e.g. CAMERA or com.example.permission.CUSTOM. The keep list takes priority.",
+          "required": false,
+          "type": "kotlin.String",
+          "default": "",
+          "values": null
+        },
+        {
+          "key": "permissionsToRemove",
+          "title": "Advanced: exact removal list",
+          "description": "Legacy override: when non-empty, replaces the category selections with this list. AdServices is still controlled by its switch; extra and keep lists still apply. Leave blank to use categories.",
+          "required": false,
+          "type": "kotlin.String",
+          "default": "",
           "values": null
         }
       ]
