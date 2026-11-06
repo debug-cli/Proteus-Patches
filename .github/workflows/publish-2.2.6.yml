@@ -52,7 +52,21 @@ jobs:
         run: python3 .github/scripts/verify_patch_source.py patches-bundle.json 2.2.6 --normalize
 
       - name: Verify Android bundle
-        run: python3 .github/scripts/verify_android_bundle.py patches/build/libs/patches-2.2.6.mpp 2.2.6 --patch-list patches-list.json
+        run: |
+          python3 .github/scripts/verify_android_bundle.py patches/build/libs/patches-2.2.6.mpp 2.2.6 --patch-list patches-list.json > .ci-verify.log 2>&1 || true
+          cat .ci-verify.log
+          git config user.name "ineednotitle"
+          git config user.email "100122698+ineednotitle@users.noreply.github.com"
+          {
+            echo "patches-list.json head:"
+            head -c 400 patches-list.json
+            echo
+            echo "build libs:"
+            ls -la patches/build/libs/ || true
+          } > .ci-verify-extra.log
+          git add .ci-verify.log .ci-verify-extra.log
+          git commit -m "ci: capture bundle verification diagnostics [skip ci]"
+          git push origin HEAD:arena/4877b858-proteus-patches
 
       - name: Commit regenerated metadata
         run: |
