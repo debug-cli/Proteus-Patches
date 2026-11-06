@@ -11,7 +11,7 @@
 ads, annoyances and risky defaults from popular Android apps — plus a set of
 **universal patches** that apply to any app.
 
-- **[v2.2.3](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.3)** — experimental, default-off Brave patches; see [limitations](docs/BRAVE.md)
+- **[v2.2.5](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.5)** — pre-release: new experimental Reddit "Show deleted comments" patch (archive-restored text, off by default) plus the default-off Brave patches; see [limitations](docs/BRAVE.md) and [the Reddit doc](docs/REDDIT-DELETED-COMMENTS.md)
 - Built and verified with the Morphe Manager v2.3.0 patcher (`patches-list.json` regenerated, zip integrity checked)
 
 [![Add to Morphe](https://img.shields.io/badge/Add_to-Morphe-1f6feb?style=for-the-badge)](https://morphe.software/add-source?github=ineednotitle/Proteus-Patches)
@@ -41,7 +41,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 2. Easiest: tap the **Add to Morphe** button above, or add
    `https://github.com/ineednotitle/Proteus-Patches` as a patch source.
 3. Or download the latest bundle from **[Releases](https://github.com/ineednotitle/Proteus-Patches/releases)**
-   (`patches-2.2.4.mpp`) and use **Settings → Patches → Import patches** in the Manager.
+   (`patches-2.2.5.mpp`) and use **Settings → Patches → Import patches** in the Manager.
 4. Pick the apps you patch, choose your patches, and patch.
 
 > If you installed the withdrawn v2.2.2 bundle, refresh the source in Morphe
