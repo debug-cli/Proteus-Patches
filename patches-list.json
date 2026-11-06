@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "patches": [
     {
       "name": "AMOLED dark theme",
@@ -496,6 +496,58 @@
                 "X86": 2016191575
               },
               "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Block Motion Sensors",
+      "description": "Attempts to disable Chromium's Android sensor provider; may also block ambient sensors. Requires device validation.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.brave.browser",
+          "name": "Brave Browser",
+          "description": null,
+          "apkFileType": "APK",
+          "appIconColor": "#FF4500",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.98.63",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Block Popups & Ratings",
+      "description": "Disables the identified rating and Brave Ads signup eligibility checks; other dialogs can still appear.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.brave.browser",
+          "name": "Brave Browser",
+          "description": null,
+          "apkFileType": "APK",
+          "appIconColor": "#FF4500",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.98.63",
+              "versionCodes": null,
+              "isExperimental": true,
               "minSdk": null,
               "description": null
             }
@@ -3297,6 +3349,32 @@
       "options": []
     },
     {
+      "name": "Preserve last active tab",
+      "description": "Disables the identified new-tab opening-screen override after inactivity. Does not prevent tab unloading under memory pressure.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.brave.browser",
+          "name": "Brave Browser",
+          "description": null,
+          "apkFileType": "APK",
+          "appIconColor": "#FF4500",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.98.63",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
       "name": "Price history charts",
       "description": "Injects Keepa and CamelCamelCamel price history charts on Amazon product pages.",
       "default": true,
@@ -3615,6 +3693,42 @@
           "required": false,
           "type": "kotlin.String",
           "default": null,
+          "values": null
+        }
+      ]
+    },
+    {
+      "name": "Remove Extra Languages",
+      "description": "Replaces larger unselected Chromium locale PAKs with the English fallback; gender variants and Android resources are not removed.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.brave.browser",
+          "name": "Brave Browser",
+          "description": null,
+          "apkFileType": "APK",
+          "appIconColor": "#FF4500",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.98.63",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": [
+        {
+          "key": "locales",
+          "title": "Languages to keep",
+          "description": "Comma-separated language codes such as en-US, fr, hi. English is always kept; choosing a language keeps all its regions.",
+          "required": false,
+          "type": "kotlin.String",
+          "default": "en-US",
           "values": null
         }
       ]
@@ -4154,6 +4268,32 @@
       "options": []
     },
     {
+      "name": "Skip Welcome Screens",
+      "description": "Reports the first-run flow complete; may skip essential consent, search or setup screens.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.brave.browser",
+          "name": "Brave Browser",
+          "description": null,
+          "apkFileType": "APK",
+          "appIconColor": "#FF4500",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.98.63",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
       "name": "Skip pre-roll promos",
       "description": "Disables MUBI's app-side pre-roll gate when it is a boolean check. Pre-roll injected by the server or embedded in the stream is unaffected.",
       "default": true,
@@ -4456,6 +4596,84 @@
           }
         }
       ]
+    },
+    {
+      "name": "Stop Background Wakeups",
+      "description": "Disables the identified Chromium background-sync scheduler gate; other wakeups remain and site background sync can break.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.brave.browser",
+          "name": "Brave Browser",
+          "description": null,
+          "apkFileType": "APK",
+          "appIconColor": "#FF4500",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.98.63",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Stop Promo Notifications",
+      "description": "Disables identified Chromium tips and retention notification entry points; other notifications may remain.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.brave.browser",
+          "name": "Brave Browser",
+          "description": null,
+          "apkFileType": "APK",
+          "appIconColor": "#FF4500",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.98.63",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Stop Text Sharing with System",
+      "description": "Disables Chromium's OnscreenContentProvider content-capture gate, not every possible text-sharing mechanism.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.brave.browser",
+          "name": "Brave Browser",
+          "description": null,
+          "apkFileType": "APK",
+          "appIconColor": "#FF4500",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.98.63",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
     },
     {
       "name": "Stop pull-notification alarms (keep push)",

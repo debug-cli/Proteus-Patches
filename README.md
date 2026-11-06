@@ -53,7 +53,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 > if you need the full app set.
 
 <!-- PATCHES_START EXPANDED -->
-> **[v2.2.3](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.3)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/e51b332d-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;158 patches total
+> **[v2.2.4](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.4)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/e51b332d-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;166 patches total
 <details open>
 <summary>📦 Google Photos&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
 <br>
@@ -286,6 +286,28 @@ For configuration advice, limitations, and permission-patch examples, see the
 |----------|----------------|-----------|
 | [Block Firefox telemetry](#block-firefox-telemetry) | IronFox-style hardening: never initializes Glean telemetry, Nimbus experiments, Sentry crash reporting, or Adjust attribution at startup; kills Mozilla-side server traffic during browsing (Firefox Suggest/Merino, sponsored shortcuts/Contile, Pocket feed + sponsored stories, search suggestion streaming incl. private tabs, studies previews); and makes the telemetry toggles in Settings read OFF. Browsing, Sync and add-ons keep working; local-only suggestions untouched. |  |
 | [Improve startup performance](#improve-startup-performance) | Skips two launch-time routines whose only job is metrics/experiments upkeep: the 4k-line startup-metrics coroutine (pure telemetry writes, ~64 metric writes per launch) and the forced Nimbus experiment fetch right after first render. Less launch I/O = faster, smoother open/close. Browser features unchanged. |  |
+
+</details>
+
+<details open>
+<summary>📦 Brave Browser&nbsp;&nbsp;•&nbsp;&nbsp;8 patches</summary>
+<br>
+
+**🎯 Supported versions:**
+
+| 🧪&nbsp;1.98.63 |
+| :---: |
+
+| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
+|----------|----------------|-----------|
+| [Block Motion Sensors](#block-motion-sensors) | Attempts to disable Chromium's Android sensor provider; may also block ambient sensors. Requires device validation. |  |
+| [Block Popups & Ratings](#block-popups-ratings) | Disables the identified rating and Brave Ads signup eligibility checks; other dialogs can still appear. |  |
+| [Preserve last active tab](#preserve-last-active-tab) | Disables the identified new-tab opening-screen override after inactivity. Does not prevent tab unloading under memory pressure. |  |
+| [Remove Extra Languages](#remove-extra-languages) | Replaces larger unselected Chromium locale PAKs with the English fallback; gender variants and Android resources are not removed. | • Languages to keep |
+| [Skip Welcome Screens](#skip-welcome-screens) | Reports the first-run flow complete; may skip essential consent, search or setup screens. |  |
+| [Stop Background Wakeups](#stop-background-wakeups) | Disables the identified Chromium background-sync scheduler gate; other wakeups remain and site background sync can break. |  |
+| [Stop Promo Notifications](#stop-promo-notifications) | Disables identified Chromium tips and retention notification entry points; other notifications may remain. |  |
+| [Stop Text Sharing with System](#stop-text-sharing-with-system) | Disables Chromium's OnscreenContentProvider content-capture gate, not every possible text-sharing mechanism. |  |
 
 </details>
 
