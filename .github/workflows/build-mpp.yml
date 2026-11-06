@@ -70,42 +70,42 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cat > /tmp/notes.md <<'EOF'
-Proteus Patches v2.2.5 (pre-release)
-
-New in this pre-release:
-
-- Reddit: new "Show deleted comments" patch (experimental). Shows the original
-  text of comments deleted by their author or removed by a moderator, restored
-  at render time from the free Arctic Shift public archive (no API key; falls
-  back to PullPush). Restored text is prefixed with [archived]. Only the ids
-  of deleted comments in the threads you open are sent — nothing else. Comments
-  the archive never captured stay [deleted]. Off by default. The bytecode side
-  rides the already-verified 2026.42.0 Listing.children anchor; the runtime
-  restore path has not been exercised on-device yet and fails safe to the
-  stock [deleted] placeholder. See docs/REDDIT-DELETED-COMMENTS.md.
-
-Included from v2.2.4:
-
-- Eight default-off Brave patches (experimental, Brave 1.98.63, not verified
-  against the real APK). See docs/BRAVE.md for the full limitations list.
-
-Verification:
-
-- CI: patch tests pass; bundle builds from this branch; Android DEX bundle
-  integrity verified (verify_android_bundle.py); patch-list metadata verified
-  (verify_patch_source.py); patches-list.json regenerated for this bundle.
-
-Known limitations:
-
-- The Reddit restore path is static-verified only; enable it only if you are
-  comfortable with archive lookups of deleted-comment ids and with the
-  experimental status.
-- Brave patches remain experimental and default-off, as in v2.2.4.
-
-For automatic updates, add the GitHub repository as a remote source in Morphe
-rather than importing a local .mpp file.
-EOF
+          printf '%s\n' \
+            'Proteus Patches v2.2.5 (pre-release)' \
+            '' \
+            'New in this pre-release:' \
+            '' \
+            '- Reddit: new "Show deleted comments" patch (experimental). Shows the original' \
+            '  text of comments deleted by their author or removed by a moderator, restored' \
+            '  at render time from the free Arctic Shift public archive (no API key; falls' \
+            '  back to PullPush). Restored text is prefixed with [archived]. Only the ids' \
+            '  of deleted comments in the threads you open are sent, nothing else. Comments' \
+            '  the archive never captured stay [deleted]. Off by default. The bytecode side' \
+            '  rides the already-verified 2026.42.0 Listing.children anchor; the runtime' \
+            '  restore path has not been exercised on-device yet and fails safe to the' \
+            '  stock [deleted] placeholder. See docs/REDDIT-DELETED-COMMENTS.md.' \
+            '' \
+            'Included from v2.2.4:' \
+            '' \
+            '- Eight default-off Brave patches (experimental, Brave 1.98.63, not verified' \
+            '  against the real APK). See docs/BRAVE.md for the full limitations list.' \
+            '' \
+            'Verification:' \
+            '' \
+            '- CI: patch tests pass; bundle builds from this branch; Android DEX bundle' \
+            '  integrity verified (verify_android_bundle.py); patch-list metadata verified' \
+            '  (verify_patch_source.py); patches-list.json regenerated for this bundle.' \
+            '' \
+            'Known limitations:' \
+            '' \
+            '- The Reddit restore path is static-verified only; enable it only if you are' \
+            '  comfortable with archive lookups of deleted-comment ids and with the' \
+            '  experimental status.' \
+            '- Brave patches remain experimental and default-off, as in v2.2.4.' \
+            '' \
+            'For automatic updates, add the GitHub repository as a remote source in Morphe' \
+            'rather than importing a local .mpp file.' \
+            > /tmp/notes.md
           gh release create v2.2.5 \
             --prerelease \
             --target arena/4877b858-proteus-patches \
