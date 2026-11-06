@@ -3,9 +3,9 @@
 > *One bundle, patches everywhere. A curated [Morphe](https://github.com/MorpheApp/Morphe) patch suite for Android.*
 
 [![License: GPL-3.0-only](https://img.shields.io/badge/License-GPL--3.0--only-green.svg)](#license)
-[![Patches](https://img.shields.io/badge/patches-158-blue.svg)](#whats-inside)
+[![Patches](https://img.shields.io/badge/patches-155-blue.svg)](#whats-inside)
 [![Universal patches](https://img.shields.io/badge/universal-24-purple.svg)](#universal-patches)
-[![Apps](https://img.shields.io/badge/apps-23-orange.svg)](#supported-apps)
+[![Apps](https://img.shields.io/badge/apps-28-orange.svg)](#supported-apps)
 
 **Proteus Patches** is a Morphe patch bundle (`.mpp`) that removes tracking,
 ads, annoyances and risky defaults from popular Android apps — plus a set of
@@ -622,8 +622,10 @@ Every patch follows a fail-safe design (details:
   sites are skipped, never guessed at, and component class names are never renamed
 - No payment, purchase or account bypasses. The PairIP and DRM patches only disable
   local client-side checks; they do not defeat server-side billing or attestation
-- No network calls, no exec, no secrets in the bundle
-- Meesho's patch set deliberately **keeps storage and SMS permissions**
+- No network calls, no exec, no secrets in the bundle — with one opt-in exception: the Reddit
+  "[Show deleted comments](#show-deleted-comments)" patch contacts the Arctic Shift archive
+  (PullPush fallback) at view time while enabled, and only for deleted comments in the threads
+  you open
 
 Understand the risk classes before enabling signature/integrity-related
 patches on apps you don't trust — see the audit for details.
