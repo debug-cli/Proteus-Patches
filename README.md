@@ -11,7 +11,7 @@
 ads, annoyances and risky defaults from popular Android apps — plus a set of
 **universal patches** that apply to any app.
 
-- **[v2.2.7](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.7)** — pre-release: adds six experimental, off-by-default Brave patches (Remove Unused AI & VPN, Block Telemetry, Clean New Tab, Close Tab In Group Order, Brave Origin, Custom Brave theme; adapted from kveld9/kveld-morphe-patches, unverified on device); broadens Block AutoMod comments detection and adds logging; "Show deleted comments" now logs archive lookup outcomes. See [limitations](docs/BRAVE.md) and [the Reddit doc](docs/REDDIT-DELETED-COMMENTS.md)
+- **[v2.2.8](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.8)** — pre-release: v2.2.7 contents (six experimental, off-by-default Brave patches adapted from kveld9/kveld-morphe-patches, Reddit AutoMod/show-deleted-comments fixes, Amazon AMOLED dark, listing performance fix) plus a broader universal "Block analytics & tracking SDKs" marker list (WebEngage, CleverTap, Flurry, Branch, Kochava) and a Mint & Hindustan Times analysis. No Mint/HT-specific patches yet — they need the APKs. See [the Brave doc](docs/BRAVE.md), [the Reddit doc](docs/REDDIT-DELETED-COMMENTS.md) and [docs/HT-NEWS-APPS.md](docs/HT-NEWS-APPS.md)
 - Built and verified with the Morphe Manager v2.3.0 patcher (`patches-list.json` regenerated, zip integrity checked)
 
 [![Add to Morphe](https://img.shields.io/badge/Add_to-Morphe-1f6feb?style=for-the-badge)](https://morphe.software/add-source?github=ineednotitle/Proteus-Patches)
