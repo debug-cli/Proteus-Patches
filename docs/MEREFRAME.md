@@ -10,10 +10,50 @@ current status page and the triage runbook for field crashes.
 | Patch | Default | Role |
 |---|---|---|
 | Allow re-signed/sideloaded installs | **on** | Neutralizes the startup install-legality verdict → app starts at all |
-| Bypass native integrity checks | **on** | Catches `SecurityException("app integrity check failed")` at the camera session-opening wrapper |
+| Bypass native integrity checks | **on** | NEW (v2.2.9 re-cut): routes the camera session JNI call through a real JVM try/catch in the extension and substitutes {0L,1L} on failure |
 | Diagnostic crash log | off | Writes the full stack to `Downloads/mereframe-crash-*.txt`, then chains to the normal crash path |
 | Unlock Pro features | off | Drops the entitlement ownership check (nv.e). **WARNING:** on realme/Android 16 enabling it crashed capture on the one device tested — keep off unless deliberately testing |
 | Fix Firebase after re-signing (universal) | off | Needed if Firebase services break after re-signing |
+
+## 2026-11-07 — issue #5: the bypass never caught anything (FIXED in v2.2.9 re-cut #2)
+
+Field report ("debug-cli"): patch reports success but the
+`SecurityException("app integrity check failed")` still kills the app at
+`B1e6ad8077f6880e309d8da4b.d(ZZZZFZ)[J`.
+
+Root cause: the inline smali tried to express a try/catch across the JNI
+invoke with `:try_start_0 / :try_end_0 / .catch Ljava/lang/SecurityException;`.
+Morphe's inline-smali compiler compiles such snippets against a dummy method
+and splices back only the instruction list — the `.catch` lives in the code
+item's exception table, not in the instruction list, so it was silently
+dropped. No handler → the native throw escaped → crash at `d(SourceFile:8)`.
+
+Fix (this build): the whole call site now lives inside
+`MereframeIntegrityHook.openSessionWithFallback(ZZZZFZ)[J` in the extension —
+a real JVM try/catch. The injected smali is `invoke-static` →
+`move-result-object` → `return-object` with no extra registers. The hook
+resolves the bridge class/singleton/native method reflectively (one place to
+change per build shape), validates the native verdict's domain `(0,4)` exactly
+like the previous iot fallback, degrades to `long[]{0L,1L}` on ANY
+mismatch/throw, and logs once per process.
+
+Two related defects from the same report were fixed as well:
+
+- **Spoof install source, Layer 2 never found the app.** The fingerprint
+  required a DIRECT subclass of `android.app.Application`; modern apps extend
+  an androidx parent (e.g. `androidx.lifecycle.LifecycleProcess`) → silent
+  skip. The patch now walks each candidate class' superclass chain inside the
+  merged DEX (bounded, null-safe). Loud log only when truly absent.
+- **Spoof app signature reported success while hooking nothing.** The failure
+  mode is now impossible to ship silently: the bundle verifier
+  (`.github/scripts/verify_android_bundle.py`) asserts all 13 extension
+  classes survive in every DEX payload of `patches-2.2.9.mpp` —
+  `SignatureHookApp` included — and fails the build otherwise.
+
+24-hour validity of the fix: compile-time only (no device log yet for the
+new code path). If the crash reappears at this exact frame, check the patching
+log for the new "session wrapper routed through MereframeIntegrityHook" line:
+if missing, that build lacks this patch.
 
 ## Reading the 2026-11-07 crash report (realme RMX5110, Android 16)
 

@@ -3,7 +3,7 @@
 > *One bundle, patches everywhere. A curated [Morphe](https://github.com/MorpheApp/Morphe) patch suite for Android.*
 
 [![License: GPL-3.0-only](https://img.shields.io/badge/License-GPL--3.0--only-green.svg)](#license)
-[![Patches](https://img.shields.io/badge/patches-172-blue.svg)](#whats-inside)
+[![Patches](https://img.shields.io/badge/patches-174-blue.svg)](#whats-inside)
 [![Universal patches](https://img.shields.io/badge/universal-24-purple.svg)](#universal-patches)
 [![Apps](https://img.shields.io/badge/apps-28-orange.svg)](#supported-apps)
 
@@ -11,7 +11,7 @@
 ads, annoyances and risky defaults from popular Android apps — plus a set of
 **universal patches** that apply to any app.
 
-- **[v2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9)** — pre-release (not the latest): Reddit save-flow stability hardening. "Remove ads" Layer 3 (comment-banner ad loader kill) rewritten as a constant `return-void` entry — zero registers used, replacing the previous `move-result v0` short-circuit that clobbered the receiver register; Layer 5 (AdPostSection Compose-render no-op) kept ON by explicit decision, see [docs/REDDIT-STABILITY.md](docs/REDDIT-STABILITY.md); new off-by-default "Reddit: Diagnostic crash log" patch writes `Downloads/reddit-crash-*.txt` on any uncaught exception (app version + device header) — install triggers on the first account sync after launch. Built blind (no crash stack yet); v2.2.8 unchanged; Latest stays v2.2.4
+- **[v2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9)** — pre-release (not the latest; re-cut #2 supersedes the earlier v2.2.9 asset): Reddit save-flow stability hardening. "Remove ads" Layer 3 (comment-banner ad loader kill) rewritten as a constant `return-void` entry — zero registers used; Layer 5 (AdPostSection Compose-render no-op) kept ON by explicit decision, see [docs/REDDIT-STABILITY.md](docs/REDDIT-STABILITY.md); new "Reddit: Diagnostic crash log" patch (default off) writes `Downloads/reddit-crash-*.txt`. Also resolves all open issues: **#22** (Amazon India patching error) — AMOLED resource pass now writes android:-framework attributes only with a hard guard; the Google Photos AMOLED patch carried the same defect and got the identical fix; **#21** (Amazon India video ads) — NEW "Amazon: Stop feed video autoplay" patch (default off) + [docs/AMAZON.md](docs/AMAZON.md) with enable steps and reach limits; **#5** (Mereframe 0.8.4) — "Bypass native integrity checks" rewritten to call the native session JNI inside a real JVM try/catch in the extension, instead of inline smali whose `.catch` was silently dropped; "Spoof install source" Layer 2 now walks the superclass chain (androidx parents like LifecycleProcess); "Spoof app signature" SignatureHookApp presence is now enforced by the bundle verifier. See [docs/MEREFRAME.md](docs/MEREFRAME.md). Unverified on device; 2026.42.0 remains the verified Reddit build; Latest stays v2.2.4
 - **[v2.2.8](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.8)** — pre-release: v2.2.7 contents (six experimental, off-by-default Brave patches adapted from kveld9/kveld-morphe-patches, Reddit AutoMod/show-deleted-comments fixes, Amazon AMOLED dark, listing performance fix) plus: a broader universal "Block analytics & tracking SDKs" marker list (WebEngage, CleverTap, Flurry, Branch, Kochava); a new universal "Disable video autoplay (ExoPlayer/Media3)" heuristic; and Mint/Hindustan Times app-scoped entries for both of those plus "Prefer external browser over Custom Tabs" (same heuristics, off by default, unverified on device), and a Mint & Hindustan Times analysis. No APK was decompiled; no binary-specific Mint/HT patches exist yet. See [the Brave doc](docs/BRAVE.md), [the Reddit doc](docs/REDDIT-DELETED-COMMENTS.md) and [docs/HT-NEWS-APPS.md](docs/HT-NEWS-APPS.md). Re-cut fixes the Amazon AMOLED resource-encoder build failure (`Unknown attribute name` for `colorSurface` on mShop 32.19.0.300) and adds app-version data + a patch-application log for Mereframe crash reports (see [docs/MEREFRAME.md](docs/MEREFRAME.md)); also adds Meesho (`com.meesho.shopping`) scoped entries — Block analytics & tracking SDKs, Disable video autoplay (ExoPlayer), Prefer external browser over Custom Tabs — with [docs/MEESHO.md](docs/MEESHO.md). No binary-specific Meesho patches yet (needs the APK)
 - Built and verified with the Morphe Manager v2.3.0 patcher (`patches-list.json` regenerated, zip integrity checked)
 
@@ -64,7 +64,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 > if you need the full app set.
 
 <!-- PATCHES_START EXPANDED -->
-> **[v2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;172 patches total
+> **[v2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;174 patches total
 <details open>
 <summary>📦 Google Photos&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
 <br>
@@ -353,7 +353,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 </details>
 
 <details open>
-<summary>📦 Amazon Shopping&nbsp;&nbsp;•&nbsp;&nbsp;8 patches</summary>
+<summary>📦 Amazon Shopping&nbsp;&nbsp;•&nbsp;&nbsp;9 patches</summary>
 <br>
 
 **🎯 Supported versions:**
@@ -363,6 +363,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
 |----------|----------------|-----------|
+| [Amazon: Stop feed video autoplay](#amazon-stop-feed-video-autoplay) | Stops Amazon's home-feed native video units (live promotional videos,<br>review carousels, sponsored reels) from starting on their own, using<br>the same setPlayWhenReady(true) → false heuristic as the universal<br>'Disable video autoplay (ExoPlayer/Media3)' patch.<br><br>Covers native ExoPlayer/Media3 players only — NOT the in-app WebView<br>pages (use the default-on 'Disable video autoplay' patch for those),<br>and NOT WebView CSS-injected ad blocks (use 'Remove ads'). Heuristic:<br>reflection or obfuscated player setup is not covered. Can stop playback<br>entirely in apps whose only play path is a flipped literal call — turn<br>it off if videos never start. Unverified on device. |  |
 | [Dark mode](#dark-mode) | Force dark mode for Amazon Shopping. | • Dark mode |
 | [Disable search suggestions tracking](#disable-search-suggestions-tracking) | Prevents search keypress and focus events from being sent with suggestion requests. |  |
 | [Disable video autoplay](#disable-video-autoplay) | Prevents videos from autoplaying in Amazon's in-app WebView pages. |  |
@@ -375,7 +376,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 </details>
 
 <details open>
-<summary>📦 Amazon India&nbsp;&nbsp;•&nbsp;&nbsp;8 patches</summary>
+<summary>📦 Amazon India&nbsp;&nbsp;•&nbsp;&nbsp;9 patches</summary>
 <br>
 
 **🎯 Supported versions:**
@@ -385,6 +386,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
 |----------|----------------|-----------|
+| [Amazon: Stop feed video autoplay](#amazon-stop-feed-video-autoplay) | Stops Amazon's home-feed native video units (live promotional videos,<br>review carousels, sponsored reels) from starting on their own, using<br>the same setPlayWhenReady(true) → false heuristic as the universal<br>'Disable video autoplay (ExoPlayer/Media3)' patch.<br><br>Covers native ExoPlayer/Media3 players only — NOT the in-app WebView<br>pages (use the default-on 'Disable video autoplay' patch for those),<br>and NOT WebView CSS-injected ad blocks (use 'Remove ads'). Heuristic:<br>reflection or obfuscated player setup is not covered. Can stop playback<br>entirely in apps whose only play path is a flipped literal call — turn<br>it off if videos never start. Unverified on device. |  |
 | [Dark mode](#dark-mode) | Force dark mode for Amazon Shopping. | • Dark mode |
 | [Disable search suggestions tracking](#disable-search-suggestions-tracking) | Prevents search keypress and focus events from being sent with suggestion requests. |  |
 | [Disable video autoplay](#disable-video-autoplay) | Prevents videos from autoplaying in Amazon's in-app WebView pages. |  |
