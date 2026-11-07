@@ -1,0 +1,57 @@
+name: Publish v2.2.8
+
+on:
+  push:
+    branches:
+      - arena/f6fc2631-proteus-patches
+    paths:
+      - ".github/workflows/publish-v2.2.8.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: Publish v2.2.8
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Setup Java
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Test permission removal and Brave helpers
+        run: ./gradlew :patches:testPermissionRemoval :patches:testBravePrivacy --stacktrace
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Android patch bundle
+        run: ./gradlew buildAndroid --stacktrace
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify version and bundle
+        run: |
+          VERSION=$(sed -n 's/^version[[:space:]]*=[[:space:]]*//p' gradle.properties)
+          test "$VERSION" = "2.2.8"
+          python3 -m unittest discover -s .github/scripts -p 'test_*.py'
+          python3 .github/scripts/verify_android_bundle.py "patches/build/libs/patches-${VERSION}.mpp" "$VERSION"
+          python3 .github/scripts/verify_patch_source.py patches-bundle.json "$VERSION"
+
+      - name: Delete previous v2.2.8 release
+        run: gh release delete v2.2.8 --cleanup-tag --yes || echo "no existing v2.2.8 release — continuing"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create release v2.2.8
+        run: gh release create v2.2.8 "patches/build/libs/patches-2.2.8.mpp" --prerelease --target "$GITHUB_SHA" --title "v2.2.8 (pre-release)" --notes-file .github/release-notes-v2.2.8.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
