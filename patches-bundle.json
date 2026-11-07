@@ -1,7 +1,7 @@
 {
-  "created_at": "2026-11-07T11:49:48",
-  "description": "v2.2.8 (pre-release): adds Meesho (com.meesho.shopping, XAPK splits, targets 29.9/29.8/29.7/29.6/29.5) app-scoped entries — 'Meesho: Block analytics & tracking SDKs', 'Meesho: Disable video autoplay (ExoPlayer)', 'Meesho: Prefer external browser over Custom Tabs' (same heuristics, off by default, unverified on device) — plus docs/MEESHO.md. Amazon AMOLED resource pass restricted to android: framework attributes (fixes 'Unknown attribute name: colorSurface' build failure on mShop 32.19.0.300); Mereframe diagnostic crash log now records app versionName/versionCode; native-integrity bypass logs its planting. 2026-11-06 build included universal ExoPlayer autoplay heuristic, Mint/HT scoped entries, Indian-market tracker markers, HT analysis doc, v2.2.7 content (Brave, Reddit, Amazon AMOLED). No APK decompiled for Meesho — sponsored-suppression/AMOLED for Meesho pending the APK; Premium unlocks are server-side and impossible. Unverified on device.",
-  "download_url": "https://github.com/ineednotitle/Proteus-Patches/releases/download/v2.2.8/patches-2.2.8.mpp",
+  "created_at": "2026-11-07T16:06:32",
+  "description": "v2.2.9 (pre-release): Reddit save-flow stability hardening — 'Remove ads' Layer 3 (comment-banner ad loader) rewritten as a constant return-void entry kill (zero registers used, no branch, no label) replacing the previous move-result-into-v0 short circuit; Layer 5 (AdPostSection Compose-render no-op) retained ON by explicit decision (2026-11-07) with keep-decision docs; new off-by-default patch 'Reddit: Diagnostic crash log' injects an uncaught-exception hook at the verified Moshi AccountJsonAdapter constructor and writes Downloads/reddit-crash-*.txt with device/app version header (chains to the original handler); new docs/REDDIT-STABILITY.md. Layer 5 remains the open risk on the save path; no device verification yet. Latest full release remains v2.2.4; v2.2.8 unchanged.",
+  "download_url": "https://github.com/ineednotitle/Proteus-Patches/releases/download/v2.2.9/patches-2.2.9.mpp",
   "signature_download_url": "",
-  "version": "2.2.8"
+  "version": "2.2.9"
 }

@@ -3,7 +3,7 @@
 > *One bundle, patches everywhere. A curated [Morphe](https://github.com/MorpheApp/Morphe) patch suite for Android.*
 
 [![License: GPL-3.0-only](https://img.shields.io/badge/License-GPL--3.0--only-green.svg)](#license)
-[![Patches](https://img.shields.io/badge/patches-171-blue.svg)](#whats-inside)
+[![Patches](https://img.shields.io/badge/patches-172-blue.svg)](#whats-inside)
 [![Universal patches](https://img.shields.io/badge/universal-24-purple.svg)](#universal-patches)
 [![Apps](https://img.shields.io/badge/apps-28-orange.svg)](#supported-apps)
 
@@ -11,6 +11,7 @@
 ads, annoyances and risky defaults from popular Android apps — plus a set of
 **universal patches** that apply to any app.
 
+- **[v2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9)** — pre-release (not the latest): Reddit save-flow stability hardening. "Remove ads" Layer 3 (comment-banner ad loader kill) rewritten as a constant `return-void` entry — zero registers used, replacing the previous `move-result v0` short-circuit that clobbered the receiver register; Layer 5 (AdPostSection Compose-render no-op) kept ON by explicit decision, see [docs/REDDIT-STABILITY.md](docs/REDDIT-STABILITY.md); new off-by-default "Reddit: Diagnostic crash log" patch writes `Downloads/reddit-crash-*.txt` on any uncaught exception (app version + device header) — install triggers on the first account sync after launch. Built blind (no crash stack yet); v2.2.8 unchanged; Latest stays v2.2.4
 - **[v2.2.8](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.8)** — pre-release: v2.2.7 contents (six experimental, off-by-default Brave patches adapted from kveld9/kveld-morphe-patches, Reddit AutoMod/show-deleted-comments fixes, Amazon AMOLED dark, listing performance fix) plus: a broader universal "Block analytics & tracking SDKs" marker list (WebEngage, CleverTap, Flurry, Branch, Kochava); a new universal "Disable video autoplay (ExoPlayer/Media3)" heuristic; and Mint/Hindustan Times app-scoped entries for both of those plus "Prefer external browser over Custom Tabs" (same heuristics, off by default, unverified on device), and a Mint & Hindustan Times analysis. No APK was decompiled; no binary-specific Mint/HT patches exist yet. See [the Brave doc](docs/BRAVE.md), [the Reddit doc](docs/REDDIT-DELETED-COMMENTS.md) and [docs/HT-NEWS-APPS.md](docs/HT-NEWS-APPS.md). Re-cut fixes the Amazon AMOLED resource-encoder build failure (`Unknown attribute name` for `colorSurface` on mShop 32.19.0.300) and adds app-version data + a patch-application log for Mereframe crash reports (see [docs/MEREFRAME.md](docs/MEREFRAME.md)); also adds Meesho (`com.meesho.shopping`) scoped entries — Block analytics & tracking SDKs, Disable video autoplay (ExoPlayer), Prefer external browser over Custom Tabs — with [docs/MEESHO.md](docs/MEESHO.md). No binary-specific Meesho patches yet (needs the APK)
 - Built and verified with the Morphe Manager v2.3.0 patcher (`patches-list.json` regenerated, zip integrity checked)
 
@@ -63,7 +64,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 > if you need the full app set.
 
 <!-- PATCHES_START EXPANDED -->
-> **[v2.2.8](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.8)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;171 patches total
+> **[v2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;172 patches total
 <details open>
 <summary>📦 Google Photos&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
 <br>
@@ -237,7 +238,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 </details>
 
 <details open>
-<summary>📦 Reddit&nbsp;&nbsp;•&nbsp;&nbsp;8 patches</summary>
+<summary>📦 Reddit&nbsp;&nbsp;•&nbsp;&nbsp;9 patches</summary>
 <br>
 
 **🎯 Supported versions:**
@@ -251,6 +252,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 | [Content filters](#content-filters) | Adds patch-time keyword, community, author and flair filters for feed posts (optionally comments), and locally bypasses Reddit's NSFW/spoiler/quarantine gates and over-18 account flags. Server-side filtering still applies. Off by default. | • Keywords to hide<br>• Communities to hide<br>• Authors to hide<br>• Flairs to hide<br>• Match mode<br>• Bypass built-in content gates<br>• Also filter comments |
 | [Disable Click Tracking](#disable-click-tracking) | Forces the outbound click-tracking account preference off at the Account deserialization choke point (local; server-side click analytics may still be recorded). Enabled by default. |  |
 | [Employee Debug Flags](#employee-debug-flags) | Spoofs is_employee locally at the Account JSON adapter, exposing Reddit's internal employee/debug UI menus (mostly non-functional without the employee backend, and a few may misbehave — enable for exploration only). Off by default. |  |
+| [Reddit: Diagnostic crash log](#reddit-diagnostic-crash-log) | DIAGNOSTIC ONLY - writes the full stack trace to Downloads/reddit-crash-*.txt when the app crashes, for remote diagnosis. Off by default; enable when asked to produce a crash log. Installs on the first account sync after launch; crashes before that are not captured. Chain-forwards to the original crash handler. |  |
 | [Remove ads](#remove-ads) | Hides promoted posts in feeds and banner ads in comment threads. |  |
 | [Show deleted comments](#show-deleted-comments) | Shows the original text of comments deleted or removed on Reddit, restored at render time from the free Arctic Shift archive (no API key; falls back to PullPush). Only the ids of deleted comments in the threads you open are sent, and restored text is prefixed with [archived]. Coverage depends on the archive; needs network. Off by default. |  |
 | [Unlock Account Entitlements](#unlock-account-entitlements) | Locally flips account-gating flags at the Account JSON adapter: can_create_subreddit, can_edit_name, password_set (kills the SSO 'set password' nag) and has_verified_email. Off by default; server entitlements still rule API actions. |  |

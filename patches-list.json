@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "2.2.8",
+  "version": "2.2.9",
   "patches": [
     {
       "name": "AMOLED dark theme",
@@ -5920,6 +5920,69 @@
               },
               "isExperimental": false,
               "minSdk": 21,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Reddit: Diagnostic crash log",
+      "description": "DIAGNOSTIC ONLY - writes the full stack trace to Downloads/reddit-crash-*.txt when the app crashes, for remote diagnosis. Off by default; enable when asked to produce a crash log. Installs on the first account sync after launch; crashes before that are not captured. Chain-forwards to the original crash handler.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.reddit.frontpage",
+          "name": "Reddit",
+          "description": null,
+          "apkFileType": "APKM",
+          "appIconColor": "#FF4500",
+          "signatures": [
+            "970b91143813b4c9d5f3634f672c9fcaa5621b4efaaedafd6c235cbbb869736f"
+          ],
+          "targets": [
+            {
+              "version": "2026.42.0",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 29,
+              "description": null
+            },
+            {
+              "version": "2026.41.0",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": 29,
+              "description": null
+            },
+            {
+              "version": "2026.40.0",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": 29,
+              "description": null
+            },
+            {
+              "version": "2026.39.0",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": 29,
+              "description": null
+            },
+            {
+              "version": "2026.24.0",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 29,
+              "description": null
+            },
+            {
+              "version": "2026.10.0",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 28,
               "description": null
             }
           ]
