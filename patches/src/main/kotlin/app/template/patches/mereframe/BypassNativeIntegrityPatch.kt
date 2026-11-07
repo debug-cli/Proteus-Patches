@@ -5,6 +5,7 @@ import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.patch.bytecodePatch
 import app.template.patches.shared.Constants.MEREFRAME_COMPATIBILITY
 import app.template.patches.shared.clearBody
+import app.template.patches.shared.logUniversal
 
 /**
  * The app's native pipeline (libunnamed_raw.so) self-verifies the APK and
@@ -88,5 +89,8 @@ val bypassNativeIntegrityPatch = bytecodePatch(
                 """,
             )
         }
+        logUniversal("Bypass native integrity: session-wrapper catch planted in " +
+            "Lapp/unnamed/rawrecording/b/B1e6ad8077f6880e309d8da4b;->d(ZZZZFZ)[J — if the crash " +
+            "reappears at this exact frame, this patch is not present in the crashing build.")
     }
 }
