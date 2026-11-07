@@ -3,7 +3,7 @@
 > *One bundle, patches everywhere. A curated [Morphe](https://github.com/MorpheApp/Morphe) patch suite for Android.*
 
 [![License: GPL-3.0-only](https://img.shields.io/badge/License-GPL--3.0--only-green.svg)](#license)
-[![Patches](https://img.shields.io/badge/patches-168-blue.svg)](#whats-inside)
+[![Patches](https://img.shields.io/badge/patches-171-blue.svg)](#whats-inside)
 [![Universal patches](https://img.shields.io/badge/universal-24-purple.svg)](#universal-patches)
 [![Apps](https://img.shields.io/badge/apps-28-orange.svg)](#supported-apps)
 
@@ -11,7 +11,7 @@
 ads, annoyances and risky defaults from popular Android apps — plus a set of
 **universal patches** that apply to any app.
 
-- **[v2.2.8](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.8)** — pre-release: v2.2.7 contents (six experimental, off-by-default Brave patches adapted from kveld9/kveld-morphe-patches, Reddit AutoMod/show-deleted-comments fixes, Amazon AMOLED dark, listing performance fix) plus: a broader universal "Block analytics & tracking SDKs" marker list (WebEngage, CleverTap, Flurry, Branch, Kochava); a new universal "Disable video autoplay (ExoPlayer/Media3)" heuristic; and Mint/Hindustan Times app-scoped entries for both of those plus "Prefer external browser over Custom Tabs" (same heuristics, off by default, unverified on device), and a Mint & Hindustan Times analysis. No APK was decompiled; no binary-specific Mint/HT patches exist yet. See [the Brave doc](docs/BRAVE.md), [the Reddit doc](docs/REDDIT-DELETED-COMMENTS.md) and [docs/HT-NEWS-APPS.md](docs/HT-NEWS-APPS.md). Re-cut fixes the Amazon AMOLED resource-encoder build failure (`Unknown attribute name` for `colorSurface` on mShop 32.19.0.300) and adds app-version data + a patch-application log for Mereframe crash reports (see [docs/MEREFRAME.md](docs/MEREFRAME.md))
+- **[v2.2.8](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.8)** — pre-release: v2.2.7 contents (six experimental, off-by-default Brave patches adapted from kveld9/kveld-morphe-patches, Reddit AutoMod/show-deleted-comments fixes, Amazon AMOLED dark, listing performance fix) plus: a broader universal "Block analytics & tracking SDKs" marker list (WebEngage, CleverTap, Flurry, Branch, Kochava); a new universal "Disable video autoplay (ExoPlayer/Media3)" heuristic; and Mint/Hindustan Times app-scoped entries for both of those plus "Prefer external browser over Custom Tabs" (same heuristics, off by default, unverified on device), and a Mint & Hindustan Times analysis. No APK was decompiled; no binary-specific Mint/HT patches exist yet. See [the Brave doc](docs/BRAVE.md), [the Reddit doc](docs/REDDIT-DELETED-COMMENTS.md) and [docs/HT-NEWS-APPS.md](docs/HT-NEWS-APPS.md). Re-cut fixes the Amazon AMOLED resource-encoder build failure (`Unknown attribute name` for `colorSurface` on mShop 32.19.0.300) and adds app-version data + a patch-application log for Mereframe crash reports (see [docs/MEREFRAME.md](docs/MEREFRAME.md)); also adds Meesho (`com.meesho.shopping`) scoped entries — Block analytics & tracking SDKs, Disable video autoplay (ExoPlayer), Prefer external browser over Custom Tabs — with [docs/MEESHO.md](docs/MEESHO.md). No binary-specific Meesho patches yet (needs the APK)
 - Built and verified with the Morphe Manager v2.3.0 patcher (`patches-list.json` regenerated, zip integrity checked)
 
 [![Add to Morphe](https://img.shields.io/badge/Add_to-Morphe-1f6feb?style=for-the-badge)](https://morphe.software/add-source?github=ineednotitle/Proteus-Patches)
@@ -63,7 +63,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 > if you need the full app set.
 
 <!-- PATCHES_START EXPANDED -->
-> **[v2.2.8](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.8)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;168 patches total
+> **[v2.2.8](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.8)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;171 patches total
 <details open>
 <summary>📦 Google Photos&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
 <br>
@@ -624,6 +624,23 @@ For configuration advice, limitations, and permission-patch examples, see the
 | [Hindustan Times: Block analytics & tracking SDKs](#hindustan-times-block-analytics-tracking-sdks) | Blocks Hindustan Times' analytics & tracking SDKs (Firebase Analytics,<br>AppsFlyer, Adjust, WebEngage, CleverTap and similar) using the same universal<br>heuristic as 'Block analytics & tracking SDKs'.<br><br>Applies to com.ht.news only. Heuristic; obfuscated or reflection-based<br>reporting is not covered. Unverified on device. |  |
 | [Hindustan Times: Disable video autoplay (ExoPlayer)](#hindustan-times-disable-video-autoplay-exoplayer) | Stops video autoplay in the Hindustan Times feed/article bodies<br>(ExoPlayer/Media3) using the same heuristic as 'Disable video autoplay<br>(ExoPlayer/Media3)'.<br><br>Applies to com.ht.news only. Heuristic; see the universal entry for<br>limitations. Unverified on device. |  |
 | [Hindustan Times: Prefer external browser over Custom Tabs](#hindustan-times-prefer-external-browser-over-custom-tabs) | Opens links in the default external browser instead of an in-app Custom<br>Tab, using the same rewrite as the universal 'Prefer external browser<br>over Custom Tabs' patch.<br><br>Applies to com.ht.news only. Some article WebViews are not affected —<br>this covers Custom Tabs / CustomTabsIntent call sites only.<br>Unverified on device. |  |
+
+</details>
+
+<details open>
+<summary>📦 Meesho&nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
+<br>
+
+**🎯 Supported versions:**
+
+| 29.9 | 29.8 | 29.7 | 29.6 | 29.5 |
+| :---: | :---: | :---: | :---: | :---: |
+
+| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
+|----------|----------------|-----------|
+| [Meesho: Block analytics & tracking SDKs](#meesho-block-analytics-tracking-sdks) | Blocks Meesho's analytics & tracking SDKs (Firebase Analytics, AppsFlyer,<br>Adjust, Facebook AppEvents, WebEngage, CleverTap and similar) using the<br>same universal heuristic as 'Block analytics & tracking SDKs'.<br><br>Applies to com.meesho.shopping only. Heuristic; obfuscated or<br>reflection-based reporting is not covered. Unverified on device. |  |
+| [Meesho: Disable video autoplay (ExoPlayer)](#meesho-disable-video-autoplay-exoplayer) | Stops video autoplay in the Meesho feed and product videos (ExoPlayer/Media3)<br>using the same heuristic as 'Disable video autoplay (ExoPlayer/Media3)'.<br><br>Applies to com.meesho.shopping only. Heuristic; see the universal entry<br>for limitations. Unverified on device. |  |
+| [Meesho: Prefer external browser over Custom Tabs](#meesho-prefer-external-browser-over-custom-tabs) | Opens links in the default external browser instead of an in-app Custom<br>Tab, using the same rewrite as the universal 'Prefer external browser<br>over Custom Tabs' patch.<br><br>Applies to com.meesho.shopping only. Covers Custom Tabs /<br>CustomTabsIntent call sites only. Unverified on device. |  |
 
 </details>
 
