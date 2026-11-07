@@ -5713,6 +5713,219 @@
         }
       ],
       "options": []
+    },
+    {
+      "name": "Meesho: Block analytics & tracking SDKs",
+      "description": "Blocks Meesho's analytics & tracking SDKs (Firebase Analytics, AppsFlyer,\nAdjust, Facebook AppEvents, WebEngage, CleverTap and similar) using the\nsame universal heuristic as 'Block analytics & tracking SDKs'.\n\nApplies to com.meesho.shopping only. Heuristic; obfuscated or\nreflection-based reporting is not covered. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "Block analytics & tracking SDKs"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.meesho.shopping",
+          "name": "Meesho",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#F43397",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "29.9",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 21,
+              "description": null
+            },
+            {
+              "version": "29.8",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 21,
+              "description": null
+            },
+            {
+              "version": "29.7",
+              "versionCodes": {
+                "ARM64_V8A": 872,
+                "ARMEABI_V7A": 872,
+                "X86_64": 872,
+                "X86": 872
+              },
+              "isExperimental": false,
+              "minSdk": 21,
+              "description": null
+            },
+            {
+              "version": "29.6",
+              "versionCodes": {
+                "ARM64_V8A": 870,
+                "ARMEABI_V7A": 870,
+                "X86_64": 870,
+                "X86": 870
+              },
+              "isExperimental": false,
+              "minSdk": 21,
+              "description": null
+            },
+            {
+              "version": "29.5",
+              "versionCodes": {
+                "ARM64_V8A": 868,
+                "ARMEABI_V7A": 868,
+                "X86_64": 868,
+                "X86": 868
+              },
+              "isExperimental": false,
+              "minSdk": 21,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Meesho: Disable video autoplay (ExoPlayer)",
+      "description": "Stops video autoplay in the Meesho feed and product videos (ExoPlayer/Media3)\nusing the same heuristic as 'Disable video autoplay (ExoPlayer/Media3)'.\n\nApplies to com.meesho.shopping only. Heuristic; see the universal entry\nfor limitations. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "Disable video autoplay (ExoPlayer/Media3)"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.meesho.shopping",
+          "name": "Meesho",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#F43397",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "29.9",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 21,
+              "description": null
+            },
+            {
+              "version": "29.8",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 21,
+              "description": null
+            },
+            {
+              "version": "29.7",
+              "versionCodes": {
+                "ARM64_V8A": 872,
+                "ARMEABI_V7A": 872,
+                "X86_64": 872,
+                "X86": 872
+              },
+              "isExperimental": false,
+              "minSdk": 21,
+              "description": null
+            },
+            {
+              "version": "29.6",
+              "versionCodes": {
+                "ARM64_V8A": 870,
+                "ARMEABI_V7A": 870,
+                "X86_64": 870,
+                "X86": 870
+              },
+              "isExperimental": false,
+              "minSdk": 21,
+              "description": null
+            },
+            {
+              "version": "29.5",
+              "versionCodes": {
+                "ARM64_V8A": 868,
+                "ARMEABI_V7A": 868,
+                "X86_64": 868,
+                "X86": 868
+              },
+              "isExperimental": false,
+              "minSdk": 21,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Meesho: Prefer external browser over Custom Tabs",
+      "description": "Opens links in the default external browser instead of an in-app Custom\nTab, using the same rewrite as the universal 'Prefer external browser\nover Custom Tabs' patch.\n\nApplies to com.meesho.shopping only. Covers Custom Tabs /\nCustomTabsIntent call sites only. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "Prefer external browser over Custom Tabs"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.meesho.shopping",
+          "name": "Meesho",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#F43397",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "29.9",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 21,
+              "description": null
+            },
+            {
+              "version": "29.8",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 21,
+              "description": null
+            },
+            {
+              "version": "29.7",
+              "versionCodes": {
+                "ARM64_V8A": 872,
+                "ARMEABI_V7A": 872,
+                "X86_64": 872,
+                "X86": 872
+              },
+              "isExperimental": false,
+              "minSdk": 21,
+              "description": null
+            },
+            {
+              "version": "29.6",
+              "versionCodes": {
+                "ARM64_V8A": 870,
+                "ARMEABI_V7A": 870,
+                "X86_64": 870,
+                "X86": 870
+              },
+              "isExperimental": false,
+              "minSdk": 21,
+              "description": null
+            },
+            {
+              "version": "29.5",
+              "versionCodes": {
+                "ARM64_V8A": 868,
+                "ARMEABI_V7A": 868,
+                "X86_64": 868,
+                "X86": 868
+              },
+              "isExperimental": false,
+              "minSdk": 21,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
     }
   ]
 }
