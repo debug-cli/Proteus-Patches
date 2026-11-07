@@ -15,6 +15,19 @@ current status page and the triage runbook for field crashes.
 | Unlock Pro features | off | Drops the entitlement ownership check (nv.e). **WARNING:** on realme/Android 16 enabling it crashed capture on the one device tested — keep off unless deliberately testing |
 | Fix Firebase after re-signing (universal) | off | Needed if Firebase services break after re-signing |
 
+## 2026-11-07 (later same day) — issue: v2.2.9 re-cut #2 fails at PATCH time (FIXED in v2.2.9 re-cut #3)
+
+On-device Manager 2.5.0 / Patcher 2.3.0 report:
+`app.morphe.patcher.patch.PatchException: Collection is empty`, caused by
+`NoSuchElementException` at `InlineSmaliCompiler.compile` via
+`addInstructions` in `BypassNativeIntegrityPatch.kt`. Root cause: the injected
+`invoke-static {p0, p1, p2, p3, p4, p5}` exceeds the five-register limit of
+the regular invoke-static opcode form; the inline compiler's dummy method
+failed to build, `methods` came back empty, `.first()` threw. Fix: the call
+now uses `invoke-static/range {p0 .. p5}` (six consecutive registers), the
+same escape hatch the original wrapper used. No other patch in the bundle
+injects more than five source registers.
+
 ## 2026-11-07 — issue #5: the bypass never caught anything (FIXED in v2.2.9 re-cut #2)
 
 Field report ("debug-cli"): patch reports success but the

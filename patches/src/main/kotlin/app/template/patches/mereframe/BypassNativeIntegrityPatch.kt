@@ -38,6 +38,13 @@ import app.template.patches.shared.logUniversal
  * NOTE: the wrapper names are Mereframe-0.8.4-shape additions only — if the
  * bridge class/method are renamed in a future build, the patch degrades to
  * the synthetic verdict (no integrity crash) instead of failing hard.
+ *
+ * REGISTER-FORM REQUIREMENT: the ZZZZFZ call has six parameters. `invoke-static`
+ * without `/range` is limited to five registers (instruct35c) — the regular
+ * form makes InlineSmaliCompiler's dummy method unbuildable, surfacing on-device
+ * as PatchException "Collection is empty" at addInstructions (observed
+ * 2026-11-07). Any injection with more than five source registers MUST use
+ * the /range form.
  */
 @Suppress("unused")
 val bypassNativeIntegrityPatch = bytecodePatch(
@@ -64,7 +71,7 @@ val bypassNativeIntegrityPatch = bytecodePatch(
             addInstructions(
                 0,
                 """
-                invoke-static {p0, p1, p2, p3, p4, p5}, Lapp/template/extension/extension/MereframeIntegrityHook;->openSessionWithFallback(ZZZZFZ)[J
+                invoke-static/range {p0 .. p5}, Lapp/template/extension/extension/MereframeIntegrityHook;->openSessionWithFallback(ZZZZFZ)[J
                 move-result-object p0
                 return-object p0
                 """,
