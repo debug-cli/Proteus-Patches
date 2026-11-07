@@ -80,10 +80,9 @@ class VerifyAndroidBundleTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Extension classes missing"):
             self.verify()
 
-    def test_extension_payload_absent_rejected(self):
+    def test_extension_payload_absent_is_advisory_not_fatal(self):
         self.make_bundle(with_extension=False)
-        with self.assertRaisesRegex(ValueError, "Extension classes missing"):
-            self.verify()
+        self.verify()  # advisory only — must not raise
 
     def test_single_missing_extension_class_rejected(self):
         missing_one = tuple(
