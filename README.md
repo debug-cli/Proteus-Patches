@@ -3,7 +3,7 @@
 > *One bundle, patches everywhere. A curated [Morphe](https://github.com/MorpheApp/Morphe) patch suite for Android.*
 
 [![License: GPL-3.0-only](https://img.shields.io/badge/License-GPL--3.0--only-green.svg)](#license)
-[![Patches](https://img.shields.io/badge/patches-179-blue.svg)](#whats-inside)
+[![Patches](https://img.shields.io/badge/patches-192-blue.svg)](#whats-inside)
 [![Universal patches](https://img.shields.io/badge/universal-24-purple.svg)](#universal-patches)
 [![Apps](https://img.shields.io/badge/apps-29-orange.svg)](#supported-apps)
 
@@ -64,7 +64,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 > if you need the full app set.
 
 <!-- PATCHES_START EXPANDED -->
-> **[v2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/3a81df7b-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;179 patches total
+> **[v2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/3a81df7b-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;192 patches total
 <details open>
 <summary>📦 Google Photos&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
 <br>
@@ -523,7 +523,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 </details>
 
 <details open>
-<summary>📦 Proton Pass&nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
+<summary>📦 Proton Pass&nbsp;&nbsp;•&nbsp;&nbsp;10 patches</summary>
 <br>
 
 **🎯 Supported versions:**
@@ -535,6 +535,13 @@ For configuration advice, limitations, and permission-patch examples, see the
 |----------|----------------|-----------|
 | [Proton Pass: Allow screenshots & screen recording](#proton-pass-allow-screenshots-screen-recording) | Attempts to remove FLAG_SECURE / secure SurfaceView settings in Proton<br>Pass so screenshots and screen recording can work in the vault and<br>profile screens, using the same universal heuristic as 'Allow screenshots<br>& screen recording'.<br><br>Applies to proton.android.pass only. Some screens (payment, biometric,<br>banking) may still block capture independently. Unverified on device. |  |
 | [Proton Pass: Block telemetry & crash reporting](#proton-pass-block-telemetry-crash-reporting) | Blocks Proton Pass telemetry and crash-reporting call sites using the<br>same universal heuristics as 'Block analytics & tracking SDKs' and<br>'Block ads & ad SDKs'.<br><br>Applies to proton.android.pass only. Heuristic; obfuscated or<br>reflection-based reporting is not covered. Unverified on device. |  |
+| [Proton Pass: Dark web monitoring local-only (cosmetic)](#proton-pass-dark-web-monitoring-local-only-cosmetic) | Disables the server call for dark-web monitoring and shows a<br>locally-cached "no breaches found" state instead of a paywall.<br><br>Requires app-specific bytecode analysis of the dark-web monitoring call<br>sites — no Proton Pass APK was decompiled in this build environment.<br>Unverified on device. Cosmetic only; does not perform real monitoring. |  |
+| [Proton Pass: Disable auto-lock / extend timeout](#proton-pass-disable-auto-lock-extend-timeout) | Forces the vault auto-lock timer to never trigger, keeping the vault<br>unlocked while the app is foregrounded.<br><br>Requires app-specific bytecode analysis of the auto-lock timer fields —<br>no Proton Pass APK was decompiled in this build environment. Unverified<br>on device. Reduces at-rest protection; enable at your own discretion. |  |
+| [Proton Pass: Disable clipboard auto-clear](#proton-pass-disable-clipboard-auto-clear) | Prevents Proton Pass from clearing copied credentials from the<br>clipboard after the default timeout.<br><br>Requires app-specific bytecode analysis of the clipboard-manager call<br>sites — no Proton Pass APK was decompiled in this build environment.<br>Unverified on device. Clipboard lingering is a local info-leak risk;<br>enable at your own discretion. |  |
+| [Proton Pass: Force biometric always-on](#proton-pass-force-biometric-always-on) | Removes the "require PIN after restart" gate so biometric unlock works<br>immediately without a prior PIN entry.<br><br>Requires app-specific bytecode analysis of the biometric/PIN gate — no<br>Proton Pass APK was decompiled in this build environment. Unverified on<br>device. Weakens restart protection; enable at your own discretion. |  |
+| [Proton Pass: Remove upgrade nag UI](#proton-pass-remove-upgrade-nag-ui) | Hides Proton Pass upgrade-to-Plus banners, paywall buttons and nag<br>interstitials in the vault list, profile and security center screens.<br><br>Requires app-specific bytecode analysis of the nag UI call sites — no<br>Proton Pass APK was decompiled in this build environment. Unverified on<br>device. |  |
+| [Proton Pass: Unlock multiple vaults](#proton-pass-unlock-multiple-vaults) | Removes the single-vault limit so free-tier users can create additional<br>vaults.<br><br>Requires app-specific bytecode analysis of the vault-limit fields — no<br>Proton Pass APK was decompiled in this build environment. Unverified on<br>device. The server may reject sync of extra vaults. |  |
+| [Proton Pass: Unlock password-generator options](#proton-pass-unlock-password-generator-options) | Removes the Plus-gated character-set and password-length options in the<br>password generator.<br><br>Requires app-specific bytecode analysis of the generator-options call<br>sites — no Proton Pass APK was decompiled in this build environment.<br>Unverified on device. |  |
 | [Unlock Unlimited Plan](#unlock-unlimited-plan) | Forces Proton Pass Plus plan with all limits removed and paid features unlocked. |  |
 
 </details>
@@ -664,6 +671,26 @@ For configuration advice, limitations, and permission-patch examples, see the
 | [Table Notes: Block ads & ad SDKs](#table-notes-block-ads-ad-sdks) | Blocks Table Notes' ads & ad SDKs (AdMob, Unity Ads, Facebook Audience<br>Network, AppLovin, IronSource and similar) by removing their ad load/show<br>call sites, using the same universal heuristic as 'Block ads & ad SDKs'.<br><br>Applies to vivekagarwal.playwithdb only. Heuristic; obfuscated or<br>reflection-based ad loading is not covered. Unverified on device. |  |
 | [Table Notes: Block analytics & tracking SDKs](#table-notes-block-analytics-tracking-sdks) | Blocks Table Notes' analytics & tracking SDKs (Firebase Analytics,<br>AppsFlyer, Adjust, Facebook AppEvents and similar) using the same<br>universal heuristic as 'Block analytics & tracking SDKs'.<br><br>Applies to vivekagarwal.playwithdb only. Heuristic; obfuscated or<br>reflection-based reporting is not covered. Unverified on device. |  |
 | [Table Notes: Prefer external browser over Custom Tabs](#table-notes-prefer-external-browser-over-custom-tabs) | Opens links in the default external browser instead of an in-app Custom<br>Tab, using the same rewrite as the universal 'Prefer external browser<br>over Custom Tabs' patch.<br><br>Applies to vivekagarwal.playwithdb only. Covers Custom Tabs /<br>CustomTabsIntent call sites only. Unverified on device. |  |
+
+</details>
+
+<details open>
+<summary>📦 WhatsApp&nbsp;&nbsp;•&nbsp;&nbsp;6 patches</summary>
+<br>
+
+**🎯 Supported versions:**
+
+| 2.26.43.76 | 2.26.43.74 | 2.26.41.77 |
+| :---: | :---: | :---: |
+
+| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
+|----------|----------------|-----------|
+| [WhatsApp: Allow screenshots & screen recording](#whatsapp-allow-screenshots-screen-recording) | Attempts to remove FLAG_SECURE / secure SurfaceView settings in<br>WhatsApp so screenshots and screen recording can work in chat and<br>status screens, using the same universal heuristic as 'Allow<br>screenshots & screen recording'.<br><br>Applies to com.whatsapp only. Some screens (chat lock, payment, media<br>viewer) may still block capture independently. Unverified on device. |  |
+| [WhatsApp: Block ads & ad SDKs](#whatsapp-block-ads-ad-sdks) | Blocks WhatsApp ad SDK call sites (AdMob, Unity Ads, Audience Network<br>and similar) using the same universal heuristic as 'Block ads & ad SDKs'.<br>Relevant to business messaging and click-to-chat surfaces.<br><br>Applies to com.whatsapp only. Heuristic; obfuscated or reflection-based<br>ad loading is not covered. Unverified on device. |  |
+| [WhatsApp: Block analytics & tracking SDKs](#whatsapp-block-analytics-tracking-sdks) | Blocks WhatsApp's analytics & tracking SDKs (Firebase Analytics,<br>Meta/Graph API event reporting, Adjust, AppEvents and similar) using<br>the same universal heuristic as 'Block analytics & tracking SDKs'.<br><br>Applies to com.whatsapp only. Heuristic; obfuscated or<br>reflection-based reporting is not covered. Unverified on device. |  |
+| [WhatsApp: Disable video autoplay (Status)](#whatsapp-disable-video-autoplay-status) | Stops video autoplay in WhatsApp Status and media viewers (ExoPlayer/<br>Media3) using the same heuristic as 'Disable video autoplay<br>(ExoPlayer/Media3)'.<br><br>Applies to com.whatsapp only. Heuristic; see the universal entry for<br>limitations. Unverified on device. |  |
+| [WhatsApp: Prefer external browser over Custom Tabs](#whatsapp-prefer-external-browser-over-custom-tabs) | Opens links in the default external browser instead of an in-app Custom<br>Tab, using the same rewrite as the universal 'Prefer external browser<br>over Custom Tabs' patch.<br><br>Applies to com.whatsapp only. Covers Custom Tabs /<br>CustomTabsIntent call sites only. Unverified on device. |  |
+| [WhatsApp: Remove dangerous permissions](#whatsapp-remove-dangerous-permissions) | Removes dangerous permission declarations from WhatsApp's manifest<br>using the same universal heuristic as 'Remove dangerous permissions'.<br><br>Applies to com.whatsapp only. Review the keep list before enabling —<br>removing Camera, Microphone, Location or Storage declarations may<br>disable features that depend on them. Unverified on device. |  |
 
 </details>
 

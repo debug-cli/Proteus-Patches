@@ -1908,6 +1908,19 @@ val WORD_COMPATIBILITY = Compatibility(
         targets = listOf(AppTarget(version = "16.0.20228.20090", versionCode = 2006247667))
     )
 
+val WHATSAPP_COMPATIBILITY = Compatibility(
+        name = "WhatsApp",
+        packageName = "com.whatsapp",
+        appIconColor = 0x075E54,
+        apkFileType = ApkFileType.XAPK,
+        targets = listOf(
+            // store builds observed 2026-11-08 (APKPure/APKFab) — XAPK split bundles
+            AppTarget(version = "2.26.43.76", versionCode = 264307627),
+            AppTarget(version = "2.26.43.74"),
+            AppTarget(version = "2.26.41.77", versionCode = 264107700),
+        )
+    )
+
 val YATRI_COMPATIBILITY = Compatibility(
         name = "Yatri",
         packageName = "com.yatrirailways.yatri",

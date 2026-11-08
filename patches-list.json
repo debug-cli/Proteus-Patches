@@ -6249,6 +6249,440 @@
         }
       ],
       "options": []
+    },
+    {
+      "name": "WhatsApp: Block analytics & tracking SDKs",
+      "description": "Blocks WhatsApp's analytics & tracking SDKs (Firebase Analytics,\nMeta/Graph API event reporting, Adjust, AppEvents and similar) using\nthe same universal heuristic as 'Block analytics & tracking SDKs'.\n\nApplies to com.whatsapp only. Heuristic; obfuscated or\nreflection-based reporting is not covered. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "Block analytics & tracking SDKs"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Block ads & ad SDKs",
+      "description": "Blocks WhatsApp ad SDK call sites (AdMob, Unity Ads, Audience Network\nand similar) using the same universal heuristic as 'Block ads & ad SDKs'.\nRelevant to business messaging and click-to-chat surfaces.\n\nApplies to com.whatsapp only. Heuristic; obfuscated or reflection-based\nad loading is not covered. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "Block ads & ad SDKs"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Prefer external browser over Custom Tabs",
+      "description": "Opens links in the default external browser instead of an in-app Custom\nTab, using the same rewrite as the universal 'Prefer external browser\nover Custom Tabs' patch.\n\nApplies to com.whatsapp only. Covers Custom Tabs /\nCustomTabsIntent call sites only. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "Prefer external browser over Custom Tabs"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Allow screenshots & screen recording",
+      "description": "Attempts to remove FLAG_SECURE / secure SurfaceView settings in\nWhatsApp so screenshots and screen recording can work in chat and\nstatus screens, using the same universal heuristic as 'Allow\nscreenshots & screen recording'.\n\nApplies to com.whatsapp only. Some screens (chat lock, payment, media\nviewer) may still block capture independently. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "Allow screenshots & screen recording"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Remove dangerous permissions",
+      "description": "Removes dangerous permission declarations from WhatsApp's manifest\nusing the same universal heuristic as 'Remove dangerous permissions'.\n\nApplies to com.whatsapp only. Review the keep list before enabling —\nremoving Camera, Microphone, Location or Storage declarations may\ndisable features that depend on them. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "Remove dangerous permissions"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Disable video autoplay (Status)",
+      "description": "Stops video autoplay in WhatsApp Status and media viewers (ExoPlayer/\nMedia3) using the same heuristic as 'Disable video autoplay\n(ExoPlayer/Media3)'.\n\nApplies to com.whatsapp only. Heuristic; see the universal entry for\nlimitations. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "Disable video autoplay (ExoPlayer/Media3)"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Proton Pass: Remove upgrade nag UI",
+      "description": "Hides Proton Pass upgrade-to-Plus banners, paywall buttons and nag\ninterstitials in the vault list, profile and security center screens.\n\nRequires app-specific bytecode analysis of the nag UI call sites — no\nProton Pass APK was decompiled in this build environment. Unverified on\ndevice.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "proton.android.pass",
+          "name": "Proton Pass",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#6D4AFF",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.41.3",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Proton Pass: Disable auto-lock / extend timeout",
+      "description": "Forces the vault auto-lock timer to never trigger, keeping the vault\nunlocked while the app is foregrounded.\n\nRequires app-specific bytecode analysis of the auto-lock timer fields —\nno Proton Pass APK was decompiled in this build environment. Unverified\non device. Reduces at-rest protection; enable at your own discretion.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "proton.android.pass",
+          "name": "Proton Pass",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#6D4AFF",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.41.3",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Proton Pass: Disable clipboard auto-clear",
+      "description": "Prevents Proton Pass from clearing copied credentials from the\nclipboard after the default timeout.\n\nRequires app-specific bytecode analysis of the clipboard-manager call\nsites — no Proton Pass APK was decompiled in this build environment.\nUnverified on device. Clipboard lingering is a local info-leak risk;\nenable at your own discretion.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "proton.android.pass",
+          "name": "Proton Pass",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#6D4AFF",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.41.3",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Proton Pass: Unlock multiple vaults",
+      "description": "Removes the single-vault limit so free-tier users can create additional\nvaults.\n\nRequires app-specific bytecode analysis of the vault-limit fields — no\nProton Pass APK was decompiled in this build environment. Unverified on\ndevice. The server may reject sync of extra vaults.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "proton.android.pass",
+          "name": "Proton Pass",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#6D4AFF",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.41.3",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Proton Pass: Force biometric always-on",
+      "description": "Removes the \"require PIN after restart\" gate so biometric unlock works\nimmediately without a prior PIN entry.\n\nRequires app-specific bytecode analysis of the biometric/PIN gate — no\nProton Pass APK was decompiled in this build environment. Unverified on\ndevice. Weakens restart protection; enable at your own discretion.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "proton.android.pass",
+          "name": "Proton Pass",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#6D4AFF",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.41.3",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Proton Pass: Unlock password-generator options",
+      "description": "Removes the Plus-gated character-set and password-length options in the\npassword generator.\n\nRequires app-specific bytecode analysis of the generator-options call\nsites — no Proton Pass APK was decompiled in this build environment.\nUnverified on device.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "proton.android.pass",
+          "name": "Proton Pass",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#6D4AFF",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.41.3",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Proton Pass: Dark web monitoring local-only (cosmetic)",
+      "description": "Disables the server call for dark-web monitoring and shows a\nlocally-cached \"no breaches found\" state instead of a paywall.\n\nRequires app-specific bytecode analysis of the dark-web monitoring call\nsites — no Proton Pass APK was decompiled in this build environment.\nUnverified on device. Cosmetic only; does not perform real monitoring.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "proton.android.pass",
+          "name": "Proton Pass",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#6D4AFF",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.41.3",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
     }
   ]
 }
