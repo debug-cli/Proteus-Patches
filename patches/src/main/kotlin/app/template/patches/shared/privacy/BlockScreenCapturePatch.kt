@@ -3,8 +3,8 @@ import app.template.patches.shared.logUniversal
 
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
-import app.morphe.patcher.patch.BytecodePatchContext
 import app.morphe.patcher.patch.bytecodePatch
+import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod
 import app.template.patches.shared.constValue
 import app.template.patches.shared.getFreeRegisterProvider
 import com.android.tools.smali.dexlib2.Opcode
@@ -16,9 +16,9 @@ import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 
 // Universal "Block screenshots & screen recording" patch.
-// Forces FLAG_SECURE (0x2000) on every Activity window (injected at onCreate
-// start via free registers — never growing registerCount) and flips literal
-// SurfaceView.setSecure(false) to true. Fail-safe; default = false.
+// Attempts FLAG_SECURE (0x2000) on recognizable Activity windows using existing
+// free registers and flips literal SurfaceView.setSecure(false) to true. A
+// missed site is left unchanged; default = false.
 
 private const val ACTIVITY_CLASS = "Landroid/app/Activity;"
 private const val WINDOW_CLASS = "Landroid/view/Window;"
@@ -34,16 +34,33 @@ private val INVOKE_OPCODES = setOf(
     Opcode.INVOKE_INTERFACE_RANGE,
 )
 
-private fun BytecodePatchContext.isActivitySubclass(classDef: ClassDef): Boolean {
+// The platform Activity class is normally absent from the app's DEX; compare
+// the superclass descriptor before attempting to resolve it in the app.
+internal fun isActivitySubclass(classDef: ClassDef, classFor: (String) -> ClassDef?): Boolean {
     val seen = mutableSetOf<String>()
     var current: ClassDef? = classDef
-    while (current != null && current.type !in seen) {
+    while (current != null && seen.add(current.type)) {
         if (current.type == ACTIVITY_CLASS) return true
-        seen.add(current.type)
         val superType = current.superclass ?: return false
-        current = classDefByOrNull(superType)
+        if (superType == ACTIVITY_CLASS) return true
+        current = classFor(superType)
     }
     return false
+}
+
+/** Return false when a normal invoke cannot encode the selected registers. */
+internal fun injectSecureWindowFlag(method: MutableMethod, windowReg: Int, flagsReg: Int): Boolean {
+    if (windowReg !in 0..15 || flagsReg !in 0..15 || windowReg == flagsReg) return false
+    method.addInstructions(
+        0,
+        """
+            invoke-virtual/range {p0 .. p0}, $ACTIVITY_CLASS->getWindow()$WINDOW_CLASS
+            move-result-object v$windowReg
+            ${constValue(flagsReg, FLAG_SECURE)}
+            invoke-virtual {v$windowReg, v$flagsReg}, $WINDOW_CLASS->addFlags(I)V
+        """.trimIndent(),
+    )
+    return true
 }
 
 @Suppress("unused")
@@ -66,7 +83,7 @@ val blockScreenCapturePatch = bytecodePatch(
         classDefForEach { classDef ->
             val mutableClass = mutableClassDefBy(classDef)
 
-            if (isActivitySubclass(classDef)) {
+            if (isActivitySubclass(classDef) { classDefByOrNull(it) }) {
                 val onCreate = mutableClass.methods.firstOrNull { method ->
                     method.name == "onCreate" &&
                         method.returnType == "V" &&
@@ -87,21 +104,9 @@ val blockScreenCapturePatch = bytecodePatch(
                     if (registerProvider != null) {
                         val windowReg = registerProvider.getFreeRegister()
                         val flagsReg = registerProvider.getFreeRegister()
-                        // Only the flags register is initialised. v$windowReg holds the
-                        // Window object returned by getWindow() and must NOT be overwritten.
-                        // FLAG_SECURE is emitted as hex (0x2000); interpolating the Int
-                        // directly would produce the decimal digits (0x8192) and set the
-                        // wrong bit.
-                        onCreate.addInstructions(
-                            0,
-                            """
-                                invoke-virtual {p0}, $ACTIVITY_CLASS->getWindow()$WINDOW_CLASS
-                                move-result-object v$windowReg
-                                ${constValue(flagsReg, FLAG_SECURE)}
-                                invoke-virtual {v$windowReg, v$flagsReg}, $WINDOW_CLASS->setFlags(II)V
-                            """.trimIndent(),
-                        )
-                        activitiesPatched++
+                        if (injectSecureWindowFlag(onCreate, windowReg, flagsReg)) {
+                            activitiesPatched++
+                        }
                     }
                 }
             }

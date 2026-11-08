@@ -1,3 +1,14 @@
+## [2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9) (2026-11-08)
+
+### Experimental additions
+
+* Add WhatsApp and Table Notes app-scoped wrappers, Proton Pass screenshot/telemetry wrappers, and the opt-in universal ad SDK heuristic. None has been tested on a target APK or device.
+* Expose seven WhatsApp and seven Proton Pass **unimplemented placeholders**; selecting one fails rather than silently claiming success.
+* Guard the existing Proton Pass local plan patch against an unexpected constructor layout. Server-side entitlements are unchanged.
+* Correct the screen-capture blocker’s Activity inheritance detection and window invocation, and add synthetic DEX regression tests.
+
+The existing v2.2.9 tag predates the corrected build; the release notes identify the actual build commit.
+
 ## [2.2.2](https://github.com/ineednotitle/Proteus-Patches/compare/v2.2.1...v2.2.2) (2026-11-05)
 
 ### 🐛 Fixes and usability

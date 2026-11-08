@@ -2,6 +2,15 @@ name: Build patch bundle (.mpp)
 
 on:
   workflow_dispatch:
+    inputs:
+      sync_metadata:
+        description: "Commit the generated catalog and README to the dispatched branch"
+        type: boolean
+        default: false
+      publish_v229:
+        description: "Publish the verified build to the existing v2.2.9 release"
+        type: boolean
+        default: false
   push:
     branches:
       - main
@@ -30,7 +39,7 @@ jobs:
         run: |
           ./gradlew buildAndroid --stacktrace > build.log 2>&1 && tail -5 build.log && exit 0
           echo "=== GREP: exception headers ==="
-          grep -n -m 12 -E "What went wrong|FAILURE:|Caused by|Exception|Error|Killed|No space|OutOfMemory|ExceptionInInitializerError|AssertionError" build.log | while IFS= read -r line; do
+          grep -n -m 12 -E "What went wrong|FAILURE:|Caused by|Exception|Error|Killed|No space|OutOfMemory|ExceptionInInitializerError|AssertionError|(^|[[:space:]])e:" build.log | while IFS= read -r line; do
             echo "::error::$line"
             echo "$line"
           done
@@ -51,24 +60,36 @@ jobs:
       - name: Test Pinterest video URLs
         run: bash .github/scripts/test_pinterest_video_urls.sh
 
-      - name: Test permission removal and Brave helpers
-        run: ./gradlew :patches:testPermissionRemoval :patches:testBravePrivacy --stacktrace
+      - name: Test permission, Brave and release safety helpers
+        run: |
+          ./gradlew :patches:testPermissionRemoval :patches:testBravePrivacy :patches:testReleaseSafety --stacktrace > tests.log 2>&1 && tail -10 tests.log && exit 0
+          grep -n -m 25 -E '(^|[[:space:]])e:|What went wrong|FAILURE:|Caused by|Exception|Error|AssertionError' tests.log | while IFS= read -r line; do echo "::error::$line"; done
+          tail -35 tests.log | while IFS= read -r line; do echo "::warning::$line"; done
+          exit 1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Exercise the same build-then-metadata sequence used by releases. The
       # metadata task must not leave a JVM-only archive in place of the MPP.
       - name: Generate patch metadata
-        run: ./gradlew generatePatchesList --stacktrace
+        run: |
+          ./gradlew generatePatchesList --stacktrace > metadata.log 2>&1 && tail -10 metadata.log && exit 0
+          grep -n -m 25 -E '(^|[[:space:]])e:|What went wrong|FAILURE:|Caused by|Exception|Error' metadata.log | while IFS= read -r line; do echo "::error::$line"; done
+          tail -35 metadata.log | while IFS= read -r line; do echo "::warning::$line"; done
+          exit 1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify Android bundle and remote source metadata
         run: |
-          python3 -m unittest discover -s .github/scripts -p 'test_*.py'
           VERSION=$(sed -n 's/^version[[:space:]]*=[[:space:]]*//p' gradle.properties)
-          python3 .github/scripts/verify_android_bundle.py "patches/build/libs/patches-${VERSION}.mpp" "$VERSION"
-          python3 .github/scripts/verify_patch_source.py patches-bundle.json "$VERSION"
+          python3 -m unittest discover -s .github/scripts -p 'test_*.py' > verify.log 2>&1 &&
+          python3 .github/scripts/verify_android_bundle.py "patches/build/libs/patches-${VERSION}.mpp" "$VERSION" --patch-list patches-list.json >> verify.log 2>&1 &&
+          python3 .github/scripts/verify_patch_source.py patches-bundle.json "$VERSION" >> verify.log 2>&1 &&
+          { if [ "$VERSION" = "2.2.9" ]; then python3 .github/scripts/verify_v229_catalog.py patches-list.json "$VERSION"; fi; } >> verify.log 2>&1 &&
+          tail -20 verify.log && exit 0
+          tail -50 verify.log | while IFS= read -r line; do echo "::error::$line"; done
+          exit 1
 
       - name: Upload .mpp artifact
         if: success()
@@ -78,9 +99,81 @@ jobs:
           path: patches/build/libs/*.mpp
           if-no-files-found: error
 
+      - name: Upload generated patch catalog
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.7.0
+        with:
+          name: patches-catalog
+          path: patches-list.json
+          if-no-files-found: error
+
       - name: Upload full gradle log
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.7.0
         with:
           name: gradle-error-log
           path: build.log
+
+
+  sync-metadata:
+    name: Sync generated catalog to branch
+    if: github.event_name == 'workflow_dispatch' && inputs.sync_metadata && !inputs.publish_v229
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout build source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.sha }}
+      - name: Download generated catalog
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: patches-catalog
+          path: ${{ runner.temp }}/catalog
+      - name: Commit metadata on the dispatched branch
+        run: |
+          test "$GITHUB_REF_TYPE" = branch
+          case "$GITHUB_REF_NAME" in main|dev) echo 'Use the normal release workflow for main/dev' >&2; exit 1;; esac
+          cp "$RUNNER_TEMP/catalog/patches-list.json" patches-list.json
+          python3 .github/scripts/verify_v229_catalog.py patches-list.json 2.2.9
+          python3 .github/scripts/generate_patches_readme.py "$GITHUB_REPOSITORY" "$GITHUB_REF_NAME" patches-list.json README.md
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add patches-list.json README.md
+          if git diff --cached --quiet; then echo 'Catalog already current'; exit 0; fi
+          git commit -m 'chore: sync generated v2.2.9 patch catalog'
+          git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
+
+  publish-v229:
+    name: Publish verified v2.2.9 assets
+    if: github.event_name == 'workflow_dispatch' && inputs.publish_v229 && !inputs.sync_metadata
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout exact build source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.sha }}
+      - name: Download verified bundle
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: patches-mpp
+          path: ${{ runner.temp }}/mpp
+      - name: Download generated catalog
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: patches-catalog
+          path: ${{ runner.temp }}/catalog
+      - name: Publish without changing the existing tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          test "$GITHUB_REF_TYPE" = branch
+          case "$GITHUB_REF_NAME" in main|dev) echo 'Use the normal release workflow for main/dev' >&2; exit 1;; esac
+          bash .github/scripts/publish_v229_bundle.sh > "$RUNNER_TEMP/publish.log" 2>&1 && tail -20 "$RUNNER_TEMP/publish.log" && exit 0
+          tail -50 "$RUNNER_TEMP/publish.log" | while IFS= read -r line; do echo "::error::$line"; done
+          exit 1

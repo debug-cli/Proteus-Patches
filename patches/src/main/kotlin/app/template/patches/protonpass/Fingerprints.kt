@@ -33,7 +33,8 @@ import com.android.tools.smali.dexlib2.AccessFlags
 //   sget-object p5, PlanLimit$Unlimited->INSTANCE   → totpLimit  = Unlimited
 //   const/4 p2, 0x1                                → hideUpgrade = true
 //   Uses param registers only — .registers 8 means 0 free locals, so no heap allocs.
-//   planType is NOT changed; isFreePlan/isPaidPlan reflect actual account state.
+//   planType IS forced to PlanType$Paid$Plus (see ProtonPassUnlockPatch.kt),
+//   so isPaidPlan == true and isFreePlan == false regardless of account state.
 //   All limits become Unlimited regardless of what the server returned.
 //
 // SMALI VERIFIED (classes4.dex, v1.40.3):

@@ -217,6 +217,11 @@ generated  = build_content(expanded=expanded)
 readme = readme.replace("https://morphe.software/add-source?github=xyz-user/xyz-patches", f"https://morphe.software/add-source?github={repo_full}")
 readme = readme.replace("https://github.com/xyz-user/xyz-patches", f"https://github.com/{repo_full}")
 
+# Badge counts describe unique catalog entries and package IDs, not appearances.
+readme = re.sub(r"(?<=badge/patch%20entries-)\d+", str(len(data["patches"])), readme)
+readme = re.sub(r"(?<=badge/universal-)\d+", str(len(universal)), readme)
+readme = re.sub(r"(?<=badge/package%20targets-)\d+", str(len(by_pkg)), readme)
+
 new_readme = re.sub(
     rf"{START_PATTERN}.*?{re.escape(END_MARKER)}",
     f"{actual_start}\n{generated}\n{END_MARKER}",

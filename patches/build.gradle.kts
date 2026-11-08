@@ -94,8 +94,16 @@ tasks {
         mainClass.set("app.template.patches.brave.BravePrivacyTest")
     }
 
+    val testReleaseSafety by registering(JavaExec::class) {
+        description = "Test ad SDK matching, screen capture bytecode and release placeholders"
+        group = "verification"
+        dependsOn(testClasses)
+        classpath = sourceSets["test"].runtimeClasspath
+        mainClass.set("app.template.patches.release.ReleaseSafetyTest")
+    }
+
     check {
-        dependsOn(testPermissionRemoval, testBravePrivacy)
+        dependsOn(testPermissionRemoval, testBravePrivacy, testReleaseSafety)
     }
 
     // Used by gradle-semantic-release-plugin.
