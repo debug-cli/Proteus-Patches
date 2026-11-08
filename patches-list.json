@@ -7005,6 +7005,132 @@
         }
       ],
       "options": []
+    },
+    {
+      "name": "WhatsApp: Strip logging (android.util.Log)",
+      "description": "Removes all android.util.Log calls from WhatsApp, so logcat cannot leak\ndiagnostic or analytics data, using the same universal heuristic as\n'Strip logging (android.util.Log)'.\n\nApplies to com.whatsapp only. Heuristic; obfuscated or reflection-based\nlogging is not covered. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "Strip logging (android.util.Log)"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Block screenshots & screen recording",
+      "description": "Forces FLAG_SECURE on every WhatsApp Activity window and flips\nSurfaceView.setSecure(false) to true, using the same universal heuristic as\n'Block screenshots & screen recording'.\n\nApplies to com.whatsapp only. Do not combine with 'WhatsApp: Allow\nscreenshots & screen recording' — they have opposing goals. Unverified\non device.",
+      "default": false,
+      "dependencies": [
+        "Block screenshots & screen recording"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Empty telephony identifiers",
+      "description": "Replaces TelephonyManager ID getters (getDeviceId, getImei, getMeid,\ngetSubscriberId, getLine1Number, getSimSerialNumber,\ngetDeviceSoftwareVersion) with empty strings, using the same universal\nheuristic as 'Empty telephony identifiers'.\n\nApplies to com.whatsapp only. Heuristic; may break phone-number-based\nregistration or re-verification. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "Empty telephony identifiers"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
     }
   ]
 }

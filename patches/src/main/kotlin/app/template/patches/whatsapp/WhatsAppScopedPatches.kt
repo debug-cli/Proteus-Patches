@@ -10,8 +10,11 @@ import app.template.patches.shared.logUniversal
 import app.template.patches.shared.manifest.removeDangerousPermissionsPatch
 import app.template.patches.shared.media.disableAutoplayPatch
 import app.template.patches.shared.misc.externalBrowserPatch
+import app.template.patches.shared.misc.stripLoggingPatch
 import app.template.patches.shared.privacy.blockAdsSdksPatch
 import app.template.patches.shared.privacy.blockAnalyticsSdksPatch
+import app.template.patches.shared.privacy.blockScreenCapturePatch
+import app.template.patches.shared.privacy.emptyTelephonyIdsPatch
 import app.template.patches.shared.privacy.universalAllowScreenCapturePatch
 
 @Suppress("unused")
@@ -315,5 +318,70 @@ val whatsappModsSettingsResourcesPatch = bytecodePatch(
             "WhatsApp: mods settings resources — awaiting app-specific resource " +
                 "analysis (no APK decompiled)."
         )
+    }
+}
+
+@Suppress("unused")
+val whatsappStripLoggingPatch = bytecodePatch(
+    name = "WhatsApp: Strip logging (android.util.Log)",
+    description = """
+        Removes all android.util.Log calls from WhatsApp, so logcat cannot leak
+        diagnostic or analytics data, using the same universal heuristic as
+        'Strip logging (android.util.Log)'.
+
+        Applies to com.whatsapp only. Heuristic; obfuscated or reflection-based
+        logging is not covered. Unverified on device.
+    """.trimIndent(),
+    default = false,
+) {
+    compatibleWith(WHATSAPP_COMPATIBILITY)
+    dependsOn(stripLoggingPatch)
+
+    execute {
+        logUniversal("WhatsApp: enabling universal logging strip.")
+    }
+}
+
+@Suppress("unused")
+val whatsappBlockScreenCapturePatch = bytecodePatch(
+    name = "WhatsApp: Block screenshots & screen recording",
+    description = """
+        Forces FLAG_SECURE on every WhatsApp Activity window and flips
+        SurfaceView.setSecure(false) to true, using the same universal heuristic
+        as 'Block screenshots & screen recording'.
+
+        Applies to com.whatsapp only. Do not combine with 'WhatsApp: Allow
+        screenshots & screen recording' — they have opposing goals. Unverified
+        on device.
+    """.trimIndent(),
+    default = false,
+) {
+    compatibleWith(WHATSAPP_COMPATIBILITY)
+    dependsOn(blockScreenCapturePatch)
+
+    execute {
+        logUniversal("WhatsApp: enabling universal screen-capture block.")
+    }
+}
+
+@Suppress("unused")
+val whatsappEmptyTelephonyIdsPatch = bytecodePatch(
+    name = "WhatsApp: Empty telephony identifiers",
+    description = """
+        Replaces TelephonyManager ID getters (getDeviceId, getImei, getMeid,
+        getSubscriberId, getLine1Number, getSimSerialNumber,
+        getDeviceSoftwareVersion) with empty strings, using the same universal
+        heuristic as 'Empty telephony identifiers'.
+
+        Applies to com.whatsapp only. Heuristic; may break phone-number-based
+        registration or re-verification. Unverified on device.
+    """.trimIndent(),
+    default = false,
+) {
+    compatibleWith(WHATSAPP_COMPATIBILITY)
+    dependsOn(emptyTelephonyIdsPatch)
+
+    execute {
+        logUniversal("WhatsApp: enabling universal telephony ID emptying.")
     }
 }

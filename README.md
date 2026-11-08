@@ -3,7 +3,7 @@
 > *One bundle, patches everywhere. A curated [Morphe](https://github.com/MorpheApp/Morphe) patch suite for Android.*
 
 [![License: GPL-3.0-only](https://img.shields.io/badge/License-GPL--3.0--only-green.svg)](#license)
-[![Patches](https://img.shields.io/badge/patches-200-blue.svg)](#whats-inside)
+[![Patches](https://img.shields.io/badge/patches-203-blue.svg)](#whats-inside)
 [![Universal patches](https://img.shields.io/badge/universal-24-purple.svg)](#universal-patches)
 [![Apps](https://img.shields.io/badge/apps-29-orange.svg)](#supported-apps)
 
@@ -64,7 +64,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 > if you need the full app set.
 
 <!-- PATCHES_START EXPANDED -->
-> **[v2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/3a81df7b-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;200 patches total
+> **[v2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/3a81df7b-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;203 patches total
 <details open>
 <summary>📦 Google Photos&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
 <br>
@@ -675,7 +675,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 </details>
 
 <details open>
-<summary>📦 WhatsApp&nbsp;&nbsp;•&nbsp;&nbsp;14 patches</summary>
+<summary>📦 WhatsApp&nbsp;&nbsp;•&nbsp;&nbsp;17 patches</summary>
 <br>
 
 **🎯 Supported versions:**
@@ -689,7 +689,9 @@ For configuration advice, limitations, and permission-patch examples, see the
 | [WhatsApp: App icon (classic or premium style)](#whatsapp-app-icon-classic-or-premium-style) | Replaces the WhatsApp launcher icon with a classic or premium-style<br>icon.<br><br>Requires app-specific resource analysis of the launcher-icon drawable —<br>no WhatsApp APK was decompiled in this build environment. Unverified on<br>device. |  |
 | [WhatsApp: Block ads & ad SDKs](#whatsapp-block-ads-ad-sdks) | Blocks WhatsApp ad SDK call sites (AdMob, Unity Ads, Audience Network<br>and similar) using the same universal heuristic as 'Block ads & ad SDKs'.<br>Relevant to business messaging and click-to-chat surfaces.<br><br>Applies to com.whatsapp only. Heuristic; obfuscated or reflection-based<br>ad loading is not covered. Unverified on device. |  |
 | [WhatsApp: Block analytics & tracking SDKs](#whatsapp-block-analytics-tracking-sdks) | Blocks WhatsApp's analytics & tracking SDKs (Firebase Analytics,<br>Meta/Graph API event reporting, Adjust, AppEvents and similar) using<br>the same universal heuristic as 'Block analytics & tracking SDKs'.<br><br>Applies to com.whatsapp only. Heuristic; obfuscated or<br>reflection-based reporting is not covered. Unverified on device. |  |
+| [WhatsApp: Block screenshots & screen recording](#whatsapp-block-screenshots-screen-recording) | Forces FLAG_SECURE on every WhatsApp Activity window and flips<br>SurfaceView.setSecure(false) to true, using the same universal heuristic as<br>'Block screenshots & screen recording'.<br><br>Applies to com.whatsapp only. Do not combine with 'WhatsApp: Allow<br>screenshots & screen recording' — they have opposing goals. Unverified<br>on device. |  |
 | [WhatsApp: Disable video autoplay (Status)](#whatsapp-disable-video-autoplay-status) | Stops video autoplay in WhatsApp Status and media viewers (ExoPlayer/<br>Media3) using the same heuristic as 'Disable video autoplay<br>(ExoPlayer/Media3)'.<br><br>Applies to com.whatsapp only. Heuristic; see the universal entry for<br>limitations. Unverified on device. |  |
+| [WhatsApp: Empty telephony identifiers](#whatsapp-empty-telephony-identifiers) | Replaces TelephonyManager ID getters (getDeviceId, getImei, getMeid,<br>getSubscriberId, getLine1Number, getSimSerialNumber,<br>getDeviceSoftwareVersion) with empty strings, using the same universal<br>heuristic as 'Empty telephony identifiers'.<br><br>Applies to com.whatsapp only. Heuristic; may break phone-number-based<br>registration or re-verification. Unverified on device. |  |
 | [WhatsApp: Keep deleted messages](#whatsapp-keep-deleted-messages) | Shows messages that were deleted for everyone. May need a fingerprint<br>update after WhatsApp upgrades.<br><br>Requires app-specific bytecode analysis of the message-deletion handler<br>— no WhatsApp APK was decompiled in this build environment. Unverified<br>on device. |  |
 | [WhatsApp: Limit usage data (diagnostics & analytics)](#whatsapp-limit-usage-data-diagnostics-analytics) | Limits diagnostic and analytics data WhatsApp sends, using the same<br>universal heuristic as 'Block analytics & tracking SDKs'.<br><br>Applies to com.whatsapp only. Heuristic; obfuscated or reflection-based<br>reporting is not covered. Unverified on device. |  |
 | [WhatsApp: Mods settings entry](#whatsapp-mods-settings-entry) | Reserves a MightyMich row in Settings. Full dialog wiring needs the<br>settings-list fingerprint for this WhatsApp build.<br><br>Requires app-specific bytecode analysis of the Settings screen — no<br>WhatsApp APK was decompiled in this build environment. Unverified on<br>device. |  |
@@ -697,6 +699,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 | [WhatsApp: Prefer external browser over Custom Tabs](#whatsapp-prefer-external-browser-over-custom-tabs) | Opens links in the default external browser instead of an in-app Custom<br>Tab, using the same rewrite as the universal 'Prefer external browser<br>over Custom Tabs' patch.<br><br>Applies to com.whatsapp only. Covers Custom Tabs /<br>CustomTabsIntent call sites only. Unverified on device. |  |
 | [WhatsApp: Read receipts (no blue ticks)](#whatsapp-read-receipts-no-blue-ticks) | Prevents WhatsApp from sending read receipts (blue ticks) when<br>enabled.<br><br>Requires app-specific bytecode analysis of the read-receipt call sites<br>— no WhatsApp APK was decompiled in this build environment. Unverified<br>on device. |  |
 | [WhatsApp: Remove dangerous permissions](#whatsapp-remove-dangerous-permissions) | Removes dangerous permission declarations from WhatsApp's manifest<br>using the same universal heuristic as 'Remove dangerous permissions'.<br><br>Applies to com.whatsapp only. Review the keep list before enabling —<br>removing Camera, Microphone, Location or Storage declarations may<br>disable features that depend on them. Unverified on device. |  |
+| [WhatsApp: Strip logging (android.util.Log)](#whatsapp-strip-logging-android-util-log) | Removes all android.util.Log calls from WhatsApp, so logcat cannot leak<br>diagnostic or analytics data, using the same universal heuristic as<br>'Strip logging (android.util.Log)'.<br><br>Applies to com.whatsapp only. Heuristic; obfuscated or reflection-based<br>logging is not covered. Unverified on device. |  |
 | [WhatsApp: Typing indicator (hide when typing)](#whatsapp-typing-indicator-hide-when-typing) | Prevents others from seeing when you are typing.<br><br>Requires app-specific bytecode analysis of the typing-indicator call<br>sites — no WhatsApp APK was decompiled in this build environment.<br>Unverified on device. |  |
 | [WhatsApp: View once media (allow reopen & save)](#whatsapp-view-once-media-allow-reopen-save) | Allows reopening and saving view-once photos and videos.<br><br>Requires app-specific bytecode analysis of the view-once media handler<br>— no WhatsApp APK was decompiled in this build environment. Unverified<br>on device. |  |
 
