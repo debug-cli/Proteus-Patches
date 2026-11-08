@@ -6056,6 +6056,132 @@
         }
       ],
       "options": []
+    },
+    {
+      "name": "Table Notes: Block analytics & tracking SDKs",
+      "description": "Blocks Table Notes' analytics & tracking SDKs (Firebase Analytics,\nAppsFlyer, Adjust, Facebook AppEvents and similar) using the same\nuniversal heuristic as 'Block analytics & tracking SDKs'.\n\nApplies to vivekagarwal.playwithdb only. Heuristic; obfuscated or\nreflection-based reporting is not covered. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "Block analytics & tracking SDKs"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "vivekagarwal.playwithdb",
+          "name": "Table Notes",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#1A237E",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "20261030",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 26,
+              "description": null
+            },
+            {
+              "version": "20260916",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 26,
+              "description": null
+            },
+            {
+              "version": "20260831",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 26,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Table Notes: Prefer external browser over Custom Tabs",
+      "description": "Opens links in the default external browser instead of an in-app Custom\nTab, using the same rewrite as the universal 'Prefer external browser\nover Custom Tabs' patch.\n\nApplies to vivekagarwal.playwithdb only. Covers Custom Tabs /\nCustomTabsIntent call sites only. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "Prefer external browser over Custom Tabs"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "vivekagarwal.playwithdb",
+          "name": "Table Notes",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#1A237E",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "20261030",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 26,
+              "description": null
+            },
+            {
+              "version": "20260916",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 26,
+              "description": null
+            },
+            {
+              "version": "20260831",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 26,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Table Notes: Block ads & ad SDKs",
+      "description": "Blocks Table Notes' ads & ad SDKs (AdMob, Unity Ads, Facebook Audience\nNetwork, AppLovin, IronSource and similar) by removing their ad load/show\ncall sites, using the same universal heuristic as 'Block ads & ad SDKs'.\n\nApplies to vivekagarwal.playwithdb only. Heuristic; obfuscated or\nreflection-based ad loading is not covered. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "Block ads & ad SDKs"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "vivekagarwal.playwithdb",
+          "name": "Table Notes",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#1A237E",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "20261030",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 26,
+              "description": null
+            },
+            {
+              "version": "20260916",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 26,
+              "description": null
+            },
+            {
+              "version": "20260831",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 26,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
     }
   ]
 }

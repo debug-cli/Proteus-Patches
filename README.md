@@ -3,9 +3,9 @@
 > *One bundle, patches everywhere. A curated [Morphe](https://github.com/MorpheApp/Morphe) patch suite for Android.*
 
 [![License: GPL-3.0-only](https://img.shields.io/badge/License-GPL--3.0--only-green.svg)](#license)
-[![Patches](https://img.shields.io/badge/patches-174-blue.svg)](#whats-inside)
+[![Patches](https://img.shields.io/badge/patches-177-blue.svg)](#whats-inside)
 [![Universal patches](https://img.shields.io/badge/universal-24-purple.svg)](#universal-patches)
-[![Apps](https://img.shields.io/badge/apps-28-orange.svg)](#supported-apps)
+[![Apps](https://img.shields.io/badge/apps-29-orange.svg)](#supported-apps)
 
 **Proteus Patches** is a Morphe patch bundle (`.mpp`) that removes tracking,
 ads, annoyances and risky defaults from popular Android apps — plus a set of
@@ -64,7 +64,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 > if you need the full app set.
 
 <!-- PATCHES_START EXPANDED -->
-> **[v2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;174 patches total
+> **[v2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/3a81df7b-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;177 patches total
 <details open>
 <summary>📦 Google Photos&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
 <br>
@@ -645,6 +645,23 @@ For configuration advice, limitations, and permission-patch examples, see the
 | [Meesho: Block analytics & tracking SDKs](#meesho-block-analytics-tracking-sdks) | Blocks Meesho's analytics & tracking SDKs (Firebase Analytics, AppsFlyer,<br>Adjust, Facebook AppEvents, WebEngage, CleverTap and similar) using the<br>same universal heuristic as 'Block analytics & tracking SDKs'.<br><br>Applies to com.meesho.shopping only. Heuristic; obfuscated or<br>reflection-based reporting is not covered. Unverified on device. |  |
 | [Meesho: Disable video autoplay (ExoPlayer)](#meesho-disable-video-autoplay-exoplayer) | Stops video autoplay in the Meesho feed and product videos (ExoPlayer/Media3)<br>using the same heuristic as 'Disable video autoplay (ExoPlayer/Media3)'.<br><br>Applies to com.meesho.shopping only. Heuristic; see the universal entry<br>for limitations. Unverified on device. |  |
 | [Meesho: Prefer external browser over Custom Tabs](#meesho-prefer-external-browser-over-custom-tabs) | Opens links in the default external browser instead of an in-app Custom<br>Tab, using the same rewrite as the universal 'Prefer external browser<br>over Custom Tabs' patch.<br><br>Applies to com.meesho.shopping only. Covers Custom Tabs /<br>CustomTabsIntent call sites only. Unverified on device. |  |
+
+</details>
+
+<details open>
+<summary>📦 Table Notes&nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
+<br>
+
+**🎯 Supported versions:**
+
+| 20261030 | 20260916 | 20260831 |
+| :---: | :---: | :---: |
+
+| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
+|----------|----------------|-----------|
+| [Table Notes: Block ads & ad SDKs](#table-notes-block-ads-ad-sdks) | Blocks Table Notes' ads & ad SDKs (AdMob, Unity Ads, Facebook Audience<br>Network, AppLovin, IronSource and similar) by removing their ad load/show<br>call sites, using the same universal heuristic as 'Block ads & ad SDKs'.<br><br>Applies to vivekagarwal.playwithdb only. Heuristic; obfuscated or<br>reflection-based ad loading is not covered. Unverified on device. |  |
+| [Table Notes: Block analytics & tracking SDKs](#table-notes-block-analytics-tracking-sdks) | Blocks Table Notes' analytics & tracking SDKs (Firebase Analytics,<br>AppsFlyer, Adjust, Facebook AppEvents and similar) using the same<br>universal heuristic as 'Block analytics & tracking SDKs'.<br><br>Applies to vivekagarwal.playwithdb only. Heuristic; obfuscated or<br>reflection-based reporting is not covered. Unverified on device. |  |
+| [Table Notes: Prefer external browser over Custom Tabs](#table-notes-prefer-external-browser-over-custom-tabs) | Opens links in the default external browser instead of an in-app Custom<br>Tab, using the same rewrite as the universal 'Prefer external browser<br>over Custom Tabs' patch.<br><br>Applies to vivekagarwal.playwithdb only. Covers Custom Tabs /<br>CustomTabsIntent call sites only. Unverified on device. |  |
 
 </details>
 

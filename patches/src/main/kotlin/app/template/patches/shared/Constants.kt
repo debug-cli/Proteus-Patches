@@ -566,6 +566,19 @@ val EXCEL_COMPATIBILITY = Compatibility(
         targets = listOf(AppTarget(version = "16.0.20228.20090", versionCode = 2006247667))
     )
 
+val TABLENOTES_COMPATIBILITY = Compatibility(
+        name = "Table Notes",
+        packageName = "vivekagarwal.playwithdb",
+        appIconColor = 0x1A237E,
+        apkFileType = ApkFileType.XAPK,
+        targets = listOf(
+            // store builds observed 2026-11-08 (APKPure/Google Play) — XAPK split bundles
+            AppTarget(version = "20261030"),
+            AppTarget(version = "20260916"),
+            AppTarget(version = "20260831"),
+        )
+    )
+
 val FEEM_COMPATIBILITY = Compatibility(
         name = "Feem",
         packageName = "com.feeperfect.airsend.android",
