@@ -3,6 +3,7 @@ package app.template.patches.protonpass
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.patch.PatchException
 import app.morphe.patcher.patch.bytecodePatch
+import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod
 import app.template.patches.shared.Constants.PROTON_PASS_COMPATIBILITY
 import app.template.patches.shared.firebase.spoofFirebaseCertHashPatch
 import app.template.patches.shared.installer.spoofInstallSourcePatch
@@ -86,8 +87,9 @@ import app.template.patches.shared.signature.spoofSignatureVerificationPatch
 val protonPassUnlockPatch = bytecodePatch(
     name = "Unlock Unlimited Plan",
     description = "Attempts to change Proton Pass's local plan model and limits; "
-        + "server-side entitlements remain unchanged. The 1.41.3 target is unverified; "
-        + "the constructor layout was documented for 1.40.3. Uses signature, install-source "
+        + "server-side entitlements remain unchanged. The 1.41.3 and 1.41.5 targets are "
+        + "unverified; the known DEX layout was documented for 1.40.3. Fails if required "
+        + "constructor and class layouts do not match. Uses signature, install-source "
         + "and Firebase certificate spoofing dependencies.",
     default = false,
 ) {
@@ -100,29 +102,36 @@ val protonPassUnlockPatch = bytecodePatch(
     )
 
     execute {
-        val method = PlanConstructorFingerprint.method
-            ?: throw PatchException(
-                "Proton Pass: Plan constructor fingerprint not resolved — " +
-                    "aborting before constructor corruption."
-            )
-        if (!isKnownPlanConstructor(method)) {
-            throw PatchException("Proton Pass: unexpected Plan constructor layout; refusing to patch.")
-        }
-        method.addInstructions(
-            1,
-            """
-                # Step 1: construct PlanType${'$'}Paid${'$'}Plus using p3/p4/p5 as scratch
-                new-instance p3, Lproton/android/pass/domain/PlanType${'$'}Paid${'$'}Plus;
-                const-string p4, "pass2023"
-                const-string p5, "Proton Pass Plus"
-                invoke-direct {p3, p4, p5}, Lproton/android/pass/domain/PlanType${'$'}Paid${'$'}Plus;-><init>(Ljava/lang/String;Ljava/lang/String;)V
-                move-object p1, p3
-                # Step 2: restore limit params and force hideUpgrade
-                sget-object p3, Lproton/android/pass/domain/PlanLimit${'$'}Unlimited;->INSTANCE:Lproton/android/pass/domain/PlanLimit${'$'}Unlimited;
-                sget-object p4, Lproton/android/pass/domain/PlanLimit${'$'}Unlimited;->INSTANCE:Lproton/android/pass/domain/PlanLimit${'$'}Unlimited;
-                sget-object p5, Lproton/android/pass/domain/PlanLimit${'$'}Unlimited;->INSTANCE:Lproton/android/pass/domain/PlanLimit${'$'}Unlimited;
-                const/4 p2, 0x1
-            """.trimIndent(),
+        val candidates = listOfNotNull(
+            PlanConstructorFingerprint.methodOrNull,
+            PlanSourceTypeConstructorFingerprint.methodOrNull,
+        ).filter(::isKnownPlanConstructor)
+        val method = candidates.singleOrNull() ?: throw PatchException(
+            "Proton Pass: no unique supported Plan constructor layout found; refusing to patch."
         )
+        if (!hasSafePlanInjectionReferences(method) { classDefByOrNull(it) }) {
+            throw PatchException("Proton Pass: incompatible or missing plan classes/members; refusing to patch.")
+        }
+        injectPlanOverrides(method)
     }
+}
+
+/** Only call after validating the constructor and injected class references. */
+internal fun injectPlanOverrides(method: MutableMethod) {
+    method.addInstructions(
+        1,
+        """
+            # Construct PlanType${'$'}Paid${'$'}Plus using p3/p4/p5 as scratch.
+            new-instance p3, Lproton/android/pass/domain/PlanType${'$'}Paid${'$'}Plus;
+            const-string p4, "pass2023"
+            const-string p5, "Proton Pass Plus"
+            invoke-direct {p3, p4, p5}, Lproton/android/pass/domain/PlanType${'$'}Paid${'$'}Plus;-><init>(Ljava/lang/String;Ljava/lang/String;)V
+            move-object p1, p3
+            # Restore limit params and force hideUpgrade.
+            sget-object p3, Lproton/android/pass/domain/PlanLimit${'$'}Unlimited;->INSTANCE:Lproton/android/pass/domain/PlanLimit${'$'}Unlimited;
+            sget-object p4, Lproton/android/pass/domain/PlanLimit${'$'}Unlimited;->INSTANCE:Lproton/android/pass/domain/PlanLimit${'$'}Unlimited;
+            sget-object p5, Lproton/android/pass/domain/PlanLimit${'$'}Unlimited;->INSTANCE:Lproton/android/pass/domain/PlanLimit${'$'}Unlimited;
+            const/4 p2, 0x1
+        """.trimIndent(),
+    )
 }

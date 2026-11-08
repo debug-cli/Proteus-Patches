@@ -66,7 +66,7 @@ APP_FAMILY_ALIASES = {
 }
 
 
-def verify_catalog(data: dict, version: str = "2.2.9") -> dict[str, int]:
+def verify_catalog(data: dict, version: str = "2.2.9", *, require_proton_1415: bool = False) -> dict[str, int]:
     if data.get("version") != version:
         raise ValueError(f"Catalog version {data.get('version')!r} does not match {version}")
     patches = data.get("patches")
@@ -87,6 +87,15 @@ def verify_catalog(data: dict, version: str = "2.2.9") -> dict[str, int]:
                 raise ValueError(f"{name} is not scoped exclusively to {package}")
             if compatibility[0].get("apkFileType") != "XAPK" or not compatibility[0].get("targets"):
                 raise ValueError(f"{name} lacks its XAPK/version compatibility metadata")
+            if package == "proton.android.pass" and require_proton_1415:
+                targets = compatibility[0]["targets"]
+                new_targets = [target for target in targets if target.get("version") == "1.41.5"]
+                if len(new_targets) != 1 or new_targets[0].get("isExperimental") is not True:
+                    raise ValueError(f"{name} must list Proton Pass 1.41.5 as experimental")
+                if new_targets[0].get("versionCodes") is not None or new_targets[0].get("minSdk") != 27:
+                    raise ValueError(f"{name} has unexpected Proton Pass 1.41.5 variant metadata")
+                if not any(target.get("version") == "1.41.3" for target in targets):
+                    raise ValueError(f"{name} must retain the 1.41.3 target")
             if entry.get("default") is not False:
                 raise ValueError(f"{name} must be off by default")
             if name in PLACEHOLDERS:
@@ -118,9 +127,14 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("catalog", type=Path)
     parser.add_argument("version", nargs="?", default="2.2.9")
+    parser.add_argument("--require-proton-1415", action="store_true", help="Check the experimental 1.41.5 target")
     args = parser.parse_args()
     try:
-        summary = verify_catalog(json.loads(args.catalog.read_text(encoding="utf-8")), args.version)
+        summary = verify_catalog(
+            json.loads(args.catalog.read_text(encoding="utf-8")),
+            args.version,
+            require_proton_1415=args.require_proton_1415,
+        )
     except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as error:
         print(f"v2.2.9 catalog verification failed: {error}", file=sys.stderr)
         return 1

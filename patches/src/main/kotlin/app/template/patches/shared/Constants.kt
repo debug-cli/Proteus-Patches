@@ -1298,7 +1298,15 @@ val PROTON_PASS_COMPATIBILITY = Compatibility(
         packageName = "proton.android.pass",
         apkFileType = ApkFileType.XAPK,
         appIconColor = 0x6D4AFF,
-        targets = listOf(AppTarget(version = "1.41.3", versionCode = 14103401))
+        targets = listOf(
+            AppTarget(
+                version = "1.41.5",
+                minSdk = 27,
+                isExperimental = true,
+                description = "Based on upstream source only; APK and device compatibility are unverified. Placeholder patches remain unavailable."
+            ),
+            AppTarget(version = "1.41.3", versionCode = 14103401)
+        )
     )
 
 val PROTONVPN_COMPATIBILITY = Compatibility(

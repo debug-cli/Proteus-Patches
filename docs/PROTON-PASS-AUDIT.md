@@ -1,8 +1,11 @@
 # Proton Pass — patch status and security limitations
 
-The catalog targets `proton.android.pass` 1.41.3 (versionCode 14103401, XAPK).
-No Proton Pass APK was analyzed or patched on a device for this release. All
-new entries are off by default.
+The source catalog lists `proton.android.pass` 1.41.3 (versionCode 14103401)
+and, experimentally, **1.41.5** (version-name only, XAPK). The 1.41.5 target
+is based on the upstream source, not on an inspected APK; no Proton Pass APK
+was analyzed or patched on a device for these versions. Manager compatibility
+metadata does not establish that any patch works. All new entries are off by
+default, and the published v2.2.9 bundle predates the 1.41.5 metadata change.
 
 ## Available entries
 
@@ -12,10 +15,12 @@ new entries are off by default.
   Allowing screen capture can expose vault contents to other software.
 - **Unlock Unlimited Plan** is the existing local plan-model patch. It does not
   grant server-side entitlements. Its documented bytecode layout came from
-  1.40.3, not the configured 1.41.3 target. A structural guard now rejects an
-  unexpected constructor instead of injecting into an unknown layout, but it
-  does not establish that 1.41.3 works. It remains off by default and uses
-  signature, installer and Firebase certificate spoofing dependencies.
+  1.40.3. A source-derived alternative fingerprint recognizes the 1.41.5
+  source's `PlanType` parameter, but the actual APK may differ. Structural
+  guards reject unexpected constructor layouts or missing/incompatible injected
+  classes and members; they do not establish that 1.41.3 or 1.41.5 works. It
+  remains off by default and uses signature, installer and Firebase certificate
+  spoofing dependencies.
 
 ## Unimplemented entries
 
@@ -42,7 +47,7 @@ clearing can expose copied credentials. See the
 
 ## Verification required
 
-Compare the actual 1.41.3 constructor, class descriptors, register layout and
+Compare the actual 1.41.5 constructor, class descriptors, register layout and
 superclass chain with `ProtonPassConstructorGuard.kt` and
 `ProtonPassUnlockPatch.kt`, then patch and test on a disposable account/device.
 The synthetic DEX tests verify the guard mechanics only. Server-validated

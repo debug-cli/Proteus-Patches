@@ -2,6 +2,8 @@ package app.template.patches.release
 
 import app.morphe.patcher.patch.PatchException
 import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod
+import app.template.patches.protonpass.hasSafePlanInjectionReferences
+import app.template.patches.protonpass.injectPlanOverrides
 import app.template.patches.protonpass.isKnownPlanConstructor
 import app.template.patches.shared.privacy.blockAdSdkCalls
 import app.template.patches.shared.privacy.injectSecureWindowFlag
@@ -26,6 +28,7 @@ import com.android.tools.smali.dexlib2.iface.instruction.RegisterRangeInstructio
 import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 import com.android.tools.smali.dexlib2.immutable.ImmutableClassDef
 import com.android.tools.smali.dexlib2.immutable.ImmutableDexFile
+import com.android.tools.smali.dexlib2.immutable.ImmutableField
 import com.android.tools.smali.dexlib2.immutable.ImmutableMethod
 import com.android.tools.smali.dexlib2.immutable.ImmutableMethodParameter
 import com.android.tools.smali.dexlib2.immutable.reference.ImmutableFieldReference
@@ -112,17 +115,61 @@ object ReleaseSafetyTest {
     }
 
     private fun testProtonPlanGuard() {
-        check(isKnownPlanConstructor(planConstructor()))
-        check(isKnownPlanConstructor(roundTrip(planConstructor())))
+        val legacyType = "Landroidx/credentials/Credential;"
+        val sourceType = "Lproton/android/pass/domain/PlanType;"
+        for (type in listOf(legacyType, sourceType)) {
+            val constructor = planConstructor(planType = type)
+            check(isKnownPlanConstructor(constructor))
+            check(isKnownPlanConstructor(roundTrip(constructor)))
+            val refs = planReferences(type)
+            check(hasSafePlanInjectionReferences(constructor) { refs[it] })
+            check(!hasSafePlanInjectionReferences(constructor) { null })
+
+            val plus = "Lproton/android/pass/domain/PlanType\$Paid\$Plus;"
+            val paid = "Lproton/android/pass/domain/PlanType\$Paid;"
+            val unlimited = "Lproton/android/pass/domain/PlanLimit\$Unlimited;"
+            check(!hasSafePlanInjectionReferences(constructor) { if (it == plus) null else refs[it] })
+            check(!hasSafePlanInjectionReferences(constructor) { if (it == paid) null else refs[it] })
+            check(!hasSafePlanInjectionReferences(constructor) { if (it == unlimited) null else refs[it] })
+            val wrongPaid = refs + (paid to classDef(paid, "Ljava/lang/Object;"))
+            check(!hasSafePlanInjectionReferences(constructor) { wrongPaid[it] })
+            val cycle = refs + (paid to classDef(paid, plus))
+            check(!hasSafePlanInjectionReferences(constructor) { cycle[it] })
+            val wrongLimit = refs + (unlimited to classDef(unlimited, "Ljava/lang/Object;"))
+            check(!hasSafePlanInjectionReferences(constructor) { wrongLimit[it] })
+            val noConstructor = refs + (plus to classDef(plus, paid))
+            check(!hasSafePlanInjectionReferences(constructor) { noConstructor[it] })
+            val noInstance = refs + (unlimited to ImmutableClassDef(
+                unlimited, AccessFlags.PUBLIC.value, "Ljava/lang/Object;",
+                listOf("Lproton/android/pass/domain/PlanLimit;"), null,
+                emptyList(), emptyList(), emptyList(),
+            ))
+            check(!hasSafePlanInjectionReferences(constructor) { noInstance[it] })
+
+            // Assemble and serialize the real injection for both supported types.
+            injectPlanOverrides(constructor)
+            val opcodes = roundTrip(constructor).implementation!!.instructions.map { it.opcode }.toList()
+            check(opcodes.take(10) == listOf(
+                Opcode.INVOKE_DIRECT, Opcode.NEW_INSTANCE, Opcode.CONST_STRING, Opcode.CONST_STRING,
+                Opcode.INVOKE_DIRECT, Opcode.MOVE_OBJECT, Opcode.SGET_OBJECT, Opcode.SGET_OBJECT,
+                Opcode.SGET_OBJECT, Opcode.CONST_4,
+            ))
+            check(opcodes[10] == Opcode.IPUT_OBJECT)
+        }
         check(!isKnownPlanConstructor(planConstructor(registers = 9)))
         check(!isKnownPlanConstructor(planConstructor(alteredField = true)))
+        check(!isKnownPlanConstructor(planConstructor(planType = "Ltest/Unexpected;")))
     }
 
-    private fun planConstructor(registers: Int = 8, alteredField: Boolean = false): MutableMethod {
+    private fun planConstructor(
+        registers: Int = 8,
+        alteredField: Boolean = false,
+        planType: String = "Landroidx/credentials/Credential;",
+    ): MutableMethod {
         val plan = "Lproton/android/pass/domain/Plan;"
         val limit = "Lproton/android/pass/domain/PlanLimit;"
         val fields = listOf(
-            Triple("planType", "Landroidx/credentials/Credential;", Opcode.IPUT_OBJECT),
+            Triple("planType", planType, Opcode.IPUT_OBJECT),
             Triple("hideUpgrade", "Z", Opcode.IPUT_BOOLEAN),
             Triple(if (alteredField) "otherLimit" else "vaultLimit", limit, Opcode.IPUT_OBJECT),
             Triple("aliasLimit", limit, Opcode.IPUT_OBJECT),
@@ -138,8 +185,30 @@ object ReleaseSafetyTest {
             }
             addInstruction(BuilderInstruction10x(Opcode.RETURN_VOID))
         }
-        return mutableMethod(plan, "<init>", listOf("Landroidx/credentials/Credential;", "Z",
-            limit, limit, limit, "J"), false, body, constructor = true)
+        return mutableMethod(plan, "<init>", listOf(planType, "Z", limit, limit, limit, "J"),
+            false, body, constructor = true)
+    }
+
+    private fun planReferences(planType: String): Map<String, ClassDef> {
+        val plus = "Lproton/android/pass/domain/PlanType\$Paid\$Plus;"
+        val paid = "Lproton/android/pass/domain/PlanType\$Paid;"
+        val limit = "Lproton/android/pass/domain/PlanLimit;"
+        val unlimited = "Lproton/android/pass/domain/PlanLimit\$Unlimited;"
+        val plusBody = MutableMethodImplementation(3).apply {
+            addInstruction(BuilderInstruction35c(Opcode.INVOKE_DIRECT, 1, 0, 0, 0, 0, 0,
+                ref(paid, "<init>")))
+            addInstruction(BuilderInstruction10x(Opcode.RETURN_VOID))
+        }
+        val plusConstructor = mutableMethod(plus, "<init>",
+            listOf("Ljava/lang/String;", "Ljava/lang/String;"), false, plusBody, constructor = true)
+        val plusClass = ImmutableClassDef(plus, AccessFlags.PUBLIC.value, paid,
+            emptyList(), null, emptyList(), emptyList(), listOf(plusConstructor))
+        val instance = ImmutableField(unlimited, "INSTANCE", unlimited,
+            AccessFlags.PUBLIC.value or AccessFlags.STATIC.value or AccessFlags.FINAL.value,
+            null, null, null)
+        val unlimitedClass = ImmutableClassDef(unlimited, AccessFlags.PUBLIC.value, "Ljava/lang/Object;",
+            listOf(limit), null, emptyList(), listOf(instance), emptyList())
+        return listOf(plusClass, classDef(paid, planType), unlimitedClass).associateBy { it.type }
     }
 
     private fun mutableMethod(

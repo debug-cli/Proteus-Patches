@@ -92,7 +92,7 @@ jobs:
           python3 -m unittest discover -s .github/scripts -p 'test_*.py' > verify.log 2>&1 &&
           python3 .github/scripts/verify_android_bundle.py "patches/build/libs/patches-${VERSION}.mpp" "$VERSION" --patch-list patches-list.json >> verify.log 2>&1 &&
           python3 .github/scripts/verify_patch_source.py patches-bundle.json "$VERSION" >> verify.log 2>&1 &&
-          { if [ "$VERSION" = "2.2.9" ]; then python3 .github/scripts/verify_v229_catalog.py patches-list.json "$VERSION"; fi; } >> verify.log 2>&1 &&
+          { if [ "$VERSION" = "2.2.9" ]; then python3 .github/scripts/verify_v229_catalog.py patches-list.json "$VERSION" --require-proton-1415; fi; } >> verify.log 2>&1 &&
           tail -20 verify.log && exit 0
           tail -50 verify.log | while IFS= read -r line; do echo "::error::$line"; done
           exit 1
@@ -121,6 +121,41 @@ jobs:
           path: build.log
 
 
+  expose-candidate:
+    name: Expose candidate bundle for retrieval
+    if: >-
+      github.event_name == 'push' && startsWith(github.ref_name, 'arena/') &&
+      contains(github.event.head_commit.message, '[candidate-mpp]')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      statuses: write
+    steps:
+      - name: Download verified bundle
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: patches-mpp
+          path: ${{ runner.temp }}/candidate-mpp
+      - name: Store an unreferenced Git blob and publish its identifier
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          mapfile -t bundles < <(find "$RUNNER_TEMP/candidate-mpp" -maxdepth 1 -name '*.mpp' -type f)
+          test "${#bundles[@]}" = 1
+          bundle="${bundles[0]}"
+          python3 - "$bundle" "$RUNNER_TEMP/mpp-blob.json" <<'PY'
+          import base64, json, sys
+          with open(sys.argv[1], "rb") as src, open(sys.argv[2], "w", encoding="utf-8") as dst:
+              json.dump({"content": base64.b64encode(src.read()).decode("ascii"), "encoding": "base64"}, dst)
+          PY
+          blob=$(gh api --method POST "repos/$GITHUB_REPOSITORY/git/blobs" --input "$RUNNER_TEMP/mpp-blob.json" --jq .sha)
+          test "$blob" = "$(git hash-object "$bundle")"
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+              -f state=success -f context=proteus/candidate-mpp -f description="blob:$blob" \
+              -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >/dev/null
+
   sync-metadata:
     name: Sync generated catalog to branch
     if: >-
@@ -146,7 +181,7 @@ jobs:
           test "$GITHUB_REF_TYPE" = branch
           case "$GITHUB_REF_NAME" in main|dev) echo 'Use the normal release workflow for main/dev' >&2; exit 1;; esac
           cp "$RUNNER_TEMP/catalog/patches-list.json" patches-list.json
-          python3 .github/scripts/verify_v229_catalog.py patches-list.json 2.2.9
+          python3 .github/scripts/verify_v229_catalog.py patches-list.json 2.2.9 --require-proton-1415
           python3 .github/scripts/generate_patches_readme.py "$GITHUB_REPOSITORY" "$GITHUB_REF_NAME" patches-list.json README.md
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'

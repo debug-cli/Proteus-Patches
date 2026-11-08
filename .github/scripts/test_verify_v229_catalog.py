@@ -68,6 +68,29 @@ class VerifyV229CatalogTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "must not execute dependencies"):
             verifier.verify_catalog(self.catalog)
 
+    def test_experimental_proton_1415_target(self):
+        proton_patches = [p for p in self.catalog["patches"] if any(
+            c.get("packageName") == "proton.android.pass" for c in p.get("compatiblePackages") or []
+        )]
+        for patch in proton_patches:
+            patch["compatiblePackages"][0]["targets"] = [
+                {"version": "1.41.3"},
+                {"version": "1.41.5", "isExperimental": True, "versionCodes": None, "minSdk": 27},
+            ]
+        verifier.verify_catalog(self.catalog, require_proton_1415=True)
+        target = proton_patches[0]["compatiblePackages"][0]["targets"][1]
+        target["isExperimental"] = False
+        with self.assertRaisesRegex(ValueError, "experimental"):
+            verifier.verify_catalog(self.catalog, require_proton_1415=True)
+        target["isExperimental"] = True
+        target["versionCodes"] = {"ARM64_V8A": 123}
+        with self.assertRaisesRegex(ValueError, "variant metadata"):
+            verifier.verify_catalog(self.catalog, require_proton_1415=True)
+        target["versionCodes"] = None
+        proton_patches[0]["compatiblePackages"][0]["targets"].pop(0)
+        with self.assertRaisesRegex(ValueError, "retain the 1.41.3"):
+            verifier.verify_catalog(self.catalog, require_proton_1415=True)
+
     def test_missing_universal_ad_patch(self):
         self.catalog["patches"].remove(self.entry("Block ads & ad SDKs"))
         with self.assertRaisesRegex(ValueError, "universal"):

@@ -78,3 +78,20 @@ internal val PlanConstructorFingerprint = Fingerprint(
         "J",
     ),
 )
+
+// Source-derived alternative: the 1.41.5 upstream Plan constructor declares
+// PlanType. R8 may rewrite or inline this signature in the actual APK, so both
+// the resolved body and all injected references still require structural checks.
+internal val PlanSourceTypeConstructorFingerprint = Fingerprint(
+    definingClass = "Lproton/android/pass/domain/Plan;",
+    name = "<init>",
+    accessFlags = listOf(AccessFlags.PUBLIC, AccessFlags.CONSTRUCTOR),
+    parameters = listOf(
+        "Lproton/android/pass/domain/PlanType;",
+        "Z",
+        "Lproton/android/pass/domain/PlanLimit;",
+        "Lproton/android/pass/domain/PlanLimit;",
+        "Lproton/android/pass/domain/PlanLimit;",
+        "J",
+    ),
+)
