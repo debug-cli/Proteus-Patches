@@ -46,7 +46,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 4. Pick the apps you patch, choose your patches, and patch.
 
 <!-- PATCHES_START EXPANDED -->
-> **[v2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;174 patches total
+> **[v2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/823830aa-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;204 patches total
 <details open>
 <summary>📦 Google Photos&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
 <br>
@@ -98,7 +98,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
 |----------|----------------|-----------|
 | [Allow re-signed/sideloaded installs](#allow-re-signed-sideloaded-installs) | Neutralizes Mereframe's install-integrity checks so patched (re-signed) builds start normally instead of showing the installation-refused screen. Required for any other patch here to be usable. |  |
-| [Bypass native integrity checks](#bypass-native-integrity-checks) | libunnamed_raw.so JNI-throws 'app integrity check failed' on re-signed builds, killing camera session start (preview) - observed via diagnostic crash log. This patch catches the throw at the session-opening wrapper and substitutes a valid session result. Required together with 'Allow re-signed/sideloaded installs'. |  |
+| [Bypass native integrity checks](#bypass-native-integrity-checks) | libunnamed_raw.so JNI-throws 'app integrity check failed' on re-signed builds, killing camera session start (preview) - observed via diagnostic crash log. This patch calls the session-opening wrapper inside a real JVM try/catch (extension) and substitutes a well-formed session result on failure. Required together with 'Allow re-signed/sideloaded installs'. |  |
 | [Diagnostic crash log](#diagnostic-crash-log) | DIAGNOSTIC ONLY - writes the full stack trace to Downloads/mereframe-crash-*.txt when the app crashes, for remote diagnosis. Off by default; enable when asked to produce a crash log. Chain-forwards to the original crash handler. |  |
 | [Unlock Pro features](#unlock-pro-features) | Includes every registered feature in the resolved feature set by dropping the ownership check at the entitlement resolver (nv.e). LOCAL client-side effect only. WARNING (kept off by default): on at least one device (realme/Android 16) enabling the single registered Pro feature crashes capture - the Pro pipeline path is gated by this flag and we cannot verify its safety side. Enable only if you specifically want the Pro toolset; the app works fully (RAW capture incl.) with just 'Allow re-signed installs'. |  |
 
@@ -131,6 +131,52 @@ For configuration advice, limitations, and permission-patch examples, see the
 | [Skip pre-roll promos](#skip-pre-roll-promos) | Disables MUBI's app-side pre-roll gate when it is a boolean check. Pre-roll injected by the server or embedded in the stream is unaffected. |  |
 | [Spoof Widevine level for MUBI](#spoof-widevine-level-for-mubi) | Reports L1 / HDCP 2.2 to MUBI's local DRM checks. Server-side licensing still decides the resolution, so HD may remain unavailable. |  |
 | [Suppress subscription paywall](#suppress-subscription-paywall) | Closes MUBI's upgrade screen immediately instead of showing it. Does not unlock playback or grant a subscription; only hides the upsell screen. |  |
+
+</details>
+
+<details open>
+<summary>📦 Amazon Shopping&nbsp;&nbsp;•&nbsp;&nbsp;9 patches</summary>
+<br>
+
+**🎯 Supported versions:**
+
+| 32.18.0.100 |
+| :---: |
+
+| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
+|----------|----------------|-----------|
+| [Amazon: Stop feed video autoplay](#amazon-stop-feed-video-autoplay) | Stops Amazon's home-feed native video units (live promotional videos,<br>review carousels, sponsored reels) from starting on their own, using<br>the same setPlayWhenReady(true) → false heuristic as the universal<br>'Disable video autoplay (ExoPlayer/Media3)' patch.<br><br>Covers native ExoPlayer/Media3 players only — NOT the in-app WebView<br>pages (use the default-on 'Disable video autoplay' patch for those),<br>and NOT WebView CSS-injected ad blocks (use 'Remove ads'). Heuristic:<br>reflection or obfuscated player setup is not covered. Can stop playback<br>entirely in apps whose only play path is a flipped literal call — turn<br>it off if videos never start. Unverified on device. |  |
+| [Dark mode](#dark-mode) | Force dark mode for Amazon Shopping. | • Dark mode |
+| [Disable search suggestions tracking](#disable-search-suggestions-tracking) | Prevents search keypress and focus events from being sent with suggestion requests. |  |
+| [Disable video autoplay](#disable-video-autoplay) | Prevents videos from autoplaying in Amazon's in-app WebView pages. |  |
+| [Fix Amazon manifest conflicts](#fix-amazon-manifest-conflicts) | Updates shared Amazon permissions so other Amazon apps can coexist. |  |
+| [Hide Rufus tab](#hide-rufus-tab) | Removes the Rufus AI assistant tab from Amazon's bottom navigation bar. |  |
+| [Open links in browser](#open-links-in-browser) | Opens non-Amazon URLs in the default browser instead of the in-app WebView. |  |
+| [Price history charts](#price-history-charts) | Injects Keepa and CamelCamelCamel price history charts on Amazon product pages. | • Chart period<br>• Show period toggle<br>• Toggle periods<br>• Keepa price lines<br>• CamelCamelCamel chart<br>• Hide zero-price gaps<br>• Chart size<br>• Start collapsed |
+| [Remove ads](#remove-ads) | Hides sponsored and ad content in Amazon Shopping via CSS injection. |  |
+
+</details>
+
+<details open>
+<summary>📦 Amazon India&nbsp;&nbsp;•&nbsp;&nbsp;9 patches</summary>
+<br>
+
+**🎯 Supported versions:**
+
+| 32.18.0.300 | 32.19.0.300 |
+| :---: | :---: |
+
+| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
+|----------|----------------|-----------|
+| [Amazon: Stop feed video autoplay](#amazon-stop-feed-video-autoplay) | Stops Amazon's home-feed native video units (live promotional videos,<br>review carousels, sponsored reels) from starting on their own, using<br>the same setPlayWhenReady(true) → false heuristic as the universal<br>'Disable video autoplay (ExoPlayer/Media3)' patch.<br><br>Covers native ExoPlayer/Media3 players only — NOT the in-app WebView<br>pages (use the default-on 'Disable video autoplay' patch for those),<br>and NOT WebView CSS-injected ad blocks (use 'Remove ads'). Heuristic:<br>reflection or obfuscated player setup is not covered. Can stop playback<br>entirely in apps whose only play path is a flipped literal call — turn<br>it off if videos never start. Unverified on device. |  |
+| [Dark mode](#dark-mode) | Force dark mode for Amazon Shopping. | • Dark mode |
+| [Disable search suggestions tracking](#disable-search-suggestions-tracking) | Prevents search keypress and focus events from being sent with suggestion requests. |  |
+| [Disable video autoplay](#disable-video-autoplay) | Prevents videos from autoplaying in Amazon's in-app WebView pages. |  |
+| [Fix Amazon manifest conflicts](#fix-amazon-manifest-conflicts) | Updates shared Amazon permissions so other Amazon apps can coexist. |  |
+| [Hide Rufus tab](#hide-rufus-tab) | Removes the Rufus AI assistant tab from Amazon's bottom navigation bar. |  |
+| [Open links in browser](#open-links-in-browser) | Opens non-Amazon URLs in the default browser instead of the in-app WebView. |  |
+| [Price history charts](#price-history-charts) | Injects Keepa and CamelCamelCamel price history charts on Amazon product pages. | • Chart period<br>• Show period toggle<br>• Toggle periods<br>• Keepa price lines<br>• CamelCamelCamel chart<br>• Hide zero-price gaps<br>• Chart size<br>• Start collapsed |
+| [Remove ads](#remove-ads) | Hides sponsored and ad content in Amazon Shopping via CSS injection. |  |
 
 </details>
 
@@ -335,48 +381,19 @@ For configuration advice, limitations, and permission-patch examples, see the
 </details>
 
 <details open>
-<summary>📦 Amazon Shopping&nbsp;&nbsp;•&nbsp;&nbsp;9 patches</summary>
+<summary>📦 Hindustan Times&nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
 <br>
 
 **🎯 Supported versions:**
 
-| 32.18.0.100 |
+| 4.9.16 |
 | :---: |
 
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
 |----------|----------------|-----------|
-| [Amazon: Stop feed video autoplay](#amazon-stop-feed-video-autoplay) | Stops Amazon's home-feed native video units (live promotional videos,<br>review carousels, sponsored reels) from starting on their own, using<br>the same setPlayWhenReady(true) → false heuristic as the universal<br>'Disable video autoplay (ExoPlayer/Media3)' patch.<br><br>Covers native ExoPlayer/Media3 players only — NOT the in-app WebView<br>pages (use the default-on 'Disable video autoplay' patch for those),<br>and NOT WebView CSS-injected ad blocks (use 'Remove ads'). Heuristic:<br>reflection or obfuscated player setup is not covered. Can stop playback<br>entirely in apps whose only play path is a flipped literal call — turn<br>it off if videos never start. Unverified on device. |  |
-| [Dark mode](#dark-mode) | Force dark mode for Amazon Shopping. | • Dark mode |
-| [Disable search suggestions tracking](#disable-search-suggestions-tracking) | Prevents search keypress and focus events from being sent with suggestion requests. |  |
-| [Disable video autoplay](#disable-video-autoplay) | Prevents videos from autoplaying in Amazon's in-app WebView pages. |  |
-| [Fix Amazon manifest conflicts](#fix-amazon-manifest-conflicts) | Updates shared Amazon permissions so other Amazon apps can coexist. |  |
-| [Hide Rufus tab](#hide-rufus-tab) | Removes the Rufus AI assistant tab from Amazon's bottom navigation bar. |  |
-| [Open links in browser](#open-links-in-browser) | Opens non-Amazon URLs in the default browser instead of the in-app WebView. |  |
-| [Price history charts](#price-history-charts) | Injects Keepa and CamelCamelCamel price history charts on Amazon product pages. | • Chart period<br>• Show period toggle<br>• Toggle periods<br>• Keepa price lines<br>• CamelCamelCamel chart<br>• Hide zero-price gaps<br>• Chart size<br>• Start collapsed |
-| [Remove ads](#remove-ads) | Hides sponsored and ad content in Amazon Shopping via CSS injection. |  |
-
-</details>
-
-<details open>
-<summary>📦 Amazon India&nbsp;&nbsp;•&nbsp;&nbsp;9 patches</summary>
-<br>
-
-**🎯 Supported versions:**
-
-| 32.18.0.300 | 32.19.0.300 |
-| :---: | :---: |
-
-| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
-|----------|----------------|-----------|
-| [Amazon: Stop feed video autoplay](#amazon-stop-feed-video-autoplay) | Stops Amazon's home-feed native video units (live promotional videos,<br>review carousels, sponsored reels) from starting on their own, using<br>the same setPlayWhenReady(true) → false heuristic as the universal<br>'Disable video autoplay (ExoPlayer/Media3)' patch.<br><br>Covers native ExoPlayer/Media3 players only — NOT the in-app WebView<br>pages (use the default-on 'Disable video autoplay' patch for those),<br>and NOT WebView CSS-injected ad blocks (use 'Remove ads'). Heuristic:<br>reflection or obfuscated player setup is not covered. Can stop playback<br>entirely in apps whose only play path is a flipped literal call — turn<br>it off if videos never start. Unverified on device. |  |
-| [Dark mode](#dark-mode) | Force dark mode for Amazon Shopping. | • Dark mode |
-| [Disable search suggestions tracking](#disable-search-suggestions-tracking) | Prevents search keypress and focus events from being sent with suggestion requests. |  |
-| [Disable video autoplay](#disable-video-autoplay) | Prevents videos from autoplaying in Amazon's in-app WebView pages. |  |
-| [Fix Amazon manifest conflicts](#fix-amazon-manifest-conflicts) | Updates shared Amazon permissions so other Amazon apps can coexist. |  |
-| [Hide Rufus tab](#hide-rufus-tab) | Removes the Rufus AI assistant tab from Amazon's bottom navigation bar. |  |
-| [Open links in browser](#open-links-in-browser) | Opens non-Amazon URLs in the default browser instead of the in-app WebView. |  |
-| [Price history charts](#price-history-charts) | Injects Keepa and CamelCamelCamel price history charts on Amazon product pages. | • Chart period<br>• Show period toggle<br>• Toggle periods<br>• Keepa price lines<br>• CamelCamelCamel chart<br>• Hide zero-price gaps<br>• Chart size<br>• Start collapsed |
-| [Remove ads](#remove-ads) | Hides sponsored and ad content in Amazon Shopping via CSS injection. |  |
+| [Hindustan Times: Block analytics & tracking SDKs](#hindustan-times-block-analytics-tracking-sdks) | Blocks Hindustan Times' analytics & tracking SDKs (Firebase Analytics,<br>AppsFlyer, Adjust, WebEngage, CleverTap and similar) using the same universal<br>heuristic as 'Block analytics & tracking SDKs'.<br><br>Applies to com.ht.news only. Heuristic; obfuscated or reflection-based<br>reporting is not covered. Unverified on device. |  |
+| [Hindustan Times: Disable video autoplay (ExoPlayer)](#hindustan-times-disable-video-autoplay-exoplayer) | Stops video autoplay in the Hindustan Times feed/article bodies<br>(ExoPlayer/Media3) using the same heuristic as 'Disable video autoplay<br>(ExoPlayer/Media3)'.<br><br>Applies to com.ht.news only. Heuristic; see the universal entry for<br>limitations. Unverified on device. |  |
+| [Hindustan Times: Prefer external browser over Custom Tabs](#hindustan-times-prefer-external-browser-over-custom-tabs) | Opens links in the default external browser instead of an in-app Custom<br>Tab, using the same rewrite as the universal 'Prefer external browser<br>over Custom Tabs' patch.<br><br>Applies to com.ht.news only. Some article WebViews are not affected —<br>this covers Custom Tabs / CustomTabsIntent call sites only.<br>Unverified on device. |  |
 
 </details>
 
@@ -392,6 +409,40 @@ For configuration advice, limitations, and permission-patch examples, see the
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
 |----------|----------------|-----------|
 | [Inure — Unlock Full Version (GitHub)](#inure-unlock-full-version-github) | Bypasses the 15-day trial gate and unlocks all premium features in Inure App Manager (GitHub). |  |
+
+</details>
+
+<details open>
+<summary>📦 Meesho&nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
+<br>
+
+**🎯 Supported versions:**
+
+| 29.9 | 29.8 | 29.7 | 29.6 | 29.5 |
+| :---: | :---: | :---: | :---: | :---: |
+
+| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
+|----------|----------------|-----------|
+| [Meesho: Block analytics & tracking SDKs](#meesho-block-analytics-tracking-sdks) | Blocks Meesho's analytics & tracking SDKs (Firebase Analytics, AppsFlyer,<br>Adjust, Facebook AppEvents, WebEngage, CleverTap and similar) using the<br>same universal heuristic as 'Block analytics & tracking SDKs'.<br><br>Applies to com.meesho.shopping only. Heuristic; obfuscated or<br>reflection-based reporting is not covered. Unverified on device. |  |
+| [Meesho: Disable video autoplay (ExoPlayer)](#meesho-disable-video-autoplay-exoplayer) | Stops video autoplay in the Meesho feed and product videos (ExoPlayer/Media3)<br>using the same heuristic as 'Disable video autoplay (ExoPlayer/Media3)'.<br><br>Applies to com.meesho.shopping only. Heuristic; see the universal entry<br>for limitations. Unverified on device. |  |
+| [Meesho: Prefer external browser over Custom Tabs](#meesho-prefer-external-browser-over-custom-tabs) | Opens links in the default external browser instead of an in-app Custom<br>Tab, using the same rewrite as the universal 'Prefer external browser<br>over Custom Tabs' patch.<br><br>Applies to com.meesho.shopping only. Covers Custom Tabs /<br>CustomTabsIntent call sites only. Unverified on device. |  |
+
+</details>
+
+<details open>
+<summary>📦 Mint&nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
+<br>
+
+**🎯 Supported versions:**
+
+| 5.7.5 | 5.8.4 |
+| :---: | :---: |
+
+| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
+|----------|----------------|-----------|
+| [Mint: Block analytics & tracking SDKs](#mint-block-analytics-tracking-sdks) | Blocks Mint's analytics & tracking SDKs (Firebase Analytics, AppsFlyer, Adjust,<br>WebEngage, CleverTap and similar) using the same universal heuristic as<br>'Block analytics & tracking SDKs'.<br><br>Applies to com.htmedia.mint only. Heuristic; obfuscated or reflection-based<br>reporting is not covered. Unverified on device. |  |
+| [Mint: Disable video autoplay (ExoPlayer)](#mint-disable-video-autoplay-exoplayer) | Stops video autoplay in the Mint feed/article bodies (ExoPlayer/Media3)<br>using the same heuristic as 'Disable video autoplay (ExoPlayer/Media3)'.<br><br>Applies to com.htmedia.mint only. Heuristic; see the universal entry for<br>limitations. Unverified on device. |  |
+| [Mint: Prefer external browser over Custom Tabs](#mint-prefer-external-browser-over-custom-tabs) | Opens links in the default external browser instead of an in-app Custom<br>Tab, using the same rewrite as the universal 'Prefer external browser<br>over Custom Tabs' patch.<br><br>Applies to com.htmedia.mint only. Some article WebViews are not affected<br>— this covers Custom Tabs / CustomTabsIntent call sites only.<br>Unverified on device. |  |
 
 </details>
 
@@ -428,6 +479,30 @@ For configuration advice, limitations, and permission-patch examples, see the
 </details>
 
 <details open>
+<summary>📦 Proton Pass&nbsp;&nbsp;•&nbsp;&nbsp;10 patches</summary>
+<br>
+
+**🎯 Supported versions:**
+
+| 1.41.3 |
+| :---: |
+
+| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
+|----------|----------------|-----------|
+| [Proton Pass: Allow screenshots & screen recording](#proton-pass-allow-screenshots-screen-recording) | Attempts to remove FLAG_SECURE / secure SurfaceView settings using the<br>universal heuristic. Some screens may still block capture; allowing it<br>can expose vault contents to other software. Unverified on device. |  |
+| [Proton Pass: Block telemetry & crash reporting](#proton-pass-block-telemetry-crash-reporting) | Attempts to remove calls matching the universal analytics and ad SDK<br>heuristics. This does not guarantee that Proton telemetry or crash<br>reporting is blocked; custom, native, reflective and obfuscated paths<br>are not covered. Unverified on device. |  |
+| [Proton Pass: Dark web monitoring local-only (cosmetic)](#proton-pass-dark-web-monitoring-local-only-cosmetic) | UNIMPLEMENTED PLACEHOLDER. Does not monitor for breaches or provide a local monitoring result.<br>Selecting this entry fails; app-specific APK analysis is required. |  |
+| [Proton Pass: Disable auto-lock / extend timeout](#proton-pass-disable-auto-lock-extend-timeout) | UNIMPLEMENTED PLACEHOLDER. Does not change the vault auto-lock behavior.<br>Selecting this entry fails; app-specific APK analysis is required. |  |
+| [Proton Pass: Disable clipboard auto-clear](#proton-pass-disable-clipboard-auto-clear) | UNIMPLEMENTED PLACEHOLDER. Does not change clipboard clearing.<br>Selecting this entry fails; app-specific APK analysis is required. |  |
+| [Proton Pass: Force biometric always-on](#proton-pass-force-biometric-always-on) | UNIMPLEMENTED PLACEHOLDER. Does not change biometric or PIN requirements.<br>Selecting this entry fails; app-specific APK analysis is required. |  |
+| [Proton Pass: Remove upgrade nag UI](#proton-pass-remove-upgrade-nag-ui) | UNIMPLEMENTED PLACEHOLDER. Does not hide upgrade banners or paywall screens.<br>Selecting this entry fails; app-specific APK analysis is required. |  |
+| [Proton Pass: Unlock multiple vaults](#proton-pass-unlock-multiple-vaults) | UNIMPLEMENTED PLACEHOLDER. Does not change vault limits or server entitlements.<br>Selecting this entry fails; app-specific APK analysis is required. |  |
+| [Proton Pass: Unlock password-generator options](#proton-pass-unlock-password-generator-options) | UNIMPLEMENTED PLACEHOLDER. Does not unlock password-generator options.<br>Selecting this entry fails; app-specific APK analysis is required. |  |
+| [Unlock Unlimited Plan](#unlock-unlimited-plan) | Attempts to change Proton Pass's local plan model and limits; server-side entitlements remain unchanged. The 1.41.3 target is unverified; the constructor layout was documented for 1.40.3. Uses signature, install-source and Firebase certificate spoofing dependencies. |  |
+
+</details>
+
+<details open>
 <summary>📦 Everything Widgets&nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
 <br>
 
@@ -441,6 +516,23 @@ For configuration advice, limitations, and permission-patch examples, see the
 | [Remove tracking & analytics](#remove-tracking-analytics) | Kills Facebook auto-init and OneSignal, and opts Firebase Crashlytics/Performance/Analytics out of collection at boot, in Everything Widgets. Widget functionality is unaffected; OneSignal push notifications stop. |  |
 | [Spoof Play Store signature](#spoof-play-store-signature) | Forces the Google license (Pairip) verdict branch to LICENSED and neutralizes the license payload's signature verification, so the patched/re-signed Everything Widgets build always passes store validation. |  |
 | [Unlock Premium](#unlock-premium) | Bypasses the Google license (Pairip) purchase check of the paid Everything Widgets app: the app runs fully without a Play purchase. Donation SKUs are cosmetic and untouched. |  |
+
+</details>
+
+<details open>
+<summary>📦 Table Notes&nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
+<br>
+
+**🎯 Supported versions:**
+
+| 20261030 | 20260916 | 20260831 |
+| :---: | :---: | :---: |
+
+| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
+|----------|----------------|-----------|
+| [Table Notes: Block ads & ad SDKs](#table-notes-block-ads-ad-sdks) | Attempts to remove ad SDK load/show calls using the universal heuristic.<br>Obfuscated, reflective, native and first-party ads may be unaffected;<br>rewarded-ad flows may break. Unverified on device. |  |
+| [Table Notes: Block analytics & tracking SDKs](#table-notes-block-analytics-tracking-sdks) | Attempts to remove calls to known analytics SDKs (Firebase Analytics,<br>AppsFlyer, Adjust, Facebook AppEvents and similar) using the universal<br>'Block analytics & tracking SDKs' heuristic.<br><br>Applies to vivekagarwal.playwithdb only. Heuristic; obfuscated or<br>reflection-based reporting is not covered. Unverified on device. |  |
+| [Table Notes: Prefer external browser over Custom Tabs](#table-notes-prefer-external-browser-over-custom-tabs) | Opens links in the default external browser instead of an in-app Custom<br>Tab, using the same rewrite as the universal 'Prefer external browser<br>over Custom Tabs' patch.<br><br>Applies to vivekagarwal.playwithdb only. Covers Custom Tabs /<br>CustomTabsIntent call sites only. Unverified on device. |  |
 
 </details>
 
@@ -505,21 +597,6 @@ For configuration advice, limitations, and permission-patch examples, see the
 </details>
 
 <details open>
-<summary>📦 Proton Pass&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
-<br>
-
-**🎯 Supported versions:**
-
-| 1.41.3 |
-| :---: |
-
-| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
-|----------|----------------|-----------|
-| [Unlock Unlimited Plan](#unlock-unlimited-plan) | Forces Proton Pass Plus plan with all limits removed and paid features unlocked. |  |
-
-</details>
-
-<details open>
 <summary>📦 trakt.TV Shows & Movies&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
 <br>
 
@@ -580,63 +657,44 @@ For configuration advice, limitations, and permission-patch examples, see the
 </details>
 
 <details open>
-<summary>📦 Mint&nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
+<summary>📦 WhatsApp&nbsp;&nbsp;•&nbsp;&nbsp;17 patches</summary>
 <br>
 
 **🎯 Supported versions:**
 
-| 5.7.5 | 5.8.4 |
-| :---: | :---: |
+| 2.26.43.76 | 2.26.43.74 | 2.26.41.77 |
+| :---: | :---: | :---: |
 
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
 |----------|----------------|-----------|
-| [Mint: Block analytics & tracking SDKs](#mint-block-analytics-tracking-sdks) | Blocks Mint's analytics & tracking SDKs (Firebase Analytics, AppsFlyer, Adjust,<br>WebEngage, CleverTap and similar) using the same universal heuristic as<br>'Block analytics & tracking SDKs'.<br><br>Applies to com.htmedia.mint only. Heuristic; obfuscated or reflection-based<br>reporting is not covered. Unverified on device. |  |
-| [Mint: Disable video autoplay (ExoPlayer)](#mint-disable-video-autoplay-exoplayer) | Stops video autoplay in the Mint feed/article bodies (ExoPlayer/Media3)<br>using the same heuristic as 'Disable video autoplay (ExoPlayer/Media3)'.<br><br>Applies to com.htmedia.mint only. Heuristic; see the universal entry for<br>limitations. Unverified on device. |  |
-| [Mint: Prefer external browser over Custom Tabs](#mint-prefer-external-browser-over-custom-tabs) | Opens links in the default external browser instead of an in-app Custom<br>Tab, using the same rewrite as the universal 'Prefer external browser<br>over Custom Tabs' patch.<br><br>Applies to com.htmedia.mint only. Some article WebViews are not affected<br>— this covers Custom Tabs / CustomTabsIntent call sites only.<br>Unverified on device. |  |
+| [WhatsApp: Allow screenshots & screen recording](#whatsapp-allow-screenshots-screen-recording) | Attempts to remove FLAG_SECURE / secure SurfaceView settings in<br>WhatsApp so screenshots and screen recording can work in chat and<br>status screens, using the same universal heuristic as 'Allow<br>screenshots & screen recording'.<br><br>Applies to com.whatsapp only. Some screens (chat lock, payment, media<br>viewer) may still block capture independently. Unverified on device. |  |
+| [WhatsApp: App icon (classic or premium style)](#whatsapp-app-icon-classic-or-premium-style) | UNIMPLEMENTED PLACEHOLDER. Does not change the launcher icon.<br>Selecting this entry fails; app-specific APK analysis is required. |  |
+| [WhatsApp: Block ads & ad SDKs](#whatsapp-block-ads-ad-sdks) | Attempts to remove known ad SDK load/show calls using the universal<br>heuristic. WhatsApp's first-party, obfuscated, reflective and native ads<br>may be unaffected; rewarded-ad flows may break. Unverified on device. |  |
+| [WhatsApp: Block analytics & tracking SDKs](#whatsapp-block-analytics-tracking-sdks) | Attempts to remove calls to known analytics SDK methods using the<br>universal heuristic. Custom WhatsApp/Meta telemetry, obfuscated,<br>reflective and native reporting may still operate. Unverified on device. |  |
+| [WhatsApp: Block screenshots & screen recording](#whatsapp-block-screenshots-screen-recording) | Attempts to add FLAG_SECURE to recognizable activity windows and to<br>secure SurfaceViews using the universal heuristic. It cannot guarantee<br>protection of every screen. Do not combine with 'WhatsApp: Allow<br>screenshots & screen recording'. Unverified on device. |  |
+| [WhatsApp: Disable video autoplay (Status)](#whatsapp-disable-video-autoplay-status) | Attempts to stop autoplay by rewriting literal ExoPlayer/Media3 calls<br>using the universal heuristic. Coverage of Status is not established;<br>some videos may stop playing entirely. Unverified on device. |  |
+| [WhatsApp: Empty telephony identifiers](#whatsapp-empty-telephony-identifiers) | Replaces TelephonyManager ID getters (getDeviceId, getImei, getMeid,<br>getSubscriberId, getLine1Number, getSimSerialNumber,<br>getDeviceSoftwareVersion) with empty strings, using the same universal<br>heuristic as 'Empty telephony identifiers'.<br><br>Applies to com.whatsapp only. Heuristic; may break phone-number-based<br>registration or re-verification. Unverified on device. |  |
+| [WhatsApp: Keep deleted messages](#whatsapp-keep-deleted-messages) | UNIMPLEMENTED PLACEHOLDER. Does not preserve deleted messages.<br>Selecting this entry fails; app-specific APK analysis is required. |  |
+| [WhatsApp: Limit usage data (diagnostics & analytics)](#whatsapp-limit-usage-data-diagnostics-analytics) | Limits diagnostic and analytics data WhatsApp sends, using the same<br>universal heuristic as 'Block analytics & tracking SDKs'.<br><br>Applies to com.whatsapp only. Heuristic; obfuscated or reflection-based<br>reporting is not covered. Unverified on device. |  |
+| [WhatsApp: Mods settings entry](#whatsapp-mods-settings-entry) | UNIMPLEMENTED PLACEHOLDER. Does not add an entry to WhatsApp Settings.<br>Selecting this entry fails; app-specific APK analysis is required. |  |
+| [WhatsApp: Mods settings resources](#whatsapp-mods-settings-resources) | UNIMPLEMENTED PLACEHOLDER. Does not add settings resources or strings.<br>Selecting this entry fails; app-specific APK analysis is required. |  |
+| [WhatsApp: Prefer external browser over Custom Tabs](#whatsapp-prefer-external-browser-over-custom-tabs) | Opens links in the default external browser instead of an in-app Custom<br>Tab, using the same rewrite as the universal 'Prefer external browser<br>over Custom Tabs' patch.<br><br>Applies to com.whatsapp only. Covers Custom Tabs /<br>CustomTabsIntent call sites only. Unverified on device. |  |
+| [WhatsApp: Read receipts (no blue ticks)](#whatsapp-read-receipts-no-blue-ticks) | UNIMPLEMENTED PLACEHOLDER. Does not prevent read receipts or blue ticks from being sent.<br>Selecting this entry fails; app-specific APK analysis is required. |  |
+| [WhatsApp: Remove dangerous permissions](#whatsapp-remove-dangerous-permissions) | Uses the universal permission-removal patch on WhatsApp. Its default<br>categories remove camera, microphone, contacts, phone, SMS and other<br>permissions, which can break calls, media or registration. For control<br>over categories and keep lists, use the universal patch directly.<br>Unverified on device. |  |
+| [WhatsApp: Strip logging (android.util.Log)](#whatsapp-strip-logging-android-util-log) | Attempts to remove matching android.util.Log calls using the universal<br>heuristic. Other logging paths can still leak data. Unverified on device. |  |
+| [WhatsApp: Typing indicator (hide when typing)](#whatsapp-typing-indicator-hide-when-typing) | UNIMPLEMENTED PLACEHOLDER. Does not hide the typing indicator.<br>Selecting this entry fails; app-specific APK analysis is required. |  |
+| [WhatsApp: View once media (allow reopen & save)](#whatsapp-view-once-media-allow-reopen-save) | UNIMPLEMENTED PLACEHOLDER. Does not enable reopening or saving view-once media.<br>Selecting this entry fails; app-specific APK analysis is required. |  |
 
 </details>
 
 <details open>
-<summary>📦 Hindustan Times&nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
-<br>
-
-**🎯 Supported versions:**
-
-| 4.9.16 |
-| :---: |
-
-| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
-|----------|----------------|-----------|
-| [Hindustan Times: Block analytics & tracking SDKs](#hindustan-times-block-analytics-tracking-sdks) | Blocks Hindustan Times' analytics & tracking SDKs (Firebase Analytics,<br>AppsFlyer, Adjust, WebEngage, CleverTap and similar) using the same universal<br>heuristic as 'Block analytics & tracking SDKs'.<br><br>Applies to com.ht.news only. Heuristic; obfuscated or reflection-based<br>reporting is not covered. Unverified on device. |  |
-| [Hindustan Times: Disable video autoplay (ExoPlayer)](#hindustan-times-disable-video-autoplay-exoplayer) | Stops video autoplay in the Hindustan Times feed/article bodies<br>(ExoPlayer/Media3) using the same heuristic as 'Disable video autoplay<br>(ExoPlayer/Media3)'.<br><br>Applies to com.ht.news only. Heuristic; see the universal entry for<br>limitations. Unverified on device. |  |
-| [Hindustan Times: Prefer external browser over Custom Tabs](#hindustan-times-prefer-external-browser-over-custom-tabs) | Opens links in the default external browser instead of an in-app Custom<br>Tab, using the same rewrite as the universal 'Prefer external browser<br>over Custom Tabs' patch.<br><br>Applies to com.ht.news only. Some article WebViews are not affected —<br>this covers Custom Tabs / CustomTabsIntent call sites only.<br>Unverified on device. |  |
-
-</details>
-
-<details open>
-<summary>📦 Meesho&nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
-<br>
-
-**🎯 Supported versions:**
-
-| 29.9 | 29.8 | 29.7 | 29.6 | 29.5 |
-| :---: | :---: | :---: | :---: | :---: |
-
-| 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
-|----------|----------------|-----------|
-| [Meesho: Block analytics & tracking SDKs](#meesho-block-analytics-tracking-sdks) | Blocks Meesho's analytics & tracking SDKs (Firebase Analytics, AppsFlyer,<br>Adjust, Facebook AppEvents, WebEngage, CleverTap and similar) using the<br>same universal heuristic as 'Block analytics & tracking SDKs'.<br><br>Applies to com.meesho.shopping only. Heuristic; obfuscated or<br>reflection-based reporting is not covered. Unverified on device. |  |
-| [Meesho: Disable video autoplay (ExoPlayer)](#meesho-disable-video-autoplay-exoplayer) | Stops video autoplay in the Meesho feed and product videos (ExoPlayer/Media3)<br>using the same heuristic as 'Disable video autoplay (ExoPlayer/Media3)'.<br><br>Applies to com.meesho.shopping only. Heuristic; see the universal entry<br>for limitations. Unverified on device. |  |
-| [Meesho: Prefer external browser over Custom Tabs](#meesho-prefer-external-browser-over-custom-tabs) | Opens links in the default external browser instead of an in-app Custom<br>Tab, using the same rewrite as the universal 'Prefer external browser<br>over Custom Tabs' patch.<br><br>Applies to com.meesho.shopping only. Covers Custom Tabs /<br>CustomTabsIntent call sites only. Unverified on device. |  |
-
-</details>
-
-<details open>
-<summary>🌐 Universal&nbsp;&nbsp;•&nbsp;&nbsp;25 patches</summary>
+<summary>🌐 Universal&nbsp;&nbsp;•&nbsp;&nbsp;26 patches</summary>
 <br>
 
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
 |----------|----------------|-----------|
 | [Allow screenshots & screen recording](#allow-screenshots-screen-recording) | Attempts to remove recognizable FLAG_SECURE and secure SurfaceView settings<br>so screenshots and screen recordings can work. Some screens or protection<br>methods may still block capture, including payment or banking screens.<br><br>Applies to any app. Do not combine with "Block screenshots & screen recording". |  |
+| [Block ads & ad SDKs](#block-ads-ad-sdks) | Attempts to remove void ad load/show calls to known SDK packages, such as<br>AdMob, Unity Ads and Facebook Audience Network. Obfuscated, reflective,<br>native and first-party ads are not covered. Apps that require an ad or its<br>callback, including rewarded flows, may stop working. Unverified on device. |  |
 | [Block analytics & tracking SDKs](#block-analytics-tracking-sdks) | Disables common analytics/tracking SDKs (Firebase Analytics, AppsFlyer, Adjust,<br>Facebook AppEvents, Segment, Amplitude, Mixpanel and similar) by removing their<br>event-reporting calls.<br><br>Heuristic: obfuscated or reflection-based reporting is not covered. Applies to<br>any app. |  |
 | [Block cleartext (HTTP) traffic](#block-cleartext-http-traffic) | Sets android:usesCleartextTraffic="false" so the app cannot send plaintext<br>HTTP requests. Breaks apps that still use legacy HTTP endpoints.<br><br>Applies to any app. |  |
 | [Block screenshots & screen recording](#block-screenshots-screen-recording) | Attempts to add FLAG_SECURE to activity windows and secure SurfaceViews.<br>This can make screenshots and screen recordings show a black surface.<br>Only recognizable code with available registers can be changed, so this<br>is not a guarantee that all screens or capture methods are protected.<br><br>Applies to any app. Do not combine with "Allow screenshots & screen recording". |  |

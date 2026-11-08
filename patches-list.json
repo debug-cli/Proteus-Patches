@@ -147,6 +147,73 @@
       "options": []
     },
     {
+      "name": "Amazon: Stop feed video autoplay",
+      "description": "Stops Amazon's home-feed native video units (live promotional videos,\nreview carousels, sponsored reels) from starting on their own, using\nthe same setPlayWhenReady(true) → false heuristic as the universal\n'Disable video autoplay (ExoPlayer/Media3)' patch.\n\nCovers native ExoPlayer/Media3 players only — NOT the in-app WebView\npages (use the default-on 'Disable video autoplay' patch for those),\nand NOT WebView CSS-injected ad blocks (use 'Remove ads'). Heuristic:\nreflection or obfuscated player setup is not covered. Can stop playback\nentirely in apps whose only play path is a flipped literal call — turn\nit off if videos never start. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.amazon.mShop.android.shopping",
+          "name": "Amazon Shopping",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#FF9900",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "32.18.0.100",
+              "versionCodes": {
+                "ARM64_V8A": 1243240206,
+                "ARMEABI_V7A": 1243240206,
+                "X86_64": 1243240206,
+                "X86": 1243240206
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        },
+        {
+          "packageName": "in.amazon.mShop.android.shopping",
+          "name": "Amazon India",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#FF9900",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "32.18.0.300",
+              "versionCodes": {
+                "ARM64_V8A": 1243240206,
+                "ARMEABI_V7A": 1243240206,
+                "X86_64": 1243240206,
+                "X86": 1243240206
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "32.19.0.300",
+              "versionCodes": {
+                "ARM64_V8A": 1243250306,
+                "ARMEABI_V7A": 1243250306,
+                "X86_64": 1243250306,
+                "X86": 1243250306
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
       "name": "Anti-delete messages",
       "description": "Prevents messages deleted by other users from being removed locally.",
       "default": true,
@@ -597,6 +664,14 @@
           "values": null
         }
       ]
+    },
+    {
+      "name": "Block ads & ad SDKs",
+      "description": "Attempts to remove void ad load/show calls to known SDK packages, such as\nAdMob, Unity Ads and Facebook Audience Network. Obfuscated, reflective,\nnative and first-party ads are not covered. Apps that require an ad or its\ncallback, including rewarded flows, may stop working. Unverified on device.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": null,
+      "options": []
     },
     {
       "name": "Block analytics & data collection",
@@ -1152,7 +1227,7 @@
     },
     {
       "name": "Bypass native integrity checks",
-      "description": "libunnamed_raw.so JNI-throws 'app integrity check failed' on re-signed builds, killing camera session start (preview) - observed via diagnostic crash log. This patch catches the throw at the session-opening wrapper and substitutes a valid session result. Required together with 'Allow re-signed/sideloaded installs'.",
+      "description": "libunnamed_raw.so JNI-throws 'app integrity check failed' on re-signed builds, killing camera session start (preview) - observed via diagnostic crash log. This patch calls the session-opening wrapper inside a real JVM try/catch (extension) and substitutes a well-formed session result on failure. Required together with 'Allow re-signed/sideloaded installs'.",
       "default": true,
       "dependencies": [],
       "compatiblePackages": [
@@ -1548,7 +1623,7 @@
           "key": "backgroundColor",
           "title": "Background color",
           "description": "Opaque hexadecimal color for primary backgrounds and base window chrome. Defaults to pure OLED black (#000000).",
-          "required": false,
+          "required": true,
           "type": "kotlin.String",
           "default": "#000000",
           "values": null
@@ -1575,7 +1650,7 @@
           "key": "textColor",
           "title": "Text ink color",
           "description": "Opaque hexadecimal color applied to primary text labels. Defaults to Brave light slate ink (#f0f2ff).",
-          "required": false,
+          "required": true,
           "type": "kotlin.String",
           "default": "#f0f2ff",
           "values": null
@@ -1584,7 +1659,7 @@
           "key": "accentColor",
           "title": "Accent highlight color",
           "description": "Opaque hexadecimal color for interactive highlights, active switches, and links. Defaults to Brave purple-blue accent (#737ade).",
-          "required": false,
+          "required": true,
           "type": "kotlin.String",
           "default": "#737ade",
           "values": null
@@ -2251,6 +2326,14 @@
           ]
         }
       ],
+      "options": []
+    },
+    {
+      "name": "Disable video autoplay (ExoPlayer/Media3)",
+      "description": "Stops ExoPlayer/Media3 players from starting on their own by flipping\nliteral 'setPlayWhenReady(true)' call sites to false.\n\nApplies to any app bundling ExoPlayer/Media3. Heuristic: reflection or\nobfuscated player setup is not covered. Can stop playback entirely in\napps whose only play path is a flipped literal call — turn it off if\nvideos never start. Applies best alongside the per-app Mint/HT entries.\nUnverified on device.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": null,
       "options": []
     },
     {
@@ -3016,6 +3099,90 @@
       "options": []
     },
     {
+      "name": "Hindustan Times: Block analytics & tracking SDKs",
+      "description": "Blocks Hindustan Times' analytics & tracking SDKs (Firebase Analytics,\nAppsFlyer, Adjust, WebEngage, CleverTap and similar) using the same universal\nheuristic as 'Block analytics & tracking SDKs'.\n\nApplies to com.ht.news only. Heuristic; obfuscated or reflection-based\nreporting is not covered. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.ht.news",
+          "name": "Hindustan Times",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#0C5594",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "4.9.16",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Hindustan Times: Disable video autoplay (ExoPlayer)",
+      "description": "Stops video autoplay in the Hindustan Times feed/article bodies\n(ExoPlayer/Media3) using the same heuristic as 'Disable video autoplay\n(ExoPlayer/Media3)'.\n\nApplies to com.ht.news only. Heuristic; see the universal entry for\nlimitations. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.ht.news",
+          "name": "Hindustan Times",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#0C5594",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "4.9.16",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Hindustan Times: Prefer external browser over Custom Tabs",
+      "description": "Opens links in the default external browser instead of an in-app Custom\nTab, using the same rewrite as the universal 'Prefer external browser\nover Custom Tabs' patch.\n\nApplies to com.ht.news only. Some article WebViews are not affected —\nthis covers Custom Tabs / CustomTabsIntent call sites only.\nUnverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.ht.news",
+          "name": "Hindustan Times",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#0C5594",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "4.9.16",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
       "name": "Improve startup performance",
       "description": "Skips two launch-time routines whose only job is metrics/experiments upkeep: the 4k-line startup-metrics coroutine (pure telemetry writes, ~64 metric writes per launch) and the forced Nimbus experiment fetch right after first render. Less launch I/O = faster, smoother open/close. Browser features unchanged.",
       "default": true,
@@ -3083,6 +3250,324 @@
       "default": false,
       "dependencies": [],
       "compatiblePackages": null,
+      "options": []
+    },
+    {
+      "name": "Meesho: Block analytics & tracking SDKs",
+      "description": "Blocks Meesho's analytics & tracking SDKs (Firebase Analytics, AppsFlyer,\nAdjust, Facebook AppEvents, WebEngage, CleverTap and similar) using the\nsame universal heuristic as 'Block analytics & tracking SDKs'.\n\nApplies to com.meesho.shopping only. Heuristic; obfuscated or\nreflection-based reporting is not covered. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.meesho.shopping",
+          "name": "Meesho",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#F43397",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "29.9",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "29.8",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "29.7",
+              "versionCodes": {
+                "ARM64_V8A": 872,
+                "ARMEABI_V7A": 872,
+                "X86_64": 872,
+                "X86": 872
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "29.6",
+              "versionCodes": {
+                "ARM64_V8A": 870,
+                "ARMEABI_V7A": 870,
+                "X86_64": 870,
+                "X86": 870
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "29.5",
+              "versionCodes": {
+                "ARM64_V8A": 868,
+                "ARMEABI_V7A": 868,
+                "X86_64": 868,
+                "X86": 868
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Meesho: Disable video autoplay (ExoPlayer)",
+      "description": "Stops video autoplay in the Meesho feed and product videos (ExoPlayer/Media3)\nusing the same heuristic as 'Disable video autoplay (ExoPlayer/Media3)'.\n\nApplies to com.meesho.shopping only. Heuristic; see the universal entry\nfor limitations. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.meesho.shopping",
+          "name": "Meesho",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#F43397",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "29.9",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "29.8",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "29.7",
+              "versionCodes": {
+                "ARM64_V8A": 872,
+                "ARMEABI_V7A": 872,
+                "X86_64": 872,
+                "X86": 872
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "29.6",
+              "versionCodes": {
+                "ARM64_V8A": 870,
+                "ARMEABI_V7A": 870,
+                "X86_64": 870,
+                "X86": 870
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "29.5",
+              "versionCodes": {
+                "ARM64_V8A": 868,
+                "ARMEABI_V7A": 868,
+                "X86_64": 868,
+                "X86": 868
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Meesho: Prefer external browser over Custom Tabs",
+      "description": "Opens links in the default external browser instead of an in-app Custom\nTab, using the same rewrite as the universal 'Prefer external browser\nover Custom Tabs' patch.\n\nApplies to com.meesho.shopping only. Covers Custom Tabs /\nCustomTabsIntent call sites only. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.meesho.shopping",
+          "name": "Meesho",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#F43397",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "29.9",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "29.8",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "29.7",
+              "versionCodes": {
+                "ARM64_V8A": 872,
+                "ARMEABI_V7A": 872,
+                "X86_64": 872,
+                "X86": 872
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "29.6",
+              "versionCodes": {
+                "ARM64_V8A": 870,
+                "ARMEABI_V7A": 870,
+                "X86_64": 870,
+                "X86": 870
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "29.5",
+              "versionCodes": {
+                "ARM64_V8A": 868,
+                "ARMEABI_V7A": 868,
+                "X86_64": 868,
+                "X86": 868
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Mint: Block analytics & tracking SDKs",
+      "description": "Blocks Mint's analytics & tracking SDKs (Firebase Analytics, AppsFlyer, Adjust,\nWebEngage, CleverTap and similar) using the same universal heuristic as\n'Block analytics & tracking SDKs'.\n\nApplies to com.htmedia.mint only. Heuristic; obfuscated or reflection-based\nreporting is not covered. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.htmedia.mint",
+          "name": "Mint",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#E01F26",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "5.7.5",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "5.8.4",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Mint: Disable video autoplay (ExoPlayer)",
+      "description": "Stops video autoplay in the Mint feed/article bodies (ExoPlayer/Media3)\nusing the same heuristic as 'Disable video autoplay (ExoPlayer/Media3)'.\n\nApplies to com.htmedia.mint only. Heuristic; see the universal entry for\nlimitations. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.htmedia.mint",
+          "name": "Mint",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#E01F26",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "5.7.5",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "5.8.4",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Mint: Prefer external browser over Custom Tabs",
+      "description": "Opens links in the default external browser instead of an in-app Custom\nTab, using the same rewrite as the universal 'Prefer external browser\nover Custom Tabs' patch.\n\nApplies to com.htmedia.mint only. Some article WebViews are not affected\n— this covers Custom Tabs / CustomTabsIntent call sites only.\nUnverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.htmedia.mint",
+          "name": "Mint",
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": "#E01F26",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "5.7.5",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "5.8.4",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
       "options": []
     },
     {
@@ -3588,6 +4073,290 @@
       "options": []
     },
     {
+      "name": "Proton Pass: Allow screenshots & screen recording",
+      "description": "Attempts to remove FLAG_SECURE / secure SurfaceView settings using the\nuniversal heuristic. Some screens may still block capture; allowing it\ncan expose vault contents to other software. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "proton.android.pass",
+          "name": "Proton Pass",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#6D4AFF",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.41.3",
+              "versionCodes": {
+                "ARM64_V8A": 14103401,
+                "ARMEABI_V7A": 14103401,
+                "X86_64": 14103401,
+                "X86": 14103401
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Proton Pass: Block telemetry & crash reporting",
+      "description": "Attempts to remove calls matching the universal analytics and ad SDK\nheuristics. This does not guarantee that Proton telemetry or crash\nreporting is blocked; custom, native, reflective and obfuscated paths\nare not covered. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch",
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "proton.android.pass",
+          "name": "Proton Pass",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#6D4AFF",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.41.3",
+              "versionCodes": {
+                "ARM64_V8A": 14103401,
+                "ARMEABI_V7A": 14103401,
+                "X86_64": 14103401,
+                "X86": 14103401
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Proton Pass: Dark web monitoring local-only (cosmetic)",
+      "description": "UNIMPLEMENTED PLACEHOLDER. Does not monitor for breaches or provide a local monitoring result.\nSelecting this entry fails; app-specific APK analysis is required.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "proton.android.pass",
+          "name": "Proton Pass",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#6D4AFF",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.41.3",
+              "versionCodes": {
+                "ARM64_V8A": 14103401,
+                "ARMEABI_V7A": 14103401,
+                "X86_64": 14103401,
+                "X86": 14103401
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Proton Pass: Disable auto-lock / extend timeout",
+      "description": "UNIMPLEMENTED PLACEHOLDER. Does not change the vault auto-lock behavior.\nSelecting this entry fails; app-specific APK analysis is required.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "proton.android.pass",
+          "name": "Proton Pass",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#6D4AFF",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.41.3",
+              "versionCodes": {
+                "ARM64_V8A": 14103401,
+                "ARMEABI_V7A": 14103401,
+                "X86_64": 14103401,
+                "X86": 14103401
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Proton Pass: Disable clipboard auto-clear",
+      "description": "UNIMPLEMENTED PLACEHOLDER. Does not change clipboard clearing.\nSelecting this entry fails; app-specific APK analysis is required.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "proton.android.pass",
+          "name": "Proton Pass",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#6D4AFF",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.41.3",
+              "versionCodes": {
+                "ARM64_V8A": 14103401,
+                "ARMEABI_V7A": 14103401,
+                "X86_64": 14103401,
+                "X86": 14103401
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Proton Pass: Force biometric always-on",
+      "description": "UNIMPLEMENTED PLACEHOLDER. Does not change biometric or PIN requirements.\nSelecting this entry fails; app-specific APK analysis is required.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "proton.android.pass",
+          "name": "Proton Pass",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#6D4AFF",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.41.3",
+              "versionCodes": {
+                "ARM64_V8A": 14103401,
+                "ARMEABI_V7A": 14103401,
+                "X86_64": 14103401,
+                "X86": 14103401
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Proton Pass: Remove upgrade nag UI",
+      "description": "UNIMPLEMENTED PLACEHOLDER. Does not hide upgrade banners or paywall screens.\nSelecting this entry fails; app-specific APK analysis is required.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "proton.android.pass",
+          "name": "Proton Pass",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#6D4AFF",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.41.3",
+              "versionCodes": {
+                "ARM64_V8A": 14103401,
+                "ARMEABI_V7A": 14103401,
+                "X86_64": 14103401,
+                "X86": 14103401
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Proton Pass: Unlock multiple vaults",
+      "description": "UNIMPLEMENTED PLACEHOLDER. Does not change vault limits or server entitlements.\nSelecting this entry fails; app-specific APK analysis is required.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "proton.android.pass",
+          "name": "Proton Pass",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#6D4AFF",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.41.3",
+              "versionCodes": {
+                "ARM64_V8A": 14103401,
+                "ARMEABI_V7A": 14103401,
+                "X86_64": 14103401,
+                "X86": 14103401
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Proton Pass: Unlock password-generator options",
+      "description": "UNIMPLEMENTED PLACEHOLDER. Does not unlock password-generator options.\nSelecting this entry fails; app-specific APK analysis is required.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "proton.android.pass",
+          "name": "Proton Pass",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#6D4AFF",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.41.3",
+              "versionCodes": {
+                "ARM64_V8A": 14103401,
+                "ARMEABI_V7A": 14103401,
+                "X86_64": 14103401,
+                "X86": 14103401
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
       "name": "Provide Original app certificate",
       "description": "Automatically reads the signing certificate from the APK you are patching — no original app installed or file provided needed. Only fill the options below if you are patching an APK that was already re-signed (e.g. a previously patched build): in that case point to the original APK file, or enter the certificate manually.",
       "default": false,
@@ -3631,6 +4400,69 @@
           "values": null
         }
       ]
+    },
+    {
+      "name": "Reddit: Diagnostic crash log",
+      "description": "DIAGNOSTIC ONLY - writes the full stack trace to Downloads/reddit-crash-*.txt when the app crashes, for remote diagnosis. Off by default; enable when asked to produce a crash log. Installs on the first account sync after launch; crashes before that are not captured. Chain-forwards to the original crash handler.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.reddit.frontpage",
+          "name": "Reddit",
+          "description": null,
+          "apkFileType": "APKM",
+          "appIconColor": "#FF4500",
+          "signatures": [
+            "970b91143813b4c9d5f3634f672c9fcaa5621b4efaaedafd6c235cbbb869736f"
+          ],
+          "targets": [
+            {
+              "version": "2026.42.0",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 29,
+              "description": null
+            },
+            {
+              "version": "2026.41.0",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": 29,
+              "description": null
+            },
+            {
+              "version": "2026.40.0",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": 29,
+              "description": null
+            },
+            {
+              "version": "2026.39.0",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": 29,
+              "description": null
+            },
+            {
+              "version": "2026.24.0",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 29,
+              "description": null
+            },
+            {
+              "version": "2026.10.0",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 28,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
     },
     {
       "name": "Remove Extra Languages",
@@ -4740,6 +5572,132 @@
       "options": []
     },
     {
+      "name": "Table Notes: Block ads & ad SDKs",
+      "description": "Attempts to remove ad SDK load/show calls using the universal heuristic.\nObfuscated, reflective, native and first-party ads may be unaffected;\nrewarded-ad flows may break. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "vivekagarwal.playwithdb",
+          "name": "Table Notes",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#1A237E",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "20261030",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "20260916",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "20260831",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Table Notes: Block analytics & tracking SDKs",
+      "description": "Attempts to remove calls to known analytics SDKs (Firebase Analytics,\nAppsFlyer, Adjust, Facebook AppEvents and similar) using the universal\n'Block analytics & tracking SDKs' heuristic.\n\nApplies to vivekagarwal.playwithdb only. Heuristic; obfuscated or\nreflection-based reporting is not covered. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "vivekagarwal.playwithdb",
+          "name": "Table Notes",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#1A237E",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "20261030",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "20260916",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "20260831",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Table Notes: Prefer external browser over Custom Tabs",
+      "description": "Opens links in the default external browser instead of an in-app Custom\nTab, using the same rewrite as the universal 'Prefer external browser\nover Custom Tabs' patch.\n\nApplies to vivekagarwal.playwithdb only. Covers Custom Tabs /\nCustomTabsIntent call sites only. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "vivekagarwal.playwithdb",
+          "name": "Table Notes",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#1A237E",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "20261030",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "20260916",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "20260831",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
       "name": "Unlock Account Entitlements",
       "description": "Locally flips account-gating flags at the Account JSON adapter: can_create_subreddit, can_edit_name, password_set (kills the SSO 'set password' nag) and has_verified_email. Off by default; server entitlements still rule API actions.",
       "default": false,
@@ -5177,8 +6135,8 @@
     },
     {
       "name": "Unlock Unlimited Plan",
-      "description": "Forces Proton Pass Plus plan with all limits removed and paid features unlocked.",
-      "default": true,
+      "description": "Attempts to change Proton Pass's local plan model and limits; server-side entitlements remain unchanged. The 1.41.3 target is unverified; the constructor layout was documented for 1.40.3. Uses signature, install-source and Firebase certificate spoofing dependencies.",
+      "default": false,
       "dependencies": [
         "BytecodePatch",
         "BytecodePatch",
@@ -5518,535 +6476,865 @@
       "options": []
     },
     {
-      "name": "Mint: Block analytics & tracking SDKs",
-      "description": "Blocks Mint's analytics & tracking SDKs (Firebase Analytics, AppsFlyer, Adjust,\nWebEngage, CleverTap and similar) using the same universal heuristic as\n'Block analytics & tracking SDKs'.\n\nApplies to com.htmedia.mint only. Heuristic; obfuscated or reflection-based\nreporting is not covered. Unverified on device.",
+      "name": "WhatsApp: Allow screenshots & screen recording",
+      "description": "Attempts to remove FLAG_SECURE / secure SurfaceView settings in\nWhatsApp so screenshots and screen recording can work in chat and\nstatus screens, using the same universal heuristic as 'Allow\nscreenshots & screen recording'.\n\nApplies to com.whatsapp only. Some screens (chat lock, payment, media\nviewer) may still block capture independently. Unverified on device.",
       "default": false,
       "dependencies": [
-        "Block analytics & tracking SDKs"
+        "BytecodePatch"
       ],
       "compatiblePackages": [
         {
-          "packageName": "com.htmedia.mint",
-          "name": "Mint",
-          "description": null,
-          "apkFileType": "APK",
-          "appIconColor": "#E01F26",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "5.7.5",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": 26,
-              "description": null
-            },
-            {
-              "version": "5.8.4",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": 26,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
-      "name": "Hindustan Times: Block analytics & tracking SDKs",
-      "description": "Blocks Hindustan Times' analytics & tracking SDKs (Firebase Analytics,\nAppsFlyer, Adjust, WebEngage, CleverTap and similar) using the same universal\nheuristic as 'Block analytics & tracking SDKs'.\n\nApplies to com.ht.news only. Heuristic; obfuscated or reflection-based\nreporting is not covered. Unverified on device.",
-      "default": false,
-      "dependencies": [
-        "Block analytics & tracking SDKs"
-      ],
-      "compatiblePackages": [
-        {
-          "packageName": "com.ht.news",
-          "name": "Hindustan Times",
-          "description": null,
-          "apkFileType": "APK",
-          "appIconColor": "#0C5594",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "4.9.16",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": 26,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
-      "name": "Disable video autoplay (ExoPlayer/Media3)",
-      "description": "Stops ExoPlayer/Media3 players from starting on their own by flipping\nliteral 'setPlayWhenReady(true)' call sites to false.\n\nApplies to any app bundling ExoPlayer/Media3. Heuristic: reflection or\nobfuscated player setup is not covered. Can stop playback entirely in\napps whose only play path is a flipped literal call — turn it off if\nvideos never start. Applies best alongside the per-app Mint/HT entries.\nUnverified on device.",
-      "default": false,
-      "dependencies": [],
-      "compatiblePackages": null,
-      "options": []
-    },
-    {
-      "name": "Mint: Disable video autoplay (ExoPlayer)",
-      "description": "Stops video autoplay in the Mint feed/article bodies (ExoPlayer/Media3)\nusing the same heuristic as 'Disable video autoplay (ExoPlayer/Media3)'.\n\nApplies to com.htmedia.mint only. Heuristic; see the universal entry for\nlimitations. Unverified on device.",
-      "default": false,
-      "dependencies": [
-        "Disable video autoplay (ExoPlayer/Media3)"
-      ],
-      "compatiblePackages": [
-        {
-          "packageName": "com.htmedia.mint",
-          "name": "Mint",
-          "description": null,
-          "apkFileType": "APK",
-          "appIconColor": "#E01F26",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "5.7.5",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": 26,
-              "description": null
-            },
-            {
-              "version": "5.8.4",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": 26,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
-      "name": "Hindustan Times: Disable video autoplay (ExoPlayer)",
-      "description": "Stops video autoplay in the Hindustan Times feed/article bodies\n(ExoPlayer/Media3) using the same heuristic as 'Disable video autoplay\n(ExoPlayer/Media3)'.\n\nApplies to com.ht.news only. Heuristic; see the universal entry for\nlimitations. Unverified on device.",
-      "default": false,
-      "dependencies": [
-        "Disable video autoplay (ExoPlayer/Media3)"
-      ],
-      "compatiblePackages": [
-        {
-          "packageName": "com.ht.news",
-          "name": "Hindustan Times",
-          "description": null,
-          "apkFileType": "APK",
-          "appIconColor": "#0C5594",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "4.9.16",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": 26,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
-      "name": "Mint: Prefer external browser over Custom Tabs",
-      "description": "Opens links in the default external browser instead of an in-app Custom\nTab, using the same rewrite as the universal 'Prefer external browser\nover Custom Tabs' patch.\n\nApplies to com.htmedia.mint only. Some article WebViews are not affected\n— this covers Custom Tabs / CustomTabsIntent call sites only.\nUnverified on device.",
-      "default": false,
-      "dependencies": [
-        "Prefer external browser over Custom Tabs"
-      ],
-      "compatiblePackages": [
-        {
-          "packageName": "com.htmedia.mint",
-          "name": "Mint",
-          "description": null,
-          "apkFileType": "APK",
-          "appIconColor": "#E01F26",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "5.7.5",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": 26,
-              "description": null
-            },
-            {
-              "version": "5.8.4",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": 26,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
-      "name": "Hindustan Times: Prefer external browser over Custom Tabs",
-      "description": "Opens links in the default external browser instead of an in-app Custom\nTab, using the same rewrite as the universal 'Prefer external browser\nover Custom Tabs' patch.\n\nApplies to com.ht.news only. Some article WebViews are not affected —\nthis covers Custom Tabs / CustomTabsIntent call sites only.\nUnverified on device.",
-      "default": false,
-      "dependencies": [
-        "Prefer external browser over Custom Tabs"
-      ],
-      "compatiblePackages": [
-        {
-          "packageName": "com.ht.news",
-          "name": "Hindustan Times",
-          "description": null,
-          "apkFileType": "APK",
-          "appIconColor": "#0C5594",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "4.9.16",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": 26,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
-      "name": "Meesho: Block analytics & tracking SDKs",
-      "description": "Blocks Meesho's analytics & tracking SDKs (Firebase Analytics, AppsFlyer,\nAdjust, Facebook AppEvents, WebEngage, CleverTap and similar) using the\nsame universal heuristic as 'Block analytics & tracking SDKs'.\n\nApplies to com.meesho.shopping only. Heuristic; obfuscated or\nreflection-based reporting is not covered. Unverified on device.",
-      "default": false,
-      "dependencies": [
-        "Block analytics & tracking SDKs"
-      ],
-      "compatiblePackages": [
-        {
-          "packageName": "com.meesho.shopping",
-          "name": "Meesho",
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
           "description": null,
           "apkFileType": "XAPK",
-          "appIconColor": "#F43397",
+          "appIconColor": "#075E54",
           "signatures": null,
           "targets": [
             {
-              "version": "29.9",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": 21,
-              "description": null
-            },
-            {
-              "version": "29.8",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": 21,
-              "description": null
-            },
-            {
-              "version": "29.7",
+              "version": "2.26.43.76",
               "versionCodes": {
-                "ARM64_V8A": 872,
-                "ARMEABI_V7A": 872,
-                "X86_64": 872,
-                "X86": 872
-              },
-              "isExperimental": false,
-              "minSdk": 21,
-              "description": null
-            },
-            {
-              "version": "29.6",
-              "versionCodes": {
-                "ARM64_V8A": 870,
-                "ARMEABI_V7A": 870,
-                "X86_64": 870,
-                "X86": 870
-              },
-              "isExperimental": false,
-              "minSdk": 21,
-              "description": null
-            },
-            {
-              "version": "29.5",
-              "versionCodes": {
-                "ARM64_V8A": 868,
-                "ARMEABI_V7A": 868,
-                "X86_64": 868,
-                "X86": 868
-              },
-              "isExperimental": false,
-              "minSdk": 21,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
-      "name": "Meesho: Disable video autoplay (ExoPlayer)",
-      "description": "Stops video autoplay in the Meesho feed and product videos (ExoPlayer/Media3)\nusing the same heuristic as 'Disable video autoplay (ExoPlayer/Media3)'.\n\nApplies to com.meesho.shopping only. Heuristic; see the universal entry\nfor limitations. Unverified on device.",
-      "default": false,
-      "dependencies": [
-        "Disable video autoplay (ExoPlayer/Media3)"
-      ],
-      "compatiblePackages": [
-        {
-          "packageName": "com.meesho.shopping",
-          "name": "Meesho",
-          "description": null,
-          "apkFileType": "XAPK",
-          "appIconColor": "#F43397",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "29.9",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": 21,
-              "description": null
-            },
-            {
-              "version": "29.8",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": 21,
-              "description": null
-            },
-            {
-              "version": "29.7",
-              "versionCodes": {
-                "ARM64_V8A": 872,
-                "ARMEABI_V7A": 872,
-                "X86_64": 872,
-                "X86": 872
-              },
-              "isExperimental": false,
-              "minSdk": 21,
-              "description": null
-            },
-            {
-              "version": "29.6",
-              "versionCodes": {
-                "ARM64_V8A": 870,
-                "ARMEABI_V7A": 870,
-                "X86_64": 870,
-                "X86": 870
-              },
-              "isExperimental": false,
-              "minSdk": 21,
-              "description": null
-            },
-            {
-              "version": "29.5",
-              "versionCodes": {
-                "ARM64_V8A": 868,
-                "ARMEABI_V7A": 868,
-                "X86_64": 868,
-                "X86": 868
-              },
-              "isExperimental": false,
-              "minSdk": 21,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
-      "name": "Meesho: Prefer external browser over Custom Tabs",
-      "description": "Opens links in the default external browser instead of an in-app Custom\nTab, using the same rewrite as the universal 'Prefer external browser\nover Custom Tabs' patch.\n\nApplies to com.meesho.shopping only. Covers Custom Tabs /\nCustomTabsIntent call sites only. Unverified on device.",
-      "default": false,
-      "dependencies": [
-        "Prefer external browser over Custom Tabs"
-      ],
-      "compatiblePackages": [
-        {
-          "packageName": "com.meesho.shopping",
-          "name": "Meesho",
-          "description": null,
-          "apkFileType": "XAPK",
-          "appIconColor": "#F43397",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "29.9",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": 21,
-              "description": null
-            },
-            {
-              "version": "29.8",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": 21,
-              "description": null
-            },
-            {
-              "version": "29.7",
-              "versionCodes": {
-                "ARM64_V8A": 872,
-                "ARMEABI_V7A": 872,
-                "X86_64": 872,
-                "X86": 872
-              },
-              "isExperimental": false,
-              "minSdk": 21,
-              "description": null
-            },
-            {
-              "version": "29.6",
-              "versionCodes": {
-                "ARM64_V8A": 870,
-                "ARMEABI_V7A": 870,
-                "X86_64": 870,
-                "X86": 870
-              },
-              "isExperimental": false,
-              "minSdk": 21,
-              "description": null
-            },
-            {
-              "version": "29.5",
-              "versionCodes": {
-                "ARM64_V8A": 868,
-                "ARMEABI_V7A": 868,
-                "X86_64": 868,
-                "X86": 868
-              },
-              "isExperimental": false,
-              "minSdk": 21,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
-      "name": "Reddit: Diagnostic crash log",
-      "description": "DIAGNOSTIC ONLY - writes the full stack trace to Downloads/reddit-crash-*.txt when the app crashes, for remote diagnosis. Off by default; enable when asked to produce a crash log. Installs on the first account sync after launch; crashes before that are not captured. Chain-forwards to the original crash handler.",
-      "default": false,
-      "dependencies": [],
-      "compatiblePackages": [
-        {
-          "packageName": "com.reddit.frontpage",
-          "name": "Reddit",
-          "description": null,
-          "apkFileType": "APKM",
-          "appIconColor": "#FF4500",
-          "signatures": [
-            "970b91143813b4c9d5f3634f672c9fcaa5621b4efaaedafd6c235cbbb869736f"
-          ],
-          "targets": [
-            {
-              "version": "2026.42.0",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": 29,
-              "description": null
-            },
-            {
-              "version": "2026.41.0",
-              "versionCodes": null,
-              "isExperimental": true,
-              "minSdk": 29,
-              "description": null
-            },
-            {
-              "version": "2026.40.0",
-              "versionCodes": null,
-              "isExperimental": true,
-              "minSdk": 29,
-              "description": null
-            },
-            {
-              "version": "2026.39.0",
-              "versionCodes": null,
-              "isExperimental": true,
-              "minSdk": 29,
-              "description": null
-            },
-            {
-              "version": "2026.24.0",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": 29,
-              "description": null
-            },
-            {
-              "version": "2026.10.0",
-              "versionCodes": null,
-              "isExperimental": false,
-              "minSdk": 28,
-              "description": null
-            }
-          ]
-        }
-      ],
-      "options": []
-    },
-    {
-      "name": "Amazon: Stop feed video autoplay",
-      "description": "Stops Amazon's home-feed native video units (live promotional videos,\nreview carousels, sponsored reels) from starting on their own, using\nthe same setPlayWhenReady(true) → false heuristic as the universal\n'Disable video autoplay (ExoPlayer/Media3)' patch.\n\nCovers native ExoPlayer/Media3 players only — NOT the in-app WebView\npages (use the default-on 'Disable video autoplay' patch for those),\nand NOT WebView CSS-injected ad blocks (use 'Remove ads'). Heuristic:\nreflection or obfuscated player setup is not covered. Can stop playback\nentirely in apps whose only play path is a flipped literal call — turn\nit off if videos never start. Unverified on device.",
-      "default": false,
-      "dependencies": [
-        "Disable video autoplay (ExoPlayer/Media3)"
-      ],
-      "compatiblePackages": [
-        {
-          "packageName": "com.amazon.mShop.android.shopping",
-          "name": "Amazon Shopping",
-          "description": null,
-          "apkFileType": "XAPK",
-          "appIconColor": "#FF9900",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "32.18.0.100",
-              "versionCodes": {
-                "ARM64_V8A": 1243240206,
-                "ARMEABI_V7A": 1243240206,
-                "X86_64": 1243240206,
-                "X86": 1243240206
-              },
-              "isExperimental": false,
-              "minSdk": null,
-              "description": null
-            }
-          ]
-        },
-        {
-          "packageName": "in.amazon.mShop.android.shopping",
-          "name": "Amazon India",
-          "description": null,
-          "apkFileType": "XAPK",
-          "appIconColor": "#FF9900",
-          "signatures": null,
-          "targets": [
-            {
-              "version": "32.18.0.300",
-              "versionCodes": {
-                "ARM64_V8A": 1243240206,
-                "ARMEABI_V7A": 1243240206,
-                "X86_64": 1243240206,
-                "X86": 1243240206
+                "ARM64_V8A": 264307627,
+                "ARMEABI_V7A": 264307627,
+                "X86_64": 264307627,
+                "X86": 264307627
               },
               "isExperimental": false,
               "minSdk": null,
               "description": null
             },
             {
-              "version": "32.19.0.300",
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
               "versionCodes": {
-                "ARM64_V8A": 1243250306,
-                "ARMEABI_V7A": 1243250306,
-                "X86_64": 1243250306,
-                "X86": 1243250306
+                "ARM64_V8A": 264107700,
+                "ARMEABI_V7A": 264107700,
+                "X86_64": 264107700,
+                "X86": 264107700
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: App icon (classic or premium style)",
+      "description": "UNIMPLEMENTED PLACEHOLDER. Does not change the launcher icon.\nSelecting this entry fails; app-specific APK analysis is required.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": {
+                "ARM64_V8A": 264307627,
+                "ARMEABI_V7A": 264307627,
+                "X86_64": 264307627,
+                "X86": 264307627
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": {
+                "ARM64_V8A": 264107700,
+                "ARMEABI_V7A": 264107700,
+                "X86_64": 264107700,
+                "X86": 264107700
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Block ads & ad SDKs",
+      "description": "Attempts to remove known ad SDK load/show calls using the universal\nheuristic. WhatsApp's first-party, obfuscated, reflective and native ads\nmay be unaffected; rewarded-ad flows may break. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": {
+                "ARM64_V8A": 264307627,
+                "ARMEABI_V7A": 264307627,
+                "X86_64": 264307627,
+                "X86": 264307627
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": {
+                "ARM64_V8A": 264107700,
+                "ARMEABI_V7A": 264107700,
+                "X86_64": 264107700,
+                "X86": 264107700
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Block analytics & tracking SDKs",
+      "description": "Attempts to remove calls to known analytics SDK methods using the\nuniversal heuristic. Custom WhatsApp/Meta telemetry, obfuscated,\nreflective and native reporting may still operate. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": {
+                "ARM64_V8A": 264307627,
+                "ARMEABI_V7A": 264307627,
+                "X86_64": 264307627,
+                "X86": 264307627
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": {
+                "ARM64_V8A": 264107700,
+                "ARMEABI_V7A": 264107700,
+                "X86_64": 264107700,
+                "X86": 264107700
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Block screenshots & screen recording",
+      "description": "Attempts to add FLAG_SECURE to recognizable activity windows and to\nsecure SurfaceViews using the universal heuristic. It cannot guarantee\nprotection of every screen. Do not combine with 'WhatsApp: Allow\nscreenshots & screen recording'. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": {
+                "ARM64_V8A": 264307627,
+                "ARMEABI_V7A": 264307627,
+                "X86_64": 264307627,
+                "X86": 264307627
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": {
+                "ARM64_V8A": 264107700,
+                "ARMEABI_V7A": 264107700,
+                "X86_64": 264107700,
+                "X86": 264107700
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Disable video autoplay (Status)",
+      "description": "Attempts to stop autoplay by rewriting literal ExoPlayer/Media3 calls\nusing the universal heuristic. Coverage of Status is not established;\nsome videos may stop playing entirely. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": {
+                "ARM64_V8A": 264307627,
+                "ARMEABI_V7A": 264307627,
+                "X86_64": 264307627,
+                "X86": 264307627
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": {
+                "ARM64_V8A": 264107700,
+                "ARMEABI_V7A": 264107700,
+                "X86_64": 264107700,
+                "X86": 264107700
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Empty telephony identifiers",
+      "description": "Replaces TelephonyManager ID getters (getDeviceId, getImei, getMeid,\ngetSubscriberId, getLine1Number, getSimSerialNumber,\ngetDeviceSoftwareVersion) with empty strings, using the same universal\nheuristic as 'Empty telephony identifiers'.\n\nApplies to com.whatsapp only. Heuristic; may break phone-number-based\nregistration or re-verification. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": {
+                "ARM64_V8A": 264307627,
+                "ARMEABI_V7A": 264307627,
+                "X86_64": 264307627,
+                "X86": 264307627
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": {
+                "ARM64_V8A": 264107700,
+                "ARMEABI_V7A": 264107700,
+                "X86_64": 264107700,
+                "X86": 264107700
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Keep deleted messages",
+      "description": "UNIMPLEMENTED PLACEHOLDER. Does not preserve deleted messages.\nSelecting this entry fails; app-specific APK analysis is required.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": {
+                "ARM64_V8A": 264307627,
+                "ARMEABI_V7A": 264307627,
+                "X86_64": 264307627,
+                "X86": 264307627
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": {
+                "ARM64_V8A": 264107700,
+                "ARMEABI_V7A": 264107700,
+                "X86_64": 264107700,
+                "X86": 264107700
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Limit usage data (diagnostics & analytics)",
+      "description": "Limits diagnostic and analytics data WhatsApp sends, using the same\nuniversal heuristic as 'Block analytics & tracking SDKs'.\n\nApplies to com.whatsapp only. Heuristic; obfuscated or reflection-based\nreporting is not covered. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": {
+                "ARM64_V8A": 264307627,
+                "ARMEABI_V7A": 264307627,
+                "X86_64": 264307627,
+                "X86": 264307627
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": {
+                "ARM64_V8A": 264107700,
+                "ARMEABI_V7A": 264107700,
+                "X86_64": 264107700,
+                "X86": 264107700
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Mods settings entry",
+      "description": "UNIMPLEMENTED PLACEHOLDER. Does not add an entry to WhatsApp Settings.\nSelecting this entry fails; app-specific APK analysis is required.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": {
+                "ARM64_V8A": 264307627,
+                "ARMEABI_V7A": 264307627,
+                "X86_64": 264307627,
+                "X86": 264307627
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": {
+                "ARM64_V8A": 264107700,
+                "ARMEABI_V7A": 264107700,
+                "X86_64": 264107700,
+                "X86": 264107700
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Mods settings resources",
+      "description": "UNIMPLEMENTED PLACEHOLDER. Does not add settings resources or strings.\nSelecting this entry fails; app-specific APK analysis is required.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": {
+                "ARM64_V8A": 264307627,
+                "ARMEABI_V7A": 264307627,
+                "X86_64": 264307627,
+                "X86": 264307627
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": {
+                "ARM64_V8A": 264107700,
+                "ARMEABI_V7A": 264107700,
+                "X86_64": 264107700,
+                "X86": 264107700
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Prefer external browser over Custom Tabs",
+      "description": "Opens links in the default external browser instead of an in-app Custom\nTab, using the same rewrite as the universal 'Prefer external browser\nover Custom Tabs' patch.\n\nApplies to com.whatsapp only. Covers Custom Tabs /\nCustomTabsIntent call sites only. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": {
+                "ARM64_V8A": 264307627,
+                "ARMEABI_V7A": 264307627,
+                "X86_64": 264307627,
+                "X86": 264307627
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": {
+                "ARM64_V8A": 264107700,
+                "ARMEABI_V7A": 264107700,
+                "X86_64": 264107700,
+                "X86": 264107700
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Read receipts (no blue ticks)",
+      "description": "UNIMPLEMENTED PLACEHOLDER. Does not prevent read receipts or blue ticks from being sent.\nSelecting this entry fails; app-specific APK analysis is required.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": {
+                "ARM64_V8A": 264307627,
+                "ARMEABI_V7A": 264307627,
+                "X86_64": 264307627,
+                "X86": 264307627
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": {
+                "ARM64_V8A": 264107700,
+                "ARMEABI_V7A": 264107700,
+                "X86_64": 264107700,
+                "X86": 264107700
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Remove dangerous permissions",
+      "description": "Uses the universal permission-removal patch on WhatsApp. Its default\ncategories remove camera, microphone, contacts, phone, SMS and other\npermissions, which can break calls, media or registration. For control\nover categories and keep lists, use the universal patch directly.\nUnverified on device.",
+      "default": false,
+      "dependencies": [
+        "ResourcePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": {
+                "ARM64_V8A": 264307627,
+                "ARMEABI_V7A": 264307627,
+                "X86_64": 264307627,
+                "X86": 264307627
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": {
+                "ARM64_V8A": 264107700,
+                "ARMEABI_V7A": 264107700,
+                "X86_64": 264107700,
+                "X86": 264107700
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Strip logging (android.util.Log)",
+      "description": "Attempts to remove matching android.util.Log calls using the universal\nheuristic. Other logging paths can still leak data. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "BytecodePatch"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": {
+                "ARM64_V8A": 264307627,
+                "ARMEABI_V7A": 264307627,
+                "X86_64": 264307627,
+                "X86": 264307627
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": {
+                "ARM64_V8A": 264107700,
+                "ARMEABI_V7A": 264107700,
+                "X86_64": 264107700,
+                "X86": 264107700
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Typing indicator (hide when typing)",
+      "description": "UNIMPLEMENTED PLACEHOLDER. Does not hide the typing indicator.\nSelecting this entry fails; app-specific APK analysis is required.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": {
+                "ARM64_V8A": 264307627,
+                "ARMEABI_V7A": 264307627,
+                "X86_64": 264307627,
+                "X86": 264307627
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": {
+                "ARM64_V8A": 264107700,
+                "ARMEABI_V7A": 264107700,
+                "X86_64": 264107700,
+                "X86": 264107700
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: View once media (allow reopen & save)",
+      "description": "UNIMPLEMENTED PLACEHOLDER. Does not enable reopening or saving view-once media.\nSelecting this entry fails; app-specific APK analysis is required.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": {
+                "ARM64_V8A": 264307627,
+                "ARMEABI_V7A": 264307627,
+                "X86_64": 264307627,
+                "X86": 264307627
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": {
+                "ARM64_V8A": 264107700,
+                "ARMEABI_V7A": 264107700,
+                "X86_64": 264107700,
+                "X86": 264107700
               },
               "isExperimental": false,
               "minSdk": null,
