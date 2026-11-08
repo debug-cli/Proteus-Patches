@@ -43,24 +43,6 @@ For configuration advice, limitations, and permission-patch examples, see the
    (`patches-2.2.6.mpp`) and use **Settings → Patches → Import patches** in the Manager.
 4. Pick the apps you patch, choose your patches, and patch.
 
-> If you installed the withdrawn v2.2.2 bundle, refresh the source in Morphe
-> Manager after the replacement release is published. If it still fails, remove
-> and re-add the remote source or import the replacement bundle from Releases.
-
-> ⚠️ **Installing patched Brave?** If patching succeeds but Android refuses to
-> install with `INSTALL_FAILED_NO_MATCHING_ABIS … Failed to extract native
-> libraries (res=-113)` — most visible on 16 KB page-size devices (e.g. Android 16
-> / realme RMX5110) — the bundle used didn't carry the extraction fix. Re-patch
-> with **v2.2.6 or newer** (every Brave patch in it sets `extractNativeLibs=true`,
-> so the libraries are extracted to disk at install time) using the standalone
-> ARM64 `BraveMonoarm64.apk`, and install that APK. The Brave patches remain
-> experimental; on-device startup is still unverified. See
-> [docs/BRAVE.md](docs/BRAVE.md#install-troubleshooting) for details.
-
-> ⚠️ v2.0.0 is a **breaking, curated** release — patches for apps outside the
-> list below were removed from this bundle. Use `patches-1.19.0.mpp` (or earlier)
-> if you need the full app set.
-
 <!-- PATCHES_START EXPANDED -->
 > **[v2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;174 patches total
 <details open>
