@@ -55,6 +55,16 @@ EXPECTED = {
 PLACEHOLDERS = WHATSAPP_PLACEHOLDERS | PROTON_PLACEHOLDERS
 HEURISTICS = WHATSAPP_IMPLEMENTED | PROTON_IMPLEMENTED | TABLE_NOTES
 
+# Package variants of the same app count once; Telegram Plus remains separate.
+APP_FAMILY_ALIASES = {
+    "com.amazon.mShop.android.shopping": "family:amazon-shopping",
+    "in.amazon.mShop.android.shopping": "family:amazon-shopping",
+    "app.simple.inure": "family:inure",
+    "app.simple.inure.play": "family:inure",
+    "org.telegram.messenger": "family:telegram",
+    "org.telegram.messenger.web": "family:telegram",
+}
+
 
 def verify_catalog(data: dict, version: str = "2.2.9") -> dict[str, int]:
     if data.get("version") != version:
@@ -96,6 +106,7 @@ def verify_catalog(data: dict, version: str = "2.2.9") -> dict[str, int]:
     universal = [p for p in patches if not p.get("compatiblePackages")]
     return {
         "entries": len(patches),
+        "app_families": len({APP_FAMILY_ALIASES.get(package, package) for package in packages}),
         "package_targets": len(packages),
         "universal_entries": len(universal),
         "appearances": len(universal) + sum(len(p.get("compatiblePackages") or []) for p in patches),

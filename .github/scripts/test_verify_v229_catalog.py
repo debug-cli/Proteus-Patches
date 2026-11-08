@@ -34,8 +34,16 @@ class VerifyV229CatalogTest(unittest.TestCase):
     def test_valid(self):
         summary = verifier.verify_catalog(self.catalog)
         self.assertEqual(summary["entries"], 31)
+        self.assertEqual(summary["app_families"], 3)
         self.assertEqual(summary["placeholders"], 14)
         self.assertEqual(summary["universal_entries"], 1)
+
+    def test_app_family_variants_are_grouped(self):
+        for package in verifier.APP_FAMILY_ALIASES:
+            self.catalog["patches"].append({"name": package, "compatiblePackages": [{"packageName": package}]})
+        summary = verifier.verify_catalog(self.catalog)
+        self.assertEqual(summary["package_targets"], 9)
+        self.assertEqual(summary["app_families"], 6)
 
     def test_missing_or_duplicate_entry(self):
         p = self.entry("WhatsApp: Keep deleted messages")

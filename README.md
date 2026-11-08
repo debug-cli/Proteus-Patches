@@ -13,7 +13,10 @@ ads, annoyances and risky defaults from popular Android apps — plus a set of
 
 - **[v2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9)** — experimental WhatsApp, Proton Pass and Table Notes entries and a universal ad SDK heuristic. Seven WhatsApp and all seven new Proton Pass feature entries are **unimplemented placeholders**: they make no changes and fail if selected. All new app entries are off by default and unverified on a target APK or device. See [WhatsApp](docs/WHATSAPP-ANALYSIS.md), [Proton Pass](docs/PROTON-PASS-AUDIT.md), and [Table Notes](docs/TABLE-NOTES.md). The release notes identify the build commit because the existing v2.2.9 tag points to older source.
 
-Catalog counts distinguish unique entries and Android package targets from patch appearances (a patch can target more than one package).
+The generated catalog contains 167 unique entries, including 26 universal entries,
+across 30 app families (33 package targets). Amazon global/India, Inure
+Play/GitHub, and Telegram/Telegram Web count as one family each; Telegram Plus
+is counted separately. Patch appearances can exceed unique entries.
 
 [![Add to Morphe](https://img.shields.io/badge/Add_to-Morphe-1f6feb?style=for-the-badge)](https://morphe.software/add-source?github=ineednotitle/Proteus-Patches)
 

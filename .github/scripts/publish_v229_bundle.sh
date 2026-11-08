@@ -83,8 +83,9 @@ notes += (
     f"- Build source: [{sha}](https://github.com/{repo}/tree/{sha}) "
     f"([CI run](https://github.com/{repo}/actions/runs/{run})).\n"
     f"- Existing tag source: `{sys.argv[5]}`; the release source archives therefore do not contain the build fixes.\n"
-    f"- Catalog: {summary['entries']} unique entries, {summary['package_targets']} package targets, "
-    f"{summary['universal_entries']} universal entries and {summary['placeholders']} placeholders.\n"
+    f"- Catalog: {summary['entries']} unique entries, {summary['app_families']} app families "
+    f"({summary['package_targets']} package targets), {summary['universal_entries']} universal entries "
+    f"and {summary['placeholders']} placeholders.\n"
     f"- Bundle SHA-256: `{sys.argv[3]}`.\n"
     f"- Bundle Git blob SHA-1 (temporary API retrieval): `{sys.argv[4]}`.\n"
 )
