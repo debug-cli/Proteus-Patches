@@ -3,7 +3,7 @@
 > *One bundle, patches everywhere. A curated [Morphe](https://github.com/MorpheApp/Morphe) patch suite for Android.*
 
 [![License: GPL-3.0-only](https://img.shields.io/badge/License-GPL--3.0--only-green.svg)](#license)
-[![Patches](https://img.shields.io/badge/patches-177-blue.svg)](#whats-inside)
+[![Patches](https://img.shields.io/badge/patches-179-blue.svg)](#whats-inside)
 [![Universal patches](https://img.shields.io/badge/universal-24-purple.svg)](#universal-patches)
 [![Apps](https://img.shields.io/badge/apps-29-orange.svg)](#supported-apps)
 
@@ -64,7 +64,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 > if you need the full app set.
 
 <!-- PATCHES_START EXPANDED -->
-> **[v2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/3a81df7b-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;177 patches total
+> **[v2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/3a81df7b-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;179 patches total
 <details open>
 <summary>📦 Google Photos&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
 <br>
@@ -523,7 +523,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 </details>
 
 <details open>
-<summary>📦 Proton Pass&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
+<summary>📦 Proton Pass&nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
 <br>
 
 **🎯 Supported versions:**
@@ -533,6 +533,8 @@ For configuration advice, limitations, and permission-patch examples, see the
 
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
 |----------|----------------|-----------|
+| [Proton Pass: Allow screenshots & screen recording](#proton-pass-allow-screenshots-screen-recording) | Attempts to remove FLAG_SECURE / secure SurfaceView settings in Proton<br>Pass so screenshots and screen recording can work in the vault and<br>profile screens, using the same universal heuristic as 'Allow screenshots<br>& screen recording'.<br><br>Applies to proton.android.pass only. Some screens (payment, biometric,<br>banking) may still block capture independently. Unverified on device. |  |
+| [Proton Pass: Block telemetry & crash reporting](#proton-pass-block-telemetry-crash-reporting) | Blocks Proton Pass telemetry and crash-reporting call sites using the<br>same universal heuristics as 'Block analytics & tracking SDKs' and<br>'Block ads & ad SDKs'.<br><br>Applies to proton.android.pass only. Heuristic; obfuscated or<br>reflection-based reporting is not covered. Unverified on device. |  |
 | [Unlock Unlimited Plan](#unlock-unlimited-plan) | Forces Proton Pass Plus plan with all limits removed and paid features unlocked. |  |
 
 </details>

@@ -6182,6 +6182,73 @@
         }
       ],
       "options": []
+    },
+    {
+      "name": "Proton Pass: Allow screenshots & screen recording",
+      "description": "Attempts to remove FLAG_SECURE / secure SurfaceView settings in Proton\nPass so screenshots and screen recording can work in the vault and\nprofile screens, using the same universal heuristic as 'Allow screenshots\n& screen recording'.\n\nApplies to proton.android.pass only. Some screens (payment, biometric,\nbanking) may still block capture independently. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "Allow screenshots & screen recording"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "proton.android.pass",
+          "name": "Proton Pass",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#6D4AFF",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.41.3",
+              "versionCodes": {
+                "ARM64_V8A": 14103401,
+                "ARMEABI_V7A": 14103401,
+                "X86_64": 14103401,
+                "X86": 14103401
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "Proton Pass: Block telemetry & crash reporting",
+      "description": "Blocks Proton Pass telemetry and crash-reporting call sites using the\nsame universal heuristics as 'Block analytics & tracking SDKs' and\n'Block ads & ad SDKs'.\n\nApplies to proton.android.pass only. Heuristic; obfuscated or\nreflection-based reporting is not covered. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "Block analytics & tracking SDKs",
+        "Block ads & ad SDKs"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "proton.android.pass",
+          "name": "Proton Pass",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#6D4AFF",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "1.41.3",
+              "versionCodes": {
+                "ARM64_V8A": 14103401,
+                "ARMEABI_V7A": 14103401,
+                "X86_64": 14103401,
+                "X86": 14103401
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
     }
   ]
 }

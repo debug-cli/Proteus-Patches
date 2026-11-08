@@ -1,6 +1,7 @@
 package app.template.patches.protonpass
 
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
+import app.morphe.patcher.patch.PatchException
 import app.morphe.patcher.patch.bytecodePatch
 import app.template.patches.shared.Constants.PROTON_PASS_COMPATIBILITY
 import app.template.patches.shared.firebase.spoofFirebaseCertHashPatch
@@ -84,8 +85,9 @@ import app.template.patches.shared.signature.spoofSignatureVerificationPatch
 @Suppress("unused")
 val protonPassUnlockPatch = bytecodePatch(
     name = "Unlock Unlimited Plan",
-    description = "Forces Proton Pass Plus plan with all limits removed and paid features unlocked.",
-    default = true,
+    description = "Forces Proton Pass Plus plan with all limits removed and paid features unlocked. "
+        + "Requires the signature, install-source and Firebase cert-hash spoof patches to be enabled.",
+    default = false,
 ) {
     compatibleWith(PROTON_PASS_COMPATIBILITY)
 
@@ -96,7 +98,12 @@ val protonPassUnlockPatch = bytecodePatch(
     )
 
     execute {
-        PlanConstructorFingerprint.method.addInstructions(
+        val method = PlanConstructorFingerprint.method
+            ?: throw PatchException(
+                "Proton Pass: Plan constructor fingerprint not resolved — " +
+                    "aborting before constructor corruption."
+            )
+        method.addInstructions(
             1,
             """
                 # Step 1: construct PlanType${'$'}Paid${'$'}Plus using p3/p4/p5 as scratch
