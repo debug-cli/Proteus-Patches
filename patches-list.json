@@ -4089,6 +4089,13 @@
           "signatures": null,
           "targets": [
             {
+              "version": "1.41.5",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": 27,
+              "description": null
+            },
+            {
               "version": "1.41.3",
               "versionCodes": {
                 "ARM64_V8A": 14103401,
@@ -4123,6 +4130,13 @@
           "signatures": null,
           "targets": [
             {
+              "version": "1.41.5",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": 27,
+              "description": null
+            },
+            {
               "version": "1.41.3",
               "versionCodes": {
                 "ARM64_V8A": 14103401,
@@ -4153,6 +4167,13 @@
           "appIconColor": "#6D4AFF",
           "signatures": null,
           "targets": [
+            {
+              "version": "1.41.5",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": 27,
+              "description": null
+            },
             {
               "version": "1.41.3",
               "versionCodes": {
@@ -4185,6 +4206,13 @@
           "signatures": null,
           "targets": [
             {
+              "version": "1.41.5",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": 27,
+              "description": null
+            },
+            {
               "version": "1.41.3",
               "versionCodes": {
                 "ARM64_V8A": 14103401,
@@ -4215,6 +4243,13 @@
           "appIconColor": "#6D4AFF",
           "signatures": null,
           "targets": [
+            {
+              "version": "1.41.5",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": 27,
+              "description": null
+            },
             {
               "version": "1.41.3",
               "versionCodes": {
@@ -4247,6 +4282,13 @@
           "signatures": null,
           "targets": [
             {
+              "version": "1.41.5",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": 27,
+              "description": null
+            },
+            {
               "version": "1.41.3",
               "versionCodes": {
                 "ARM64_V8A": 14103401,
@@ -4277,6 +4319,13 @@
           "appIconColor": "#6D4AFF",
           "signatures": null,
           "targets": [
+            {
+              "version": "1.41.5",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": 27,
+              "description": null
+            },
             {
               "version": "1.41.3",
               "versionCodes": {
@@ -4309,6 +4358,13 @@
           "signatures": null,
           "targets": [
             {
+              "version": "1.41.5",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": 27,
+              "description": null
+            },
+            {
               "version": "1.41.3",
               "versionCodes": {
                 "ARM64_V8A": 14103401,
@@ -4339,6 +4395,13 @@
           "appIconColor": "#6D4AFF",
           "signatures": null,
           "targets": [
+            {
+              "version": "1.41.5",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": 27,
+              "description": null
+            },
             {
               "version": "1.41.3",
               "versionCodes": {
@@ -6135,7 +6198,7 @@
     },
     {
       "name": "Unlock Unlimited Plan",
-      "description": "Attempts to change Proton Pass's local plan model and limits; server-side entitlements remain unchanged. The 1.41.3 target is unverified; the constructor layout was documented for 1.40.3. Uses signature, install-source and Firebase certificate spoofing dependencies.",
+      "description": "Attempts to change Proton Pass's local plan model and limits; server-side entitlements remain unchanged. The 1.41.3 and 1.41.5 targets are unverified; the known DEX layout was documented for 1.40.3. Fails if required constructor and class layouts do not match. Uses signature, install-source and Firebase certificate spoofing dependencies.",
       "default": false,
       "dependencies": [
         "BytecodePatch",
@@ -6151,6 +6214,13 @@
           "appIconColor": "#6D4AFF",
           "signatures": null,
           "targets": [
+            {
+              "version": "1.41.5",
+              "versionCodes": null,
+              "isExperimental": true,
+              "minSdk": 27,
+              "description": null
+            },
             {
               "version": "1.41.3",
               "versionCodes": {

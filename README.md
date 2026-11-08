@@ -487,8 +487,8 @@ For configuration advice, limitations, and permission-patch examples, see the
 
 **🎯 Supported versions:**
 
-| 1.41.3 |
-| :---: |
+| 🧪&nbsp;1.41.5 | 1.41.3 |
+| :---: | :---: |
 
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
 |----------|----------------|-----------|
@@ -501,7 +501,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 | [Proton Pass: Remove upgrade nag UI](#proton-pass-remove-upgrade-nag-ui) | UNIMPLEMENTED PLACEHOLDER. Does not hide upgrade banners or paywall screens.<br>Selecting this entry fails; app-specific APK analysis is required. |  |
 | [Proton Pass: Unlock multiple vaults](#proton-pass-unlock-multiple-vaults) | UNIMPLEMENTED PLACEHOLDER. Does not change vault limits or server entitlements.<br>Selecting this entry fails; app-specific APK analysis is required. |  |
 | [Proton Pass: Unlock password-generator options](#proton-pass-unlock-password-generator-options) | UNIMPLEMENTED PLACEHOLDER. Does not unlock password-generator options.<br>Selecting this entry fails; app-specific APK analysis is required. |  |
-| [Unlock Unlimited Plan](#unlock-unlimited-plan) | Attempts to change Proton Pass's local plan model and limits; server-side entitlements remain unchanged. The 1.41.3 target is unverified; the constructor layout was documented for 1.40.3. Uses signature, install-source and Firebase certificate spoofing dependencies. |  |
+| [Unlock Unlimited Plan](#unlock-unlimited-plan) | Attempts to change Proton Pass's local plan model and limits; server-side entitlements remain unchanged. The 1.41.3 and 1.41.5 targets are unverified; the known DEX layout was documented for 1.40.3. Fails if required constructor and class layouts do not match. Uses signature, install-source and Firebase certificate spoofing dependencies. |  |
 
 </details>
 
