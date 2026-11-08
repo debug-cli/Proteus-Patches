@@ -14,6 +14,7 @@ on:
   push:
     branches:
       - main
+      - 'arena/**'
 
 permissions:
   contents: read
@@ -21,6 +22,11 @@ permissions:
 jobs:
   build:
     name: Build .mpp
+    if: >-
+      github.event_name == 'workflow_dispatch' || github.ref_name == 'main' ||
+      (startsWith(github.ref_name, 'arena/') &&
+      (contains(github.event.head_commit.message, '[v229-sync]') ||
+       contains(github.event.head_commit.message, '[v229-publish]')))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -117,7 +123,10 @@ jobs:
 
   sync-metadata:
     name: Sync generated catalog to branch
-    if: github.event_name == 'workflow_dispatch' && inputs.sync_metadata && !inputs.publish_v229
+    if: >-
+      (github.event_name == 'workflow_dispatch' && inputs.sync_metadata && !inputs.publish_v229) ||
+      (github.event_name == 'push' && startsWith(github.ref_name, 'arena/') &&
+       contains(github.event.head_commit.message, '[v229-sync]'))
     needs: build
     runs-on: ubuntu-latest
     permissions:
@@ -148,7 +157,10 @@ jobs:
 
   publish-v229:
     name: Publish verified v2.2.9 assets
-    if: github.event_name == 'workflow_dispatch' && inputs.publish_v229 && !inputs.sync_metadata
+    if: >-
+      (github.event_name == 'workflow_dispatch' && inputs.publish_v229 && !inputs.sync_metadata) ||
+      (github.event_name == 'push' && startsWith(github.ref_name, 'arena/') &&
+       contains(github.event.head_commit.message, '[v229-publish]'))
     needs: build
     runs-on: ubuntu-latest
     permissions:
