@@ -140,3 +140,180 @@ val whatsappDisableAutoplayPatch = bytecodePatch(
         logUniversal("WhatsApp: enabling ExoPlayer autoplay block.")
     }
 }
+
+@Suppress("unused")
+val whatsappKeepDeletedMessagesPatch = bytecodePatch(
+    name = "WhatsApp: Keep deleted messages",
+    description = """
+        Shows messages that were deleted for everyone. May need a fingerprint
+        update after WhatsApp upgrades.
+
+        Requires app-specific bytecode analysis of the message-deletion handler
+        — no WhatsApp APK was decompiled in this build environment. Unverified
+        on device.
+    """.trimIndent(),
+    default = false,
+) {
+    compatibleWith(WHATSAPP_COMPATIBILITY)
+
+    execute {
+        logUniversal(
+            "WhatsApp: keep deleted messages — awaiting app-specific bytecode " +
+                "analysis (no APK decompiled)."
+        )
+    }
+}
+
+@Suppress("unused")
+val whatsappReadReceiptsPatch = bytecodePatch(
+    name = "WhatsApp: Read receipts (no blue ticks)",
+    description = """
+        Prevents WhatsApp from sending read receipts (blue ticks) when enabled.
+
+        Requires app-specific bytecode analysis of the read-receipt call sites
+        — no WhatsApp APK was decompiled in this build environment. Unverified
+        on device.
+    """.trimIndent(),
+    default = false,
+) {
+    compatibleWith(WHATSAPP_COMPATIBILITY)
+
+    execute {
+        logUniversal(
+            "WhatsApp: disable read receipts — awaiting app-specific bytecode " +
+                "analysis (no APK decompiled)."
+        )
+    }
+}
+
+@Suppress("unused")
+val whatsappTypingIndicatorPatch = bytecodePatch(
+    name = "WhatsApp: Typing indicator (hide when typing)",
+    description = """
+        Prevents others from seeing when you are typing.
+
+        Requires app-specific bytecode analysis of the typing-indicator call
+        sites — no WhatsApp APK was decompiled in this build environment.
+        Unverified on device.
+    """.trimIndent(),
+    default = false,
+) {
+    compatibleWith(WHATSAPP_COMPATIBILITY)
+
+    execute {
+        logUniversal(
+            "WhatsApp: hide typing indicator — awaiting app-specific bytecode " +
+                "analysis (no APK decompiled)."
+        )
+    }
+}
+
+@Suppress("unused")
+val whatsappUsageDataPatch = bytecodePatch(
+    name = "WhatsApp: Limit usage data (diagnostics & analytics)",
+    description = """
+        Limits diagnostic and analytics data WhatsApp sends, using the same
+        universal heuristic as 'Block analytics & tracking SDKs'.
+
+        Applies to com.whatsapp only. Heuristic; obfuscated or reflection-based
+        reporting is not covered. Unverified on device.
+    """.trimIndent(),
+    default = false,
+) {
+    compatibleWith(WHATSAPP_COMPATIBILITY)
+    dependsOn(blockAnalyticsSdksPatch)
+
+    execute {
+        logUniversal("WhatsApp: enabling universal analytics blocking for usage data.")
+    }
+}
+
+@Suppress("unused")
+val whatsappViewOnceMediaPatch = bytecodePatch(
+    name = "WhatsApp: View once media (allow reopen & save)",
+    description = """
+        Allows reopening and saving view-once photos and videos.
+
+        Requires app-specific bytecode analysis of the view-once media handler
+        — no WhatsApp APK was decompiled in this build environment. Unverified
+        on device.
+    """.trimIndent(),
+    default = false,
+) {
+    compatibleWith(WHATSAPP_COMPATIBILITY)
+
+    execute {
+        logUniversal(
+            "WhatsApp: view once media — awaiting app-specific bytecode " +
+                "analysis (no APK decompiled)."
+        )
+    }
+}
+
+@Suppress("unused")
+val whatsappAppIconPatch = bytecodePatch(
+    name = "WhatsApp: App icon (classic or premium style)",
+    description = """
+        Replaces the WhatsApp launcher icon with a classic or premium-style
+        icon.
+
+        Requires app-specific resource analysis of the launcher-icon drawable —
+        no WhatsApp APK was decompiled in this build environment. Unverified on
+        device.
+    """.trimIndent(),
+    default = false,
+) {
+    compatibleWith(WHATSAPP_COMPATIBILITY)
+
+    execute {
+        logUniversal(
+            "WhatsApp: app icon replacement — awaiting app-specific resource " +
+                "analysis (no APK decompiled)."
+        )
+    }
+}
+
+@Suppress("unused")
+val whatsappModsSettingsEntryPatch = bytecodePatch(
+    name = "WhatsApp: Mods settings entry",
+    description = """
+        Reserves a MightyMich row in Settings. Full dialog wiring needs the
+        settings-list fingerprint for this WhatsApp build.
+
+        Requires app-specific bytecode analysis of the Settings screen — no
+        WhatsApp APK was decompiled in this build environment. Unverified on
+        device.
+    """.trimIndent(),
+    default = false,
+) {
+    compatibleWith(WHATSAPP_COMPATIBILITY)
+
+    execute {
+        logUniversal(
+            "WhatsApp: mods settings entry — awaiting app-specific bytecode " +
+                "analysis (no APK decompiled)."
+        )
+    }
+}
+
+@Suppress("unused")
+val whatsappModsSettingsResourcesPatch = bytecodePatch(
+    name = "WhatsApp: Mods settings resources",
+    description = """
+        Adds English strings for the MightyMich section in WhatsApp Settings.
+
+        Requires app-specific resource analysis of the settings string table —
+        no WhatsApp APK was decompiled in this build environment. Unverified on
+        device.
+    """.trimIndent(),
+    default = false,
+) {
+    compatibleWith(WHATSAPP_COMPATIBILITY)
+
+    execute {
+        logUniversal(
+            "WhatsApp: mods settings resources — awaiting app-specific resource " +
+                "analysis (no APK decompiled)."
+        )
+    }
+}

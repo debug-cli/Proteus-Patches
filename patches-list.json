@@ -6683,6 +6683,328 @@
         }
       ],
       "options": []
+    },
+    {
+      "name": "WhatsApp: Keep deleted messages",
+      "description": "Shows messages that were deleted for everyone. May need a fingerprint\nupdate after WhatsApp upgrades.\n\nRequires app-specific bytecode analysis of the message-deletion handler\n— no WhatsApp APK was decompiled in this build environment. Unverified\non device.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Read receipts (no blue ticks)",
+      "description": "Prevents WhatsApp from sending read receipts (blue ticks) when\nenabled.\n\nRequires app-specific bytecode analysis of the read-receipt call sites\n— no WhatsApp APK was decompiled in this build environment. Unverified\non device.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Typing indicator (hide when typing)",
+      "description": "Prevents others from seeing when you are typing.\n\nRequires app-specific bytecode analysis of the typing-indicator call\nsites — no WhatsApp APK was decompiled in this build environment.\nUnverified on device.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Limit usage data (diagnostics & analytics)",
+      "description": "Limits diagnostic and analytics data WhatsApp sends, using the same\nuniversal heuristic as 'Block analytics & tracking SDKs'.\n\nApplies to com.whatsapp only. Heuristic; obfuscated or reflection-based\nreporting is not covered. Unverified on device.",
+      "default": false,
+      "dependencies": [
+        "Block analytics & tracking SDKs"
+      ],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: View once media (allow reopen & save)",
+      "description": "Allows reopening and saving view-once photos and videos.\n\nRequires app-specific bytecode analysis of the view-once media handler\n— no WhatsApp APK was decompiled in this build environment. Unverified\non device.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: App icon (classic or premium style)",
+      "description": "Replaces the WhatsApp launcher icon with a classic or premium-style\nicon.\n\nRequires app-specific resource analysis of the launcher-icon drawable —\nno WhatsApp APK was decompiled in this build environment. Unverified on\ndevice.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Mods settings entry",
+      "description": "Reserves a MightyMich row in Settings. Full dialog wiring needs the\nsettings-list fingerprint for this WhatsApp build.\n\nRequires app-specific bytecode analysis of the Settings screen — no\nWhatsApp APK was decompiled in this build environment. Unverified on\ndevice.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
+      "name": "WhatsApp: Mods settings resources",
+      "description": "Adds English strings for the MightyMich section in WhatsApp\nSettings.\n\nRequires app-specific resource analysis of the settings string table —\nno WhatsApp APK was decompiled in this build environment. Unverified on\ndevice.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "com.whatsapp",
+          "name": "WhatsApp",
+          "description": null,
+          "apkFileType": "XAPK",
+          "appIconColor": "#075E54",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "2.26.43.76",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.43.74",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            },
+            {
+              "version": "2.26.41.77",
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": 23,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
     }
   ]
 }
