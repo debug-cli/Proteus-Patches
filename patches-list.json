@@ -3466,6 +3466,37 @@
       "options": []
     },
     {
+      "name": "Mereframe: Trace Pro entitlement (diagnostic)",
+      "description": "DIAGNOSTIC ONLY: logs a bounded, static trace of the 0.8.4 Pro resolver and direct references while patching. Does not unlock Pro, change the app, or log string literals or runtime data. Off by default; share only the MEREFRAME_PRO_TRACE lines after reviewing them.",
+      "default": false,
+      "dependencies": [],
+      "compatiblePackages": [
+        {
+          "packageName": "app.unnamed.rawrecording",
+          "name": "Mereframe",
+          "description": null,
+          "apkFileType": "APK",
+          "appIconColor": "#212121",
+          "signatures": null,
+          "targets": [
+            {
+              "version": "0.8.4",
+              "versionCodes": {
+                "ARM64_V8A": 118,
+                "ARMEABI_V7A": 118,
+                "X86_64": 118,
+                "X86": 118
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": []
+    },
+    {
       "name": "Mint: Block analytics & tracking SDKs",
       "description": "Blocks Mint's analytics & tracking SDKs (Firebase Analytics, AppsFlyer, Adjust,\nWebEngage, CleverTap and similar) using the same universal heuristic as\n'Block analytics & tracking SDKs'.\n\nApplies to com.htmedia.mint only. Heuristic; obfuscated or reflection-based\nreporting is not covered. Unverified on device.",
       "default": false,
@@ -6136,7 +6167,7 @@
     },
     {
       "name": "Unlock Pro features",
-      "description": "Includes every registered feature in the resolved feature set by dropping the ownership check at the entitlement resolver (nv.e). LOCAL client-side effect only. WARNING (kept off by default): on at least one device (realme/Android 16) enabling the single registered Pro feature crashes capture - the Pro pipeline path is gated by this flag and we cannot verify its safety side. Enable only if you specifically want the Pro toolset; the app works fully (RAW capture incl.) with just 'Allow re-signed installs'.",
+      "description": "EXPERIMENTAL: issue #5 reports that Pro features still show the purchase prompt. Attempts to remove one contains-branch in nv.e; successful patching does not prove Pro access. Off by default: capture also reportedly crashed on one device with this patch enabled.",
       "default": false,
       "dependencies": [],
       "compatiblePackages": [

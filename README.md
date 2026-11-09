@@ -3,7 +3,7 @@
 > *One bundle, patches everywhere. A curated [Morphe](https://github.com/MorpheApp/Morphe) patch suite for Android.*
 
 [![License: GPL-3.0-only](https://img.shields.io/badge/License-GPL--3.0--only-green.svg)](#license)
-[![Patch entries](https://img.shields.io/badge/patch%20entries-167-blue.svg)](#whats-inside)
+[![Patch entries](https://img.shields.io/badge/patch%20entries-168-blue.svg)](#whats-inside)
 [![Universal patches](https://img.shields.io/badge/universal-26-purple.svg)](#universal-patches)
 [![Package targets](https://img.shields.io/badge/package%20targets-33-orange.svg)](#supported-apps)
 
@@ -50,7 +50,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 4. Pick the apps you patch, choose your patches, and patch.
 
 <!-- PATCHES_START EXPANDED -->
-> **[v2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/823830aa-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;204 patches total
+> **[v2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9)**&nbsp;&nbsp;•&nbsp;&nbsp;`arena/823830aa-proteus-patches`&nbsp;&nbsp;•&nbsp;&nbsp;205 patches total
 <details open>
 <summary>📦 Google Photos&nbsp;&nbsp;•&nbsp;&nbsp;7 patches</summary>
 <br>
@@ -91,7 +91,7 @@ For configuration advice, limitations, and permission-patch examples, see the
 </details>
 
 <details open>
-<summary>📦 Mereframe&nbsp;&nbsp;•&nbsp;&nbsp;4 patches</summary>
+<summary>📦 Mereframe&nbsp;&nbsp;•&nbsp;&nbsp;5 patches</summary>
 <br>
 
 **🎯 Supported versions:**
@@ -104,7 +104,8 @@ For configuration advice, limitations, and permission-patch examples, see the
 | [Allow re-signed/sideloaded installs](#allow-re-signed-sideloaded-installs) | Neutralizes Mereframe's install-integrity checks so patched (re-signed) builds start normally instead of showing the installation-refused screen. Required for any other patch here to be usable. |  |
 | [Bypass native integrity checks](#bypass-native-integrity-checks) | libunnamed_raw.so JNI-throws 'app integrity check failed' on re-signed builds, killing camera session start (preview) - observed via diagnostic crash log. This patch calls the session-opening wrapper inside a real JVM try/catch (extension) and substitutes a well-formed session result on failure. Required together with 'Allow re-signed/sideloaded installs'. |  |
 | [Diagnostic crash log](#diagnostic-crash-log) | DIAGNOSTIC ONLY - writes the full stack trace to Downloads/mereframe-crash-*.txt when the app crashes, for remote diagnosis. Off by default; enable when asked to produce a crash log. Chain-forwards to the original crash handler. |  |
-| [Unlock Pro features](#unlock-pro-features) | Includes every registered feature in the resolved feature set by dropping the ownership check at the entitlement resolver (nv.e). LOCAL client-side effect only. WARNING (kept off by default): on at least one device (realme/Android 16) enabling the single registered Pro feature crashes capture - the Pro pipeline path is gated by this flag and we cannot verify its safety side. Enable only if you specifically want the Pro toolset; the app works fully (RAW capture incl.) with just 'Allow re-signed installs'. |  |
+| [Mereframe: Trace Pro entitlement (diagnostic)](#mereframe-trace-pro-entitlement-diagnostic) | DIAGNOSTIC ONLY: logs a bounded, static trace of the 0.8.4 Pro resolver and direct references while patching. Does not unlock Pro, change the app, or log string literals or runtime data. Off by default; share only the MEREFRAME_PRO_TRACE lines after reviewing them. |  |
+| [Unlock Pro features](#unlock-pro-features) | EXPERIMENTAL: issue #5 reports that Pro features still show the purchase prompt. Attempts to remove one contains-branch in nv.e; successful patching does not prove Pro access. Off by default: capture also reportedly crashed on one device with this patch enabled. |  |
 
 </details>
 
