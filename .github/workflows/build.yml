@@ -190,6 +190,34 @@ jobs:
           git commit -m 'chore: sync generated v2.2.9 patch catalog'
           git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
 
+  replace-v229-proton1415:
+    name: Replace v2.2.9 assets with the reviewed candidate
+    if: >-
+      github.event_name == 'push' && github.ref_name == 'arena/823830aa-proteus-patches' &&
+      contains(github.event.head_commit.message, '[v229-replace-proton1415]')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Checkout release controls
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Verify and replace approved v2.2.9 assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash .github/scripts/publish_v229_proton1415.sh
+      - name: Retain original assets and notes for recovery
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.7.0
+        with:
+          name: v2.2.9-original-assets-backup
+          path: ${{ runner.temp }}/v229-proton1415/backup/*
+          retention-days: 30
+          if-no-files-found: ignore
+
   publish-v229:
     name: Publish verified v2.2.9 assets
     if: >-

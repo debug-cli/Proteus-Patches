@@ -5,7 +5,8 @@ and, experimentally, **1.41.5** (version-name only, XAPK). The 1.41.5 target
 is based on the upstream source, not on an inspected APK; no Proton Pass APK
 was analyzed or patched on a device for these versions. Manager compatibility
 metadata does not establish that any patch works. All new entries are off by
-default, and the published v2.2.9 bundle predates the 1.41.5 metadata change.
+default. The v2.2.9 release notes identify the exact bundle build; earlier
+v2.2.9 downloads do not include the experimental 1.41.5 target.
 
 ## Available entries
 
