@@ -2,6 +2,7 @@ package app.template.patches.release
 
 import app.morphe.patcher.patch.PatchException
 import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod
+import app.template.patches.mereframe.MereframeProSafetyTest
 import app.template.patches.protonpass.hasSafePlanInjectionReferences
 import app.template.patches.protonpass.injectPlanOverrides
 import app.template.patches.protonpass.isKnownPlanConstructor
@@ -45,6 +46,7 @@ object ReleaseSafetyTest {
         testAdSdkCalls()
         testScreenCapture()
         testProtonPlanGuard()
+        MereframeProSafetyTest.run()
         val failure = runCatching { unimplementedAppPatch("test feature") }.exceptionOrNull()
         check(failure is PatchException && failure.message.orEmpty().contains("unimplemented placeholder"))
         println("Release safety DEX and placeholder tests passed")

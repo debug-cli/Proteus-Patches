@@ -12,8 +12,9 @@ ads, annoyances and risky defaults from popular Android apps — plus a set of
 **universal patches** that apply to any app.
 
 - **[v2.2.9](https://github.com/ineednotitle/Proteus-Patches/releases/tag/v2.2.9)** — experimental WhatsApp, Proton Pass and Table Notes entries and a universal ad SDK heuristic. Seven WhatsApp and all seven new Proton Pass feature entries are **unimplemented placeholders**: they make no changes and fail if selected. All new app entries are off by default and unverified on a target APK or device. See [WhatsApp](docs/WHATSAPP-ANALYSIS.md), [Proton Pass](docs/PROTON-PASS-AUDIT.md), and [Table Notes](docs/TABLE-NOTES.md). The release notes identify the build commit because the existing v2.2.9 tag points to older source.
+- **Mereframe Pro:** a purchase prompt has been reported despite successful patching. Pro access is **not verified**; the source-branch diagnostic and safety guard are not in the published v2.2.9 bundle. See [Mereframe status](docs/MEREFRAME.md).
 
-The generated catalog contains 167 unique entries, including 26 universal entries,
+The generated catalog contains 168 unique entries, including 26 universal entries,
 across 30 app families (33 package targets). Amazon global/India, Inure
 Play/GitHub, and Telegram/Telegram Web count as one family each; Telegram Plus
 is counted separately. Patch appearances can exceed unique entries.

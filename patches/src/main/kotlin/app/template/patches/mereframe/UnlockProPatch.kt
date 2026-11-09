@@ -3,44 +3,66 @@ package app.template.patches.mereframe
 import app.morphe.patcher.Fingerprint
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.bytecodePatch
+import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod
 import app.template.patches.shared.Constants.MEREFRAME_COMPATIBILITY
+import app.template.patches.shared.logUniversal
 import com.android.tools.smali.dexlib2.Opcode
+import com.android.tools.smali.dexlib2.iface.instruction.Instruction
+import com.android.tools.smali.dexlib2.iface.instruction.OneRegisterInstruction
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
+import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 
 /**
- * Mereframe 0.8.4 introduced a Pro tier; entitlement resolution happens in
- * exactly one function of the vendored licensing SDK:
+ * The existing 0.8.4 patch removes one conditional branch following an
+ * ArrayList.contains call in Lnv;->e(Context, Sv, List)Set. The original
+ * analysis identified that as an ownership check; it left a separate Ru.a()Z
+ * availability check untouched. Issue #5 subsequently reported that a Pro
+ * feature still displayed the purchase prompt. The actual remaining gate and
+ * whether this branch is responsible have not been established.
  *
- *   Lnv;->e(Landroid/content/Context;LSv;Ljava/util/List;)Ljava/util/Set;
- *
- * It iterates the feature registry (the p2 List, all pluggable features with
- * a feature key Ru.a and a default-availability flag Ru.a()Z) and only adds a
- * feature to the enabled set when the *owned-id list* (Sv.a()) CONTAINS the
- * key. All feature consumers (Il, ns) read the set produced here; drop the
- * contains-guard and every registered feature resolves enabled - no web call,
- * no account, no Play Billing interaction needed.
- *
- * The edit is surgical and label-free: the `if-eqz` that skips unowned
- * features (directly after Ljava/util/ArrayList;->contains(Ljava/lang/Object;)Z
- * + move-result) is replaced by `nop`, so the skip path disappears while the
- * vendor's own per-feature availability flag (Ru.a()Z) stays respected. No new
- * instructions, no registers re-purposed, layout verified against 0.8.4
- * (vc 118) with asserted opcode flow (invoke -> move-result -> if-eqz).
- *
- * Pair with "Allow re-signed/sideloaded installs": the stock APK checks the
- * installer signature; without that patch the app refuses to start at all.
- * Fail-closed on structure: any drift makes the patch throw instead of
- * silently half-patching.
+ * Match the documented ArrayList call exactly and fail rather than guessing
+ * when it is ambiguous, truncated, or the branch checks a different register.
+ * These checks prevent some incorrect edits, but do not prove that this is the
+ * ownership check, that it governs all consumers, or that Pro works on device.
  */
+internal fun findMereframeProBranch(instructions: List<Instruction>): Int {
+    val containsSites = instructions.withIndex().filter { (_, instruction) ->
+        if (instruction.opcode != Opcode.INVOKE_VIRTUAL) return@filter false
+        val ref = (instruction as? ReferenceInstruction)?.reference as? MethodReference
+            ?: return@filter false
+        ref.definingClass == "Ljava/util/ArrayList;" &&
+            ref.name == "contains" &&
+            ref.parameterTypes.map { it.toString() } == listOf("Ljava/lang/Object;") &&
+            ref.returnType == "Z"
+    }
+    require(containsSites.size == 1) {
+        "Mereframe Pro: expected one ArrayList.contains(Object)Z in nv.e, found ${containsSites.size}"
+    }
+    val invokeIndex = containsSites.single().index
+    val move = instructions.getOrNull(invokeIndex + 1) as? OneRegisterInstruction
+    val branch = instructions.getOrNull(invokeIndex + 2) as? OneRegisterInstruction
+    require(move != null && branch != null && move.opcode == Opcode.MOVE_RESULT &&
+        branch.opcode == Opcode.IF_EQZ && move.registerA == branch.registerA) {
+        "Mereframe Pro: contains result is not followed by if-eqz on the same register"
+    }
+    return invokeIndex + 2
+}
+
+internal fun patchMereframeProBranch(method: MutableMethod): Int {
+    val instructions = requireNotNull(method.implementation) {
+        "Mereframe Pro: nv.e has no implementation"
+    }.instructions.toList()
+    val index = findMereframeProBranch(instructions)
+    method.replaceInstruction(index, "nop")
+    return index
+}
+
 @Suppress("unused")
 val unlockProPatch = bytecodePatch(
     name = "Unlock Pro features",
-    description = "Includes every registered feature in the resolved feature set by dropping the " +
-        "ownership check at the entitlement resolver (nv.e). LOCAL client-side effect only. " +
-        "WARNING (kept off by default): on at least one device (realme/Android 16) enabling the " +
-        "single registered Pro feature crashes capture - the Pro pipeline path is gated by this " +
-        "flag and we cannot verify its safety side. Enable only if you specifically want the Pro " +
-        "toolset; the app works fully (RAW capture incl.) with just 'Allow re-signed installs'.",
+    description = "EXPERIMENTAL: issue #5 reports that Pro features still show the purchase prompt. " +
+        "Attempts to remove one contains-branch in nv.e; successful patching does not prove Pro access. " +
+        "Off by default: capture also reportedly crashed on one device with this patch enabled.",
     default = false,
 ) {
     compatibleWith(MEREFRAME_COMPATIBILITY)
@@ -52,22 +74,8 @@ val unlockProPatch = bytecodePatch(
             returnType = "Ljava/util/Set;",
             parameters = listOf("Landroid/content/Context;", "LSv;", "Ljava/util/List;"),
         ).method
-
-        method.apply {
-            val instructions = implementation!!.instructions
-            val containsIdx = instructions.indexOfFirst { ins ->
-                ins.opcode == Opcode.INVOKE_VIRTUAL &&
-                    (ins as? ReferenceInstruction)?.reference?.toString()
-                        ?.contains("->contains(Ljava/lang/Object;)Z") == true
-            }
-            require(containsIdx >= 0) { "nv.e: ArrayList.contains not found" }
-            // Layout after the call: move-result (containsIdx+1) -> if-eqz (containsIdx+2).
-            val ifIdx = containsIdx + 2
-            require(instructions.elementAt(containsIdx + 1).opcode == Opcode.MOVE_RESULT &&
-                instructions.elementAt(ifIdx).opcode == Opcode.IF_EQZ) {
-                "nv.e: unexpected layout after contains()"
-            }
-            replaceInstruction(ifIdx, "nop")
-        }
+        val branchIndex = patchMereframeProBranch(method)
+        logUniversal("Mereframe Pro: removed structurally matched branch at instruction $branchIndex; " +
+            "Pro access is not verified.")
     }
 }
