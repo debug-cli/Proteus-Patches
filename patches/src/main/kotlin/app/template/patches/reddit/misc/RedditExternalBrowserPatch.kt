@@ -41,11 +41,11 @@ val redditExternalBrowserPatch = bytecodePatch(
             returnType = "V",
             parameters = listOf(
                 "Lcom/reddit/webembed/util/e;",
-                "Lwv80;",
+                "L",
                 "Landroid/net/Uri;",
                 "Ljava/lang/String;",
                 "Landroid/app/Activity;",
-                "Lj490;",
+                "L",
                 "Z",
                 "Ljava/lang/String;",
                 "I",
