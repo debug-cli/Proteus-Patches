@@ -826,7 +826,7 @@ ongoing development:
   </tr>
   <tr>
     <td><code>ADD_UPI_ID_HERE</code></td>
-    <td><a href="https://paypal.me/ADD_PAYPAL_HANDLE">ADD_PAYPAL_HANDLE</a></td>
+    <td><a href="https://paypal.me/ineednotitle">ineednotitle</a></td>
     <td><a href="https://buymeacoffee.com/ADD_BMC_HANDLE">ADD_BMC_HANDLE</a></td>
   </tr>
 </table>
