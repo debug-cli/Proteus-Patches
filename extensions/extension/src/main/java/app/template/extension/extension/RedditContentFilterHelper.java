@@ -8,7 +8,9 @@ import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -63,7 +65,9 @@ public final class RedditContentFilterHelper {
 
     /** Set once the first hideAutoModComments pass completes; lets device logs prove the hook is live. */
     private static final AtomicBoolean AUTO_MOD_PROBE_LOGGED = new AtomicBoolean();
+    private static final AtomicBoolean AUTO_MOD_TREE_PROBE_LOGGED = new AtomicBoolean();
     private static final AtomicInteger AUTO_MOD_DROP_LOG_COUNT = new AtomicInteger();
+    private static final AtomicInteger AUTO_MOD_TREE_DROP_LOG_COUNT = new AtomicInteger();
 
     private static void logAutoMod(String message) {
         System.out.println("[Proteus][Block AutoMod] " + message);
@@ -173,6 +177,170 @@ public final class RedditContentFilterHelper {
             return filtered;
         }
         return list;
+    }
+
+    // ── Comment-tree filters ─────────────────────────────────────────────────
+
+    /**
+     * Comment threads do not flow through {@code Listing}.  Reddit's comment
+     * tree store emits a {@code TreeData} object whose constructor receives
+     * three parallel views: the ordered tree item ids, the id → comment map,
+     * and the tree item wrappers.  AutoMod rows must be removed from all three
+     * or the renderer resurrects them from one of the other views.
+     *
+     * <p>Each helper returns the original object when nothing matched, so the
+     * injected {@code move-result-object} is cheap on the common path.
+     */
+    public static List<?> hideAutoModTreeIds(
+            List<?> treeItemIds,
+            Map<?, ?> comments,
+            Map<?, ?> treeItems
+    ) {
+        if (treeItemIds == null || treeItemIds.isEmpty()) {
+            return treeItemIds;
+        }
+        Set<Object> removed = autoModTreeKeys(comments, treeItems);
+        if (removed.isEmpty()) {
+            return treeItemIds;
+        }
+        if (!AUTO_MOD_TREE_PROBE_LOGGED.getAndSet(true)) {
+            int commentCount = comments == null ? 0 : comments.size();
+            int itemCount = treeItems == null ? 0 : treeItems.size();
+            logAutoMod("comment tree filter is live (" + commentCount
+                    + " comments, " + itemCount + " tree items)");
+        }
+
+        List<Object> filtered = new ArrayList<>(treeItemIds.size());
+        boolean changed = false;
+        for (Object id : treeItemIds) {
+            if (removed.contains(id)) {
+                changed = true;
+                continue;
+            }
+            filtered.add(id);
+        }
+        if (changed) {
+            logAutoModTreeDrop(treeItemIds.size() - filtered.size(), treeItemIds.size());
+        }
+        return changed ? filtered : treeItemIds;
+    }
+
+    /** Drops AutoModerator entries from a comment-id map. */
+    public static Map<?, ?> hideAutoModTreeComments(Map<?, ?> comments) {
+        if (comments == null || comments.isEmpty()) {
+            return comments;
+        }
+        Map<Object, Object> filtered = null;
+        for (Map.Entry<?, ?> entry : comments.entrySet()) {
+            if (!isAutoModComment(entry.getValue())) {
+                continue;
+            }
+            if (filtered == null) {
+                filtered = new LinkedHashMap<Object, Object>(comments);
+            }
+            filtered.remove(entry.getKey());
+        }
+        return filtered != null ? filtered : comments;
+    }
+
+    /** Drops AutoModerator entries from a tree-item wrapper map. */
+    public static Map<?, ?> hideAutoModTreeItems(Map<?, ?> comments, Map<?, ?> treeItems) {
+        if (treeItems == null || treeItems.isEmpty()) {
+            return treeItems;
+        }
+        Set<Object> removed = autoModTreeKeys(comments, treeItems);
+        if (removed.isEmpty()) {
+            return treeItems;
+        }
+        Map<Object, Object> filtered = null;
+        for (Map.Entry<?, ?> entry : treeItems.entrySet()) {
+            Object key = entry.getKey();
+            String id = treeItemId(entry.getValue());
+            if (removed.contains(key) || (id != null && removed.contains(id))) {
+                if (filtered == null) {
+                    filtered = new LinkedHashMap<Object, Object>(treeItems);
+                }
+                filtered.remove(key);
+            }
+        }
+        return filtered != null ? filtered : treeItems;
+    }
+
+    /**
+     * Collects every key that can identify an AutoMod comment: the comment map
+     * key, its kind-with-id string, and any tree-item wrapper key that points
+     * back at one of those ids.
+     */
+    private static Set<Object> autoModTreeKeys(Map<?, ?> comments, Map<?, ?> treeItems) {
+        Set<Object> removed = null;
+        if (comments != null) {
+            for (Map.Entry<?, ?> entry : comments.entrySet()) {
+                Object value = entry.getValue();
+                if (!isAutoModComment(value)) {
+                    continue;
+                }
+                if (removed == null) {
+                    removed = new HashSet<>();
+                }
+                removed.add(entry.getKey());
+                Object model = findModel(value);
+                if (model != null) {
+                    String kind = stringValue(invoke(accessors(model.getClass()).kind, model));
+                    if (!kind.isEmpty()) {
+                        removed.add(kind);
+                    }
+                }
+            }
+        }
+        if (treeItems != null && removed != null) {
+            for (Map.Entry<?, ?> entry : treeItems.entrySet()) {
+                String id = treeItemId(entry.getValue());
+                if (id != null && removed.contains(id)) {
+                    removed.add(entry.getKey());
+                }
+            }
+        }
+        return removed != null ? removed : Collections.emptySet();
+    }
+
+    /**
+     * The tree stores ordered ids and a wrapper object per id; the wrapper's
+     * public {@code a} field is the kind-with-id string (e.g. {@code t1_abc}).
+     * Keep this reflective so R8-renamed wrapper classes cannot break the
+     * extension's compile-time classpath.
+     */
+    private static String treeItemId(Object item) {
+        if (item == null) {
+            return null;
+        }
+        try {
+            Field field = item.getClass().getField("a");
+            field.setAccessible(true);
+            Object value = field.get(item);
+            if (value instanceof CharSequence) {
+                return value.toString();
+            }
+        } catch (Throwable ignored) {
+            // Try the accessor shape next.
+        }
+        try {
+            Method getter = noArgMethod(item.getClass(), "getA");
+            Object value = invoke(getter, item);
+            if (value instanceof CharSequence) {
+                return value.toString();
+            }
+        } catch (Throwable ignored) {
+            // Unknown wrapper shape: leave the row alone.
+        }
+        return null;
+    }
+
+    private static void logAutoModTreeDrop(int dropped, int total) {
+        int n = AUTO_MOD_TREE_DROP_LOG_COUNT.incrementAndGet();
+        if (n <= 5 || n % 25 == 0) {
+            logAutoMod("tree dropped " + dropped + " of " + total
+                    + " items (event " + n + ")");
+        }
     }
 
     /**

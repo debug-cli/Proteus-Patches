@@ -156,6 +156,66 @@ public final class RedditDeletedCommentHelper {
         return undeleteContent(list);
     }
 
+    /**
+     * Batch entry point for the obfuscated comment-tree `TreeData` constructor.
+     * Comment threads build their rows through the comment tree store, not
+     * through {@code Listing}.  The constructor receives the full id → comment
+     * map, so all deleted comments in one emission are resolved with a single
+     * archive request.  Non-deleted comments are a local no-op.
+     */
+    public static Map<?, ?> undeleteTreeComments(Map<?, ?> comments) {
+        if (comments == null || comments.isEmpty()) {
+            return comments;
+        }
+        List<Pending> pending = null;
+        for (Object value : comments.values()) {
+            Object model = findModel(value);
+            if (model == null || rowKind(model) != RowKind.COMMENT) {
+                continue;
+            }
+            String sentinel = deletedSentinel(bodyText(model));
+            if (sentinel == null) {
+                continue;
+            }
+
+            // Prefer the undo payload if Reddit attached one; avoids a request
+            // for comments the client can already reconstruct.
+            Object restore = commentToRestore(model);
+            if (restore != null) {
+                String original = bodyText(restore);
+                if (deletedSentinel(original) == null && !original.trim().isEmpty()
+                        && replaceBody(model, sentinel, MARKER + original)) {
+                    continue;
+                }
+            }
+
+            String id = rowId(model);
+            if (id == null) {
+                continue;
+            }
+            if (pending == null) {
+                pending = new ArrayList<>();
+            }
+            pending.add(new Pending(model, id, sentinel, null));
+        }
+
+        if (pending == null) {
+            return comments;
+        }
+        try {
+            restoreComments(pending);
+        } catch (Throwable t) {
+            log("comment-tree restore failed (" + t.getClass().getSimpleName()
+                    + "); keeping original rows");
+        }
+        return comments;
+    }
+
+    private static Object commentToRestore(Object model) {
+        Accessors accessors = accessors(model.getClass());
+        return invoke(accessors.commentToRestore, model);
+    }
+
     private static List<?> undeleteContentInner(List<?> list) {
         List<Pending> comments = null;
         List<Pending> posts = null;
@@ -978,6 +1038,7 @@ public final class RedditDeletedCommentHelper {
         final Method id;
         final Method kind;
         final Method tombstone;
+        final Method commentToRestore;
 
         Accessors(Class<?> type) {
             body = firstMethod(type, BODY_GETTERS);
@@ -987,6 +1048,7 @@ public final class RedditDeletedCommentHelper {
             id = firstMethod(type, ID_GETTERS);
             kind = firstMethod(type, KIND_GETTERS);
             tombstone = firstMethod(type, new String[]{"getCommentTombstone"});
+            commentToRestore = firstMethod(type, new String[]{"getCommentToRestore"});
         }
     }
 

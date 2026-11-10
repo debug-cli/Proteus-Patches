@@ -34,6 +34,7 @@ https://github.com/ineednotitle/Proteus-Patches
 - [Documentation](#documentation)
 - [Build from source](#build-from-source)
 - [Contributing](#contributing)
+- [Support](#support)
 - [License](#license)
 
 ## Install
@@ -798,6 +799,20 @@ are published by semantic-release from `main`. Run the verification scripts in
 Bug reports and focused pull requests are welcome. Please read
 [CONTRIBUTING.md](CONTRIBUTING.md) before opening an issue or PR. Report security
 problems privately using [SECURITY.md](SECURITY.md), not in a public issue.
+
+## Support
+
+If these patches save you time or make an app more usable, you can support
+ongoing development:
+
+| Method | Details |
+| :--- | :--- |
+| UPI | `ADD_UPI_ID_HERE` |
+| PayPal | `ADD_PAYPAL_URL_HERE` |
+| Buy Me a Coffee | `ADD_BUY_ME_A_COFFEE_URL_HERE` |
+
+Donations are optional. Bug reports, testing and focused pull requests help just
+as much.
 
 ## Acknowledgements
 

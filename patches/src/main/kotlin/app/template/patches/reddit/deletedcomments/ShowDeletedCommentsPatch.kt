@@ -2,6 +2,7 @@ package app.template.patches.reddit.deletedcomments
 
 import app.morphe.patcher.patch.bytecodePatch
 import app.template.patches.shared.Constants.REDDIT_COMPATIBILITY
+import app.template.patches.reddit.shared.injectCommentTreeUndelete
 import app.template.patches.reddit.shared.injectListingChildrenFilter
 
 /**
@@ -10,16 +11,20 @@ import app.template.patches.reddit.shared.injectListingChildrenFilter
  * Reddit renders posts and comments whose author deleted them (or that a
  * moderator removed) as `[deleted]` / `[removed]` and does NOT send the
  * original text to clients, so an archive is the only source.  This patch
- * hooks the same verified `Listing.children` choke point as "Block AutoMod
- * comments" / "Content filters" and, for each deleted row, looks the id up in
- * a public archive and swaps in the archived text (prefixed with
+ * hooks the verified `Listing.children` choke point for posts/listings and the
+ * obfuscated comment-tree `TreeData` constructor for comments (comment threads
+ * do not build a `Listing` in this build).  For each deleted row it looks the id
+ * up in a public archive and swaps in the archived text (prefixed with
  * `[archived] `).
  *
  * HOW IT WORKS
  *   1. `Listing.<init>` (and `getChildren()` when present) is wrapped with
- *      `RedditDeletedCommentHelper.undeleteContent(List)`.  Listings are
- *      deserialized off the main thread, so the synchronous archive request
- *      does not run on the UI thread.
+ *      `RedditDeletedCommentHelper.undeleteContent(List)` for post rows, and
+ *      the comment-tree `TreeData` constructor passes its id → comment map to
+ *      `undeleteTreeComments(Map)`.  The map is one batch, so a thread with
+ *      several deleted comments still issues one archive request.  The tree
+ *      store runs in the application coroutine scope, off the Compose UI
+ *      thread.
  *   2. The helper collects the ids of exactly the deleted/removed rows in the
  *      listing, issues ONE batched HTTP GET per listing to the free Arctic
  *      Shift id lookup (`/api/comments/ids` and `/api/posts/ids`, no API key)
@@ -50,12 +55,12 @@ import app.template.patches.reddit.shared.injectListingChildrenFilter
  *   → HTTP 200, {"data":[{"id":"…","selftext":"…","title":"…"}]}.
  *
  * Implementation status: verified statically against a decompiled Reddit
- * 2026.42.0 APK.  The injection rides the already-verified `Listing.children`
- * anchor used by "Block AutoMod comments" (see
- * `reddit/shared/RedditListingChildren.kt`), so the bytecode side is low-risk.
- * The runtime restore path (reflection into the post/comment models + archive
- * fetch) still fails safe to the stock `[deleted]` row and never throws into
- * app code.
+ * 2026.42.0 APK.  Post/listing rows ride the already-verified
+ * `Listing.children` anchor (see `reddit/shared/RedditListingChildren.kt`);
+ * comment rows are batched at the obfuscated `TreeData` constructor (see
+ * `reddit/shared/RedditCommentTree.kt`).  The runtime restore path
+ * (reflection into the post/comment models + archive fetch) still fails safe
+ * to the stock `[deleted]` row and never throws into app code.
  */
 
 private const val DELETED_COMMENT_HELPER =
@@ -81,5 +86,6 @@ val redditShowDeletedCommentsPatch = bytecodePatch(
             logTag = "Show deleted posts and comments",
             helperClass = DELETED_COMMENT_HELPER,
         )
+        injectCommentTreeUndelete("Show deleted posts and comments")
     }
 }

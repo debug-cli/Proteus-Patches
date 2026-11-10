@@ -2,9 +2,12 @@ package app.template.extension.extension;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Method;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.junit.Test;
 
 public class RedditDeletedCommentHelperTest {
@@ -49,6 +52,19 @@ public class RedditDeletedCommentHelperTest {
         assertEquals("restored text", comment.commentTombstone.markdown);
     }
 
+    @Test
+    public void restoresTreeCommentFromUndoPayloadWithoutNetwork() {
+        FakeComment original = new FakeComment("original text", null, null);
+        FakeComment deleted = new FakeComment("[deleted]", null, null, original);
+        Map<Object, Object> comments = new LinkedHashMap<>();
+        comments.put("t1_abc", deleted);
+
+        Map<?, ?> result = RedditDeletedCommentHelper.undeleteTreeComments(comments);
+
+        assertSame(comments, result);
+        assertEquals("[archived] original text", deleted.body);
+    }
+
     private static String bodyText(Object model) throws Exception {
         return (String) method("bodyText", Object.class).invoke(null, model);
     }
@@ -65,15 +81,26 @@ public class RedditDeletedCommentHelperTest {
         return method;
     }
 
-    private static final class FakeComment {
+    public static final class FakeComment {
         private String body;
         private String bodyPreview;
         private final FakeTombstone commentTombstone;
+        private final FakeComment commentToRestore;
 
         FakeComment(String body, String bodyPreview, FakeTombstone commentTombstone) {
+            this(body, bodyPreview, commentTombstone, null);
+        }
+
+        FakeComment(
+                String body,
+                String bodyPreview,
+                FakeTombstone commentTombstone,
+                FakeComment commentToRestore
+        ) {
             this.body = body;
             this.bodyPreview = bodyPreview;
             this.commentTombstone = commentTombstone;
+            this.commentToRestore = commentToRestore;
         }
 
         public String getBody() {
@@ -87,9 +114,13 @@ public class RedditDeletedCommentHelperTest {
         public FakeTombstone getCommentTombstone() {
             return commentTombstone;
         }
+
+        public FakeComment getCommentToRestore() {
+            return commentToRestore;
+        }
     }
 
-    private static final class FakeTombstone {
+    public static final class FakeTombstone {
         private String markdown;
         private String richtext;
 
