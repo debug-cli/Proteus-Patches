@@ -807,33 +807,10 @@ ongoing development:
 
 <p align="center">
   <a href="#scan-to-donate"><img alt="Donate via UPI (scan QR)" src="https://img.shields.io/badge/UPI-Scan%20QR-FF6B00?style=for-the-badge&logo=googlepay&logoColor=white"></a>
-  <a href="https://paypal.me/ADD_PAYPAL_HANDLE"><img alt="Donate via PayPal" src="https://img.shields.io/badge/PayPal-Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white"></a>
+  <a href="https://paypal.me/ineednotitle"><img alt="Donate via PayPal" src="https://img.shields.io/badge/PayPal-Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white"></a>
   <a href="https://buymeacoffee.com/ADD_BMC_HANDLE"><img alt="Buy Me a Coffee" src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black"></a>
 </p>
 
-### Scan to donate
-
-<table align="center">
-  <tr>
-    <th>UPI</th>
-    <th>PayPal</th>
-    <th>Buy Me a Coffee</th>
-  </tr>
-  <tr>
-    <td><img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&amp;margin=8&amp;data=upi%3A%2F%2Fpay%3Fpa%3DADD_UPI_ID_HERE%26pn%3DProteus%2520Patches%26cu%3DINR" width="180" alt="UPI QR code"></td>
-    <td><img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&amp;margin=8&amp;data=https%3A%2F%2Fpaypal.me%2FADD_PAYPAL_HANDLE" width="180" alt="PayPal QR code"></td>
-    <td><img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&amp;margin=8&amp;data=https%3A%2F%2Fbuymeacoffee.com%2FADD_BMC_HANDLE" width="180" alt="Buy Me a Coffee QR code"></td>
-  </tr>
-  <tr>
-    <td><code>ADD_UPI_ID_HERE</code></td>
-    <td><a href="https://paypal.me/ineednotitle">ineednotitle</a></td>
-    <td><a href="https://buymeacoffee.com/ADD_BMC_HANDLE">ADD_BMC_HANDLE</a></td>
-  </tr>
-</table>
-
-<!-- Replace ADD_UPI_ID_HERE, ADD_PAYPAL_HANDLE and ADD_BMC_HANDLE in both the
-     buttons and the QR image URLs. QR data is URL-encoded; keep the encoding
-     when changing the handle. UPI links use the upi://pay?... deep link. -->
 
 Donations are optional. Bug reports, testing and focused pull requests help just
 as much.
