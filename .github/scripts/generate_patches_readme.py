@@ -10,6 +10,7 @@ Spoilers are expanded (open by default) if:
 python3 generate_patches_readme.py <owner/repo> <branch> [patches-list.json] [README.md]
 """
 
+import html
 import json
 import re
 import sys
@@ -192,7 +193,7 @@ def build_content(expanded=False):
     # One collapsed spoiler per app, sorted by display name.
     for pkg, entry in sorted(by_pkg.items(), key=lambda item: item[1]["name"].lower()):
         patches = list(entry["patches"].values())
-        label   = f"**{entry['name']}**"
+        label   = f"<strong>{html.escape(entry['name'])}</strong>"
         lines.append(f'<a id="{app_anchor(pkg)}"></a>')
         lines.append(spoiler(label, len(patches), entry["targets"], patches_table(patches), expanded))
         lines.append("")
@@ -204,7 +205,7 @@ def build_content(expanded=False):
         tag  = "<details open>" if expanded else "<details>"
         lines.append('<a id="universal-patches"></a>')
         lines.append(f"""{tag}
-<summary>**Universal patches** · {len(uni_patches)} {noun}</summary>
+<summary><strong>Universal patches</strong> · {len(uni_patches)} {noun}</summary>
 <br>
 
 {patches_table(uni_patches)}

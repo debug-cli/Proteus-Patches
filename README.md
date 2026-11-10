@@ -97,7 +97,7 @@ compatible versions, patches and options.
 
 <a id="app-in-amazon-mshop-android-shopping"></a>
 <details>
-<summary **Amazon India** · 9 patches</summary>
+<summary><strong>Amazon India</strong> · 9 patches</summary>
 <br>
 
 **Compatible versions**
@@ -121,7 +121,7 @@ compatible versions, patches and options.
 
 <a id="app-com-amazon-mshop-android-shopping"></a>
 <details>
-<summary> **Amazon Shopping** · 9 patches</summary>
+<summary><strong>Amazon Shopping</strong> · 9 patches</summary>
 <br>
 
 **Compatible versions**
@@ -145,7 +145,7 @@ compatible versions, patches and options.
 
 <a id="app-com-brave-browser"></a>
 <details>
-<summary> **Brave Browser** · 14 patches</summary>
+<summary><strong>Brave Browser</strong> · 14 patches</summary>
 <br>
 
 **Compatible versions**
@@ -174,7 +174,7 @@ compatible versions, patches and options.
 
 <a id="app-com-openai-chatgpt"></a>
 <details>
-<summary> **ChatGPT** · 3 patches</summary>
+<summary><strong>ChatGPT</strong> · 3 patches</summary>
 <br>
 
 **Compatible versions**
@@ -192,7 +192,7 @@ compatible versions, patches and options.
 
 <a id="app-com-anthropic-claude"></a>
 <details>
-<summary> **Claude** · 1 patch</summary>
+<summary><strong>Claude</strong> · 1 patch</summary>
 <br>
 
 **Compatible versions**
@@ -208,7 +208,7 @@ compatible versions, patches and options.
 
 <a id="app-com-application-zomato-district"></a>
 <details>
-<summary> **District** · 2 patches</summary>
+<summary><strong>District</strong> · 2 patches</summary>
 <br>
 
 **Compatible versions**
@@ -225,7 +225,7 @@ compatible versions, patches and options.
 
 <a id="app-com-jndapp-nothing-widgets-pack"></a>
 <details>
-<summary> **Everything Widgets** · 3 patches</summary>
+<summary><strong>Everything Widgets</strong> · 3 patches</summary>
 <br>
 
 **Compatible versions**
@@ -243,7 +243,7 @@ compatible versions, patches and options.
 
 <a id="app-com-microsoft-office-excel"></a>
 <details>
-<summary> **Excel** · 1 patch</summary>
+<summary><strong>Excel</strong> · 1 patch</summary>
 <br>
 
 **Compatible versions**
@@ -259,7 +259,7 @@ compatible versions, patches and options.
 
 <a id="app-org-mozilla-firefox"></a>
 <details>
-<summary> **Firefox** · 2 patches</summary>
+<summary><strong>Firefox</strong> · 2 patches</summary>
 <br>
 
 **Compatible versions**
@@ -276,7 +276,7 @@ compatible versions, patches and options.
 
 <a id="app-com-google-android-inputmethod-latin"></a>
 <details>
-<summary> **Gboard** · 1 patch</summary>
+<summary><strong>Gboard</strong> · 1 patch</summary>
 <br>
 
 **Compatible versions**
@@ -292,7 +292,7 @@ compatible versions, patches and options.
 
 <a id="app-com-google-android-apps-photos"></a>
 <details>
-<summary> **Google Photos** · 7 patches</summary>
+<summary><strong>Google Photos</strong> · 7 patches</summary>
 <br>
 
 **Compatible versions**
@@ -314,7 +314,7 @@ compatible versions, patches and options.
 
 <a id="app-com-ht-news"></a>
 <details>
-<summary> **Hindustan Times** · 3 patches</summary>
+<summary><strong>Hindustan Times</strong> · 3 patches</summary>
 <br>
 
 **Compatible versions**
@@ -332,7 +332,7 @@ compatible versions, patches and options.
 
 <a id="app-app-simple-inure-play"></a>
 <details>
-<summary> **Inure App Manager** · 1 patch</summary>
+<summary><strong>Inure App Manager</strong> · 1 patch</summary>
 <br>
 
 **Compatible versions**
@@ -348,7 +348,7 @@ compatible versions, patches and options.
 
 <a id="app-app-simple-inure"></a>
 <details>
-<summary> **Inure App Manager (GitHub)** · 1 patch</summary>
+<summary><strong>Inure App Manager (GitHub)</strong> · 1 patch</summary>
 <br>
 
 **Compatible versions**
@@ -364,7 +364,7 @@ compatible versions, patches and options.
 
 <a id="app-org-malwarebytes-antimalware"></a>
 <details>
-<summary> **Malwarebytes Mobile Security** · 1 patch</summary>
+<summary><strong>Malwarebytes Mobile Security</strong> · 1 patch</summary>
 <br>
 
 **Compatible versions**
@@ -380,7 +380,7 @@ compatible versions, patches and options.
 
 <a id="app-com-meesho-shopping"></a>
 <details>
-<summary>**Meesho** · 3 patches</summary>
+<summary><strong>Meesho</strong> · 3 patches</summary>
 <br>
 
 **Compatible versions**
@@ -398,7 +398,7 @@ compatible versions, patches and options.
 
 <a id="app-app-unnamed-rawrecording"></a>
 <details>
-<summary> **Mereframe** · 4 patches</summary>
+<summary><strong>Mereframe</strong> · 4 patches</summary>
 <br>
 
 **Compatible versions**
@@ -417,7 +417,7 @@ compatible versions, patches and options.
 
 <a id="app-com-htmedia-mint"></a>
 <details>
-<summary> **Mint** · 3 patches</summary>
+<summary><strong>Mint</strong> · 3 patches</summary>
 <br>
 
 **Compatible versions**
@@ -435,7 +435,7 @@ compatible versions, patches and options.
 
 <a id="app-com-mubi"></a>
 <details>
-<summary> **MUBI** · 16 patches</summary>
+<summary><strong>MUBI</strong> · 16 patches</summary>
 <br>
 
 **Compatible versions**
@@ -466,7 +466,7 @@ compatible versions, patches and options.
 
 <a id="app-com-pinterest"></a>
 <details>
-<summary> **Pinterest** · 4 patches</summary>
+<summary><strong>Pinterest</strong> · 4 patches</summary>
 <br>
 
 **Compatible versions**
@@ -485,7 +485,7 @@ compatible versions, patches and options.
 
 <a id="app-proton-android-pass"></a>
 <details>
-<summary> **Proton Pass** · 1 patch</summary>
+<summary><strong>Proton Pass</strong> · 1 patch</summary>
 <br>
 
 **Compatible versions**
@@ -501,7 +501,7 @@ compatible versions, patches and options.
 
 <a id="app-ch-protonvpn-android"></a>
 <details>
-<summary>**Proton VPN** · 1 patch</summary>
+<summary><strong>Proton VPN</strong> · 1 patch</summary>
 <br>
 
 **Compatible versions**
@@ -517,7 +517,7 @@ compatible versions, patches and options.
 
 <a id="app-com-proxyman-proxymanandroid"></a>
 <details>
-<summary> **Proxyman** · 1 patch</summary>
+<summary><strong>Proxyman</strong> · 1 patch</summary>
 <br>
 
 **Compatible versions**
@@ -533,7 +533,7 @@ compatible versions, patches and options.
 
 <a id="app-com-reddit-frontpage"></a>
 <details>
-<summary> **Reddit** · 14 patches</summary>
+<summary><strong>Reddit</strong> · 14 patches</summary>
 <br>
 
 **Compatible versions**
@@ -562,7 +562,7 @@ compatible versions, patches and options.
 
 <a id="app-com-strava"></a>
 <details>
-<summary> **Strava** · 3 patches</summary>
+<summary><strong>Strava</strong> · 3 patches</summary>
 <br>
 
 **Compatible versions**
@@ -580,7 +580,7 @@ compatible versions, patches and options.
 
 <a id="app-org-telegram-messenger"></a>
 <details>
-<summary> **Telegram** · 14 patches</summary>
+<summary><strong>Telegram</strong> · 14 patches</summary>
 <br>
 
 **Compatible versions**
@@ -609,7 +609,7 @@ compatible versions, patches and options.
 
 <a id="app-org-telegram-plus"></a>
 <details>
-<summary> **Telegram Plus** · 15 patches</summary>
+<summary><strong>Telegram Plus</strong> · 15 patches</summary>
 <br>
 
 **Compatible versions**
@@ -639,7 +639,7 @@ compatible versions, patches and options.
 
 <a id="app-org-telegram-messenger-web"></a>
 <details>
-<summary> **Telegram Web** · 14 patches</summary>
+<summary><strong>Telegram Web</strong> · 14 patches</summary>
 <br>
 
 **Compatible versions**
@@ -668,7 +668,7 @@ compatible versions, patches and options.
 
 <a id="app-tv-trakt-trakt"></a>
 <details>
-<summary> **trakt.TV Shows & Movies** · 1 patch</summary>
+<summary><strong>trakt.TV Shows &amp; Movies</strong> · 1 patch</summary>
 <br>
 
 **Compatible versions**
@@ -684,7 +684,7 @@ compatible versions, patches and options.
 
 <a id="app-com-microsoft-office-word"></a>
 <details>
-<summary>**Word** · 1 patch</summary>
+<summary><strong>Word</strong> · 1 patch</summary>
 <br>
 
 **Compatible versions**
@@ -700,7 +700,7 @@ compatible versions, patches and options.
 
 <a id="app-com-yatrirailways-yatri"></a>
 <details>
-<summary> **Yatri** · 1 patch</summary>
+<summary><strong>Yatri</strong> · 1 patch</summary>
 <br>
 
 **Compatible versions**
@@ -716,7 +716,7 @@ compatible versions, patches and options.
 
 <a id="universal-patches"></a>
 <details>
-<summary>**Universal patches** · 25 patches</summary>
+<summary><strong>Universal patches</strong> · 25 patches</summary>
 <br>
 
 | Patch | Description | Options |
@@ -805,11 +805,35 @@ problems privately using [SECURITY.md](SECURITY.md), not in a public issue.
 If these patches save you time or make an app more usable, you can support
 ongoing development:
 
-| Method | Details |
-| :--- | :--- |
-| UPI | `ADD_UPI_ID_HERE` |
-| PayPal | `ADD_PAYPAL_URL_HERE` |
-| Buy Me a Coffee | `ADD_BUY_ME_A_COFFEE_URL_HERE` |
+<p align="center">
+  <a href="#scan-to-donate"><img alt="Donate via UPI (scan QR)" src="https://img.shields.io/badge/UPI-Scan%20QR-FF6B00?style=for-the-badge&logo=googlepay&logoColor=white"></a>
+  <a href="https://paypal.me/ADD_PAYPAL_HANDLE"><img alt="Donate via PayPal" src="https://img.shields.io/badge/PayPal-Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white"></a>
+  <a href="https://buymeacoffee.com/ADD_BMC_HANDLE"><img alt="Buy Me a Coffee" src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black"></a>
+</p>
+
+### Scan to donate
+
+<table align="center">
+  <tr>
+    <th>UPI</th>
+    <th>PayPal</th>
+    <th>Buy Me a Coffee</th>
+  </tr>
+  <tr>
+    <td><img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&amp;margin=8&amp;data=upi%3A%2F%2Fpay%3Fpa%3DADD_UPI_ID_HERE%26pn%3DProteus%2520Patches%26cu%3DINR" width="180" alt="UPI QR code"></td>
+    <td><img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&amp;margin=8&amp;data=https%3A%2F%2Fpaypal.me%2FADD_PAYPAL_HANDLE" width="180" alt="PayPal QR code"></td>
+    <td><img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&amp;margin=8&amp;data=https%3A%2F%2Fbuymeacoffee.com%2FADD_BMC_HANDLE" width="180" alt="Buy Me a Coffee QR code"></td>
+  </tr>
+  <tr>
+    <td><code>ADD_UPI_ID_HERE</code></td>
+    <td><a href="https://paypal.me/ADD_PAYPAL_HANDLE">ADD_PAYPAL_HANDLE</a></td>
+    <td><a href="https://buymeacoffee.com/ADD_BMC_HANDLE">ADD_BMC_HANDLE</a></td>
+  </tr>
+</table>
+
+<!-- Replace ADD_UPI_ID_HERE, ADD_PAYPAL_HANDLE and ADD_BMC_HANDLE in both the
+     buttons and the QR image URLs. QR data is URL-encoded; keep the encoding
+     when changing the handle. UPI links use the upi://pay?... deep link. -->
 
 Donations are optional. Bug reports, testing and focused pull requests help just
 as much.
