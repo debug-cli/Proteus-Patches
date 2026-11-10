@@ -107,6 +107,17 @@ public final class RedditContentFilterHelper {
     private static final String[] COMMENT_MARKER_GETTERS = {
             "getParentId", "getLinkId", "getDepth", "getReplies", "getParent"
     };
+    private static final String[] READ_GETTERS = {
+            "isRead", "getRead", "isVisited", "getVisited", "isSeen", "getSeen"
+    };
+    private static final String[] TYPE_GETTERS = {
+            "getTypename", "getTypeName", "getKindWithId", "getKind"
+    };
+    private static final String[] URL_GETTERS = {
+            "getUrl", "getURL", "getPermalink", "getCanonicalUrl"
+    };
+
+    private static final AtomicInteger LISTING_DROP_LOG_COUNT = new AtomicInteger();
 
     private RedditContentFilterHelper() {
         // Static injection surface only.
@@ -128,12 +139,12 @@ public final class RedditContentFilterHelper {
         if (list == null || list.isEmpty()) {
             return list;
         }
-        List<?> memoized = ProteusListMemo.get(list);
+        List<?> memoized = ProteusListMemo.get("hideAutoModComments", list);
         if (memoized != null) {
             return memoized;
         }
         List<?> result = hideAutoModCommentsInner(list);
-        ProteusListMemo.put(list, result);
+        ProteusListMemo.put("hideAutoModComments", list, result);
         return result;
     }
 
@@ -178,12 +189,12 @@ public final class RedditContentFilterHelper {
         if (list == null || list.isEmpty()) {
             return list;
         }
-        List<?> memoized = ProteusListMemo.get(list);
+        List<?> memoized = ProteusListMemo.get("filterContent", list);
         if (memoized != null) {
             return memoized;
         }
         List<?> result = filterContentInner(list);
-        ProteusListMemo.put(list, result);
+        ProteusListMemo.put("filterContent", list, result);
         return result;
     }
 
@@ -212,6 +223,84 @@ public final class RedditContentFilterHelper {
             }
         }
         return filtered != null ? filtered : list;
+    }
+
+    // ── Post listing filters ─────────────────────────────────────────────────
+
+    /** Drops post rows Reddit has marked as read/visited. */
+    public static List<?> hideReadPosts(List<?> list) {
+        return filterPosts(list, "hideReadPosts", "Hide read posts", 0);
+    }
+
+    /** Drops crossposts (rows carrying a crosspost parent or a positive count). */
+    public static List<?> hideCrossposts(List<?> list) {
+        return filterPosts(list, "hideCrossposts", "Hide crossposts", 1);
+    }
+
+    /** Drops live streams / broadcasts surfaced in listings. */
+    public static List<?> hideLiveStreams(List<?> list) {
+        return filterPosts(list, "hideLiveStreams", "Hide live streams", 2);
+    }
+
+    private static List<?> filterPosts(List<?> list, String tag, String label, int mode) {
+        if (list == null || list.isEmpty()) {
+            return list;
+        }
+        List<?> memoized = ProteusListMemo.get(tag, list);
+        if (memoized != null) {
+            return memoized;
+        }
+        List<?> result = filterPostsInner(list, mode);
+        ProteusListMemo.put(tag, list, result);
+        return result;
+    }
+
+    private static List<?> filterPostsInner(List<?> list, int mode) {
+        List<Object> filtered = null;
+        int dropped = 0;
+        for (int i = 0, size = list.size(); i < size; i++) {
+            Object item = list.get(i);
+            if (shouldDropPost(item, mode)) {
+                dropped++;
+                if (filtered == null) {
+                    filtered = new ArrayList<Object>(list.subList(0, i));
+                }
+                continue;
+            }
+            if (filtered != null) {
+                filtered.add(item);
+            }
+        }
+        if (filtered != null) {
+            int n = LISTING_DROP_LOG_COUNT.incrementAndGet();
+            if (n <= 5 || n % 25 == 0) {
+                System.out.println("[Proteus][listing filters] dropped " + dropped
+                        + " of " + list.size() + " rows (mode " + mode + ", event " + n + ")");
+            }
+            return filtered;
+        }
+        return list;
+    }
+
+    private static boolean shouldDropPost(Object item, int mode) {
+        Object model = findModel(item);
+        if (model == null) {
+            return false;
+        }
+        Accessors accessors = accessors(model.getClass());
+        if (!accessors.isPostLike(model)) {
+            return false;
+        }
+        switch (mode) {
+            case 0:
+                return accessors.isRead(model);
+            case 1:
+                return accessors.isCrosspost(model);
+            case 2:
+                return accessors.isLiveStream(model);
+            default:
+                return false;
+        }
     }
 
     // ── AutoModerator detection ──────────────────────────────────────────────
@@ -549,6 +638,12 @@ public final class RedditContentFilterHelper {
         final Method parentId;
         final Method linkId;
         final Method depth;
+        final Method read;
+        final Method crosspostParents;
+        final Method crosspostCount;
+        final Method websocketUrl;
+        final Method typeName;
+        final Method url;
 
         Accessors(Class<?> type) {
             this.type = type;
@@ -562,6 +657,59 @@ public final class RedditContentFilterHelper {
             parentId = noArgMethod(type, "getParentId");
             linkId = noArgMethod(type, "getLinkId");
             depth = firstMethod(type, COMMENT_MARKER_GETTERS);
+            read = firstMethod(type, READ_GETTERS);
+            crosspostParents = noArgMethod(type, "getCrossPostParentList");
+            crosspostCount = noArgMethod(type, "getCrosspostCount");
+            websocketUrl = noArgMethod(type, "getWebsocketUrl");
+            typeName = firstMethod(type, TYPE_GETTERS);
+            url = firstMethod(type, URL_GETTERS);
+        }
+
+        boolean isPostLike(Object model) {
+            String kindValue = stringValue(invoke(kind, model)).toLowerCase(Locale.ROOT);
+            if (kindValue.startsWith("t3")) {
+                return true;
+            }
+            if (kindValue.startsWith("t1")) {
+                return false;
+            }
+            String className = type.getName().toLowerCase(Locale.ROOT);
+            if (className.contains("comment") || className.contains("reply")) {
+                return false;
+            }
+            return title != null && (className.contains("link") || className.contains("post"));
+        }
+
+        boolean isRead(Object model) {
+            Object value = invoke(read, model);
+            return Boolean.TRUE.equals(value)
+                    || (value instanceof Number && ((Number) value).intValue() != 0);
+        }
+
+        boolean isCrosspost(Object model) {
+            Object parents = invoke(crosspostParents, model);
+            if (parents instanceof Iterable<?> && ((Iterable<?>) parents).iterator().hasNext()) {
+                return true;
+            }
+            Object count = invoke(crosspostCount, model);
+            return count instanceof Number && ((Number) count).intValue() > 0;
+        }
+
+        boolean isLiveStream(Object model) {
+            String websocket = stringValue(invoke(websocketUrl, model));
+            if (!websocket.isEmpty()) {
+                return true;
+            }
+            String type = stringValue(invoke(typeName, model)).toLowerCase(Locale.ROOT);
+            if (type.contains("liveupdate") || type.contains("live_update")
+                    || type.contains("livethread") || type.contains("live_thread")) {
+                return true;
+            }
+            String link = stringValue(invoke(url, model)).toLowerCase(Locale.ROOT);
+            // Only Reddit-hosted live threads count here. A normal link post can
+            // point at e.g. youtube.com/live/... and must not be hidden.
+            return link.contains("reddit.com/live/") || link.startsWith("/live/")
+                    || link.startsWith("/live?");
         }
 
         boolean isCommentLike(Object model) {
