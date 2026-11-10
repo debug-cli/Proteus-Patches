@@ -96,7 +96,7 @@ compatible versions, patches and options.
 
 <a id="app-in-amazon-mshop-android-shopping"></a>
 <details>
-<summary>**Amazon India** · 9 patches</summary>
+<summary **Amazon India** · 9 patches</summary>
 <br>
 
 **Compatible versions**
@@ -120,7 +120,7 @@ compatible versions, patches and options.
 
 <a id="app-com-amazon-mshop-android-shopping"></a>
 <details>
-<summary>**Amazon Shopping** · 9 patches</summary>
+<summary> **Amazon Shopping** · 9 patches</summary>
 <br>
 
 **Compatible versions**
@@ -144,7 +144,7 @@ compatible versions, patches and options.
 
 <a id="app-com-brave-browser"></a>
 <details>
-<summary>**Brave Browser** · 14 patches</summary>
+<summary> **Brave Browser** · 14 patches</summary>
 <br>
 
 **Compatible versions**
@@ -173,7 +173,7 @@ compatible versions, patches and options.
 
 <a id="app-com-openai-chatgpt"></a>
 <details>
-<summary>**ChatGPT** · 3 patches</summary>
+<summary> **ChatGPT** · 3 patches</summary>
 <br>
 
 **Compatible versions**
@@ -191,7 +191,7 @@ compatible versions, patches and options.
 
 <a id="app-com-anthropic-claude"></a>
 <details>
-<summary>**Claude** · 1 patch</summary>
+<summary> **Claude** · 1 patch</summary>
 <br>
 
 **Compatible versions**
@@ -207,7 +207,7 @@ compatible versions, patches and options.
 
 <a id="app-com-application-zomato-district"></a>
 <details>
-<summary>**District** · 2 patches</summary>
+<summary> **District** · 2 patches</summary>
 <br>
 
 **Compatible versions**
@@ -224,7 +224,7 @@ compatible versions, patches and options.
 
 <a id="app-com-jndapp-nothing-widgets-pack"></a>
 <details>
-<summary>**Everything Widgets** · 3 patches</summary>
+<summary> **Everything Widgets** · 3 patches</summary>
 <br>
 
 **Compatible versions**
@@ -242,7 +242,7 @@ compatible versions, patches and options.
 
 <a id="app-com-microsoft-office-excel"></a>
 <details>
-<summary>**Excel** · 1 patch</summary>
+<summary> **Excel** · 1 patch</summary>
 <br>
 
 **Compatible versions**
@@ -258,7 +258,7 @@ compatible versions, patches and options.
 
 <a id="app-org-mozilla-firefox"></a>
 <details>
-<summary>**Firefox** · 2 patches</summary>
+<summary> **Firefox** · 2 patches</summary>
 <br>
 
 **Compatible versions**
@@ -275,7 +275,7 @@ compatible versions, patches and options.
 
 <a id="app-com-google-android-inputmethod-latin"></a>
 <details>
-<summary>**Gboard** · 1 patch</summary>
+<summary> **Gboard** · 1 patch</summary>
 <br>
 
 **Compatible versions**
@@ -291,7 +291,7 @@ compatible versions, patches and options.
 
 <a id="app-com-google-android-apps-photos"></a>
 <details>
-<summary>**Google Photos** · 7 patches</summary>
+<summary> **Google Photos** · 7 patches</summary>
 <br>
 
 **Compatible versions**
@@ -313,7 +313,7 @@ compatible versions, patches and options.
 
 <a id="app-com-ht-news"></a>
 <details>
-<summary>**Hindustan Times** · 3 patches</summary>
+<summary> **Hindustan Times** · 3 patches</summary>
 <br>
 
 **Compatible versions**
@@ -331,7 +331,7 @@ compatible versions, patches and options.
 
 <a id="app-app-simple-inure-play"></a>
 <details>
-<summary>**Inure App Manager** · 1 patch</summary>
+<summary> **Inure App Manager** · 1 patch</summary>
 <br>
 
 **Compatible versions**
@@ -347,7 +347,7 @@ compatible versions, patches and options.
 
 <a id="app-app-simple-inure"></a>
 <details>
-<summary>**Inure App Manager (GitHub)** · 1 patch</summary>
+<summary> **Inure App Manager (GitHub)** · 1 patch</summary>
 <br>
 
 **Compatible versions**
@@ -363,7 +363,7 @@ compatible versions, patches and options.
 
 <a id="app-org-malwarebytes-antimalware"></a>
 <details>
-<summary>**Malwarebytes Mobile Security** · 1 patch</summary>
+<summary> **Malwarebytes Mobile Security** · 1 patch</summary>
 <br>
 
 **Compatible versions**
@@ -397,7 +397,7 @@ compatible versions, patches and options.
 
 <a id="app-app-unnamed-rawrecording"></a>
 <details>
-<summary>**Mereframe** · 4 patches</summary>
+<summary> **Mereframe** · 4 patches</summary>
 <br>
 
 **Compatible versions**
@@ -416,7 +416,7 @@ compatible versions, patches and options.
 
 <a id="app-com-htmedia-mint"></a>
 <details>
-<summary>**Mint** · 3 patches</summary>
+<summary> **Mint** · 3 patches</summary>
 <br>
 
 **Compatible versions**
@@ -434,7 +434,7 @@ compatible versions, patches and options.
 
 <a id="app-com-mubi"></a>
 <details>
-<summary>**MUBI** · 16 patches</summary>
+<summary> **MUBI** · 16 patches</summary>
 <br>
 
 **Compatible versions**
@@ -465,7 +465,7 @@ compatible versions, patches and options.
 
 <a id="app-com-pinterest"></a>
 <details>
-<summary>**Pinterest** · 4 patches</summary>
+<summary> **Pinterest** · 4 patches</summary>
 <br>
 
 **Compatible versions**
@@ -484,7 +484,7 @@ compatible versions, patches and options.
 
 <a id="app-proton-android-pass"></a>
 <details>
-<summary>**Proton Pass** · 1 patch</summary>
+<summary> **Proton Pass** · 1 patch</summary>
 <br>
 
 **Compatible versions**
@@ -516,7 +516,7 @@ compatible versions, patches and options.
 
 <a id="app-com-proxyman-proxymanandroid"></a>
 <details>
-<summary>**Proxyman** · 1 patch</summary>
+<summary> **Proxyman** · 1 patch</summary>
 <br>
 
 **Compatible versions**
@@ -532,7 +532,7 @@ compatible versions, patches and options.
 
 <a id="app-com-reddit-frontpage"></a>
 <details>
-<summary>**Reddit** · 14 patches</summary>
+<summary> **Reddit** · 14 patches</summary>
 <br>
 
 **Compatible versions**
@@ -561,7 +561,7 @@ compatible versions, patches and options.
 
 <a id="app-com-strava"></a>
 <details>
-<summary>**Strava** · 3 patches</summary>
+<summary> **Strava** · 3 patches</summary>
 <br>
 
 **Compatible versions**
@@ -579,7 +579,7 @@ compatible versions, patches and options.
 
 <a id="app-org-telegram-messenger"></a>
 <details>
-<summary>**Telegram** · 14 patches</summary>
+<summary> **Telegram** · 14 patches</summary>
 <br>
 
 **Compatible versions**
@@ -608,7 +608,7 @@ compatible versions, patches and options.
 
 <a id="app-org-telegram-plus"></a>
 <details>
-<summary>**Telegram Plus** · 15 patches</summary>
+<summary> **Telegram Plus** · 15 patches</summary>
 <br>
 
 **Compatible versions**
@@ -638,7 +638,7 @@ compatible versions, patches and options.
 
 <a id="app-org-telegram-messenger-web"></a>
 <details>
-<summary>**Telegram Web** · 14 patches</summary>
+<summary> **Telegram Web** · 14 patches</summary>
 <br>
 
 **Compatible versions**
@@ -667,7 +667,7 @@ compatible versions, patches and options.
 
 <a id="app-tv-trakt-trakt"></a>
 <details>
-<summary>**trakt.TV Shows & Movies** · 1 patch</summary>
+<summary> **trakt.TV Shows & Movies** · 1 patch</summary>
 <br>
 
 **Compatible versions**
@@ -699,7 +699,7 @@ compatible versions, patches and options.
 
 <a id="app-com-yatrirailways-yatri"></a>
 <details>
-<summary>**Yatri** · 1 patch</summary>
+<summary> **Yatri** · 1 patch</summary>
 <br>
 
 **Compatible versions**
