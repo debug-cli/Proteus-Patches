@@ -112,7 +112,7 @@ public final class RedditDeletedCommentHelper {
             "getParentId", "getLinkId", "getDepth", "getReplies"
     };
     private static final String[] BODY_FIELD_NAMES = {
-            "body", "selftext", "self_text", "commentbody", "comment_body",
+            "body", "bodypreview", "selftext", "self_text", "commentbody", "comment_body",
             "text", "content", "markdown"
     };
     private static final String[] TITLE_FIELD_NAMES = {
@@ -339,7 +339,69 @@ public final class RedditDeletedCommentHelper {
 
     private static String bodyText(Object model) {
         Accessors accessors = accessors(model.getClass());
-        return stringValue(invoke(accessors.body, model));
+        String body = stringValue(invoke(accessors.body, model));
+        if (deletedSentinel(body) != null) {
+            return body;
+        }
+        String preview = stringValue(invoke(accessors.preview, model));
+        if (deletedSentinel(preview) != null) {
+            return preview;
+        }
+        Object tombstone = tombstone(model);
+        if (tombstone == null) {
+            return body;
+        }
+        String tombstoneText = tombstoneText(tombstone);
+        if (deletedSentinel(tombstoneText) != null) {
+            return tombstoneText;
+        }
+        return body.isEmpty() ? "[deleted]" : body;
+    }
+
+    private static Object tombstone(Object model) {
+        Accessors accessors = accessors(model.getClass());
+        if (accessors.tombstone != null) {
+            return invoke(accessors.tombstone, model);
+        }
+        for (Class<?> owner = model.getClass(); owner != null && owner != Object.class;
+             owner = owner.getSuperclass()) {
+            Field[] declared;
+            try {
+                declared = owner.getDeclaredFields();
+            } catch (Throwable t) {
+                continue;
+            }
+            for (Field field : declared) {
+                if (Modifier.isStatic(field.getModifiers())
+                        || !field.getName().toLowerCase(Locale.ROOT).contains("tombstone")) {
+                    continue;
+                }
+                try {
+                    field.setAccessible(true);
+                    Object fieldValue = field.get(model);
+                    if (fieldValue != null) {
+                        return fieldValue;
+                    }
+                } catch (Throwable ignored) {
+                    // Try the next field.
+                }
+            }
+        }
+        return null;
+    }
+
+    private static String tombstoneText(Object tombstone) {
+        String markdown = stringValue(invoke(
+                noArgMethod(tombstone.getClass(), "getMarkdown"), tombstone));
+        if (deletedSentinel(markdown) != null) {
+            return markdown;
+        }
+        String richtext = stringValue(invoke(
+                noArgMethod(tombstone.getClass(), "getRichtext"), tombstone));
+        if (deletedSentinel(richtext) != null) {
+            return richtext;
+        }
+        return markdown;
     }
 
     private static String postText(Object model) {
@@ -607,12 +669,14 @@ public final class RedditDeletedCommentHelper {
     // ── Body replacement ─────────────────────────────────────────────────────
 
     private static boolean replaceBody(Object model, String lowerSentinel, String replacement) {
+        boolean replaced = false;
+
         // Prefer a dedicated setter when the model exposes one.
         Method setter = stringSetter(model.getClass());
         if (setter != null) {
             try {
                 setter.invoke(model, replacement);
-                return true;
+                replaced = true;
             } catch (Throwable ignored) {
                 // Fall through to the field walk.
             }
@@ -626,13 +690,88 @@ public final class RedditDeletedCommentHelper {
         collectSentinelFields(model, lowerSentinel, false, named, valued);
 
         List<Field> targets = !named.isEmpty() ? named : valued;
-        boolean replaced = false;
         for (Field field : targets) {
             try {
                 field.set(model, replacement);
                 replaced = true;
             } catch (Throwable ignored) {
                 // Keep trying the other candidates.
+            }
+        }
+
+        Object tombstone = tombstone(model);
+        if (tombstone != null) {
+            replaced |= replaceEmptyBodyFields(model, replacement);
+            replaced |= replaceTombstone(tombstone, replacement);
+        }
+        return replaced;
+    }
+
+    private static boolean replaceEmptyBodyFields(Object model, String replacement) {
+        boolean replaced = false;
+        for (Class<?> owner = model.getClass(); owner != null && owner != Object.class;
+             owner = owner.getSuperclass()) {
+            Field[] declared;
+            try {
+                declared = owner.getDeclaredFields();
+            } catch (Throwable t) {
+                continue;
+            }
+            for (Field field : declared) {
+                int modifiers = field.getModifiers();
+                if (Modifier.isStatic(modifiers)
+                        || !String.class.isAssignableFrom(field.getType())) {
+                    continue;
+                }
+                String name = field.getName().toLowerCase(Locale.ROOT);
+                if (!isBodyFieldName(name)) {
+                    continue;
+                }
+                try {
+                    field.setAccessible(true);
+                    Object value = field.get(model);
+                    if (value instanceof String && !((String) value).trim().isEmpty()) {
+                        continue;
+                    }
+                    field.set(model, replacement);
+                    replaced = true;
+                } catch (Throwable ignored) {
+                    // Try the next body field.
+                }
+            }
+        }
+        return replaced;
+    }
+
+    private static boolean replaceTombstone(Object tombstone, String replacement) {
+        boolean replaced = false;
+        for (Class<?> owner = tombstone.getClass(); owner != null && owner != Object.class;
+             owner = owner.getSuperclass()) {
+            Field[] declared;
+            try {
+                declared = owner.getDeclaredFields();
+            } catch (Throwable t) {
+                continue;
+            }
+            for (Field field : declared) {
+                int modifiers = field.getModifiers();
+                if (Modifier.isStatic(modifiers)
+                        || !String.class.isAssignableFrom(field.getType())) {
+                    continue;
+                }
+                String name = field.getName().toLowerCase(Locale.ROOT);
+                try {
+                    field.setAccessible(true);
+                    if (name.equals("richtext")) {
+                        field.set(tombstone, null);
+                        replaced = true;
+                    } else if (isBodyFieldName(name)) {
+                        field.set(tombstone, replacement);
+                        replaced = true;
+                    }
+                } catch (Throwable ignored) {
+                    // Try the next tombstone field.
+                }
             }
         }
         return replaced;
@@ -833,17 +972,21 @@ public final class RedditDeletedCommentHelper {
 
     private static final class Accessors {
         final Method body;
+        final Method preview;
         final Method selftext;
         final Method title;
         final Method id;
         final Method kind;
+        final Method tombstone;
 
         Accessors(Class<?> type) {
             body = firstMethod(type, BODY_GETTERS);
+            preview = firstMethod(type, new String[]{"getBodyPreview"});
             selftext = firstMethod(type, new String[]{"getSelftext", "getSelfText"});
             title = firstMethod(type, TITLE_GETTERS);
             id = firstMethod(type, ID_GETTERS);
             kind = firstMethod(type, KIND_GETTERS);
+            tombstone = firstMethod(type, new String[]{"getCommentTombstone"});
         }
     }
 
