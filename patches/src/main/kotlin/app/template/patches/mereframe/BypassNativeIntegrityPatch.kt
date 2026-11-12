@@ -105,27 +105,41 @@ val bypassNativeIntegrityPatch = bytecodePatch(
 
     execute {
         // ── Stage 1: pinned session-opening wrapper ───────────────────────
-        Fingerprint(
+        // Pinned to the 0.8.4 (vc 118) shape. On drift the injection is
+        // aborted (never half-patched) and logged loudly; the sweep below then
+        // covers the session wrapper generically, so the build degrades to the
+        // native verdict instead of failing hard.
+        val sessionWrapper = Fingerprint(
             definingClass = BRIDGE_CLASS,
             name = PINNED_METHOD_NAME,
             returnType = PINNED_RETURN_TYPE,
             parameters = PINNED_PARAMETERS,
-        ).method.apply {
-            clearBody()
-            addInstructions(
-                0,
-                """
-                invoke-static/range {p0 .. p5}, $HOOK_CLASS->openSessionWithFallback(ZZZZFZ)[J
-                move-result-object p0
-                return-object p0
-                """.trimIndent(),
+        ).methodOrNull
+        if (sessionWrapper == null) {
+            logUniversal(
+                "Bypass native integrity: PINNED SESSION WRAPPER NOT FOUND — " +
+                    "${BRIDGE_CLASS}->$PINNED_METHOD_NAME(ZZZZFZ)[J does not match this build " +
+                    "(app version drifted from 0.8.4 / vc 118). Falling back to the generic sweep; " +
+                    "send versionName and versionCode so the fingerprint can be re-pinned.",
+            )
+        } else {
+            sessionWrapper.apply {
+                clearBody()
+                addInstructions(
+                    0,
+                    """
+                    invoke-static/range {p0 .. p5}, $HOOK_CLASS->openSessionWithFallback(ZZZZFZ)[J
+                    move-result-object p0
+                    return-object p0
+                    """.trimIndent(),
+                )
+            }
+            logUniversal(
+                "Bypass native integrity: session wrapper routed through MereframeIntegrityHook " +
+                    "(JVM try/catch) in ${BRIDGE_CLASS}->$PINNED_METHOD_NAME(ZZZZFZ)[J — " +
+                    "if the crash reappears at this exact frame, this patch is not present in the crashing build.",
             )
         }
-        logUniversal(
-            "Bypass native integrity: session wrapper routed through MereframeIntegrityHook " +
-                "(JVM try/catch) in ${BRIDGE_CLASS}->$PINNED_METHOD_NAME(ZZZZFZ)[J — " +
-                "if the crash reappears at this exact frame, this patch is not present in the crashing build.",
-        )
 
         // ── Stage 2: sweep every other native-calling public wrapper ───────
         val nativeMethods = HashSet<String>()

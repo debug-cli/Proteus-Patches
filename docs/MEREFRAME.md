@@ -93,15 +93,28 @@ Bypass native integrity: sweep complete — 21 wrapper(s) guarded across
 Paste those lines into this page to pin the inventory for a build (and to see
 which wrappers still need a per-wrapper fallback value tuned).
 
+**Fail-soft on drift.** Both stages abort the individual injection instead of
+half-patching. Stage 1 additionally degrades instead of throwing: if
+`d(ZZZZFZ)[J` is missing the patch logs `PINNED SESSION WRAPPER NOT FOUND` and
+falls back to the generic sweep, which then guards whatever the session wrapper
+is called in that build. That log line means the fingerprint needs re-pinning —
+send `versionName`/`versionCode`.
+
 **Known limits**
 
 * Only `d()` gets shape-aware domain validation of the native verdict. The
   swept wrappers keep the app's own validation code and only get a generic
   fail-open value when the native call throws; a wrapper that *returns* a
   malformed value is not corrected yet.
-* **On-device behaviour is unverified.** Compilation and the injection logic are
-  the only things checked so far; the preview/capture path still needs one run
-  on a re-signed 0.8.4 (vc 118) install.
+* The generic fail-open values (two-element arrays, zero scalars, `null` for
+  unknown reference shapes) are a best-effort guess derived from `d()`'s shape.
+  A wrapper that validates a *different* length or range needs its own value —
+  the sweep log tells you which wrappers exist, and the handler table in
+  `BypassNativeIntegrityPatch.kt` is the one place to add them.
+* **On-device behaviour is unverified.** Type-checking, the smali/Java
+  cross-check and the JUnit tests for the hook's fail-open decisions are the
+  only things checked so far; the preview/capture path still needs one run on a
+  re-signed 0.8.4 (vc 118) install.
 
 ## 2026-11-10 — issue #5: Pro paywall still appears (FIXED, patch-application verified)
 
@@ -201,11 +214,15 @@ This is **precisely the frame "Bypass native integrity checks" wraps**
 (`Lapp/unnamed/rawrecording/b/B1e6ad8077f6880e309d8da4b;->d(ZZZZFZ)[J`). With the
 bypass compiled in, the `SecurityException` is caught *inside* `d` and the
 substitution result (`long[]{0L, 1L}`) is returned — the JVM never unwinds, the
-log file never gets written. Since 2026-11-12 the same containment is planted in
-every other native-calling public wrapper on that class, so a trace that names
-a *different* `B1e6ad…` wrapper above `nd2ccc…(Native Method)` means the sweep
-did not cover it — check the sweep log line for that build. **The existence of any such log file therefore
+log file never gets written. **The existence of any such log file therefore
 proves the bypass was not effective in the crashing build.**
+
+Since 2026-11-12 the same containment is planted in every other native-calling
+public wrapper on that class, so a trace that names a *different* `B1e6ad…`
+wrapper above `nd2ccc…(Native Method)` (instead of `…d(SourceFile:8)`) means the
+sweep did not cover that wrapper — check the
+`sweep complete — N wrapper(s) guarded` log line for that build and look for the
+wrapper in the `left … on the native verdict` line.
 
 So the field outcome says one of these happened:
 
