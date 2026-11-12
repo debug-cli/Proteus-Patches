@@ -10,10 +10,98 @@ current status page and the triage runbook for field crashes.
 | Patch | Default | Role |
 |---|---|---|
 | Allow re-signed/sideloaded installs | **on** | Neutralizes the startup install-legality verdict → app starts at all |
-| Bypass native integrity checks | **on** | NEW (v2.2.9 re-cut): routes the camera session JNI call through a real JVM try/catch in the extension and substitutes {0L,1L} on failure |
+| Bypass native integrity checks | **on** | Routes the camera session JNI call through a real JVM try/catch in the extension, **and** plants the same real try/catch in every other public bridge wrapper that calls the native engine (see [2026-11-12](#2026-11-12--issue-5-part-2-the-integrity-throw-is-not-limited-to-d)) |
 | Diagnostic crash log | off | Writes the full stack to `Downloads/mereframe-crash-*.txt`, then chains to the normal crash path |
 | Unlock Pro features | off | Makes the entitlement accessor (`Qu.k`) return the full registered feature set, so every Pro gate (`Qu.e/o/p`) resolves unlocked. **WARNING:** on realme/Android 16 enabling it crashed capture on the one device tested — keep off unless deliberately testing |
 | Fix Firebase after re-signing (universal) | off | Needed if Firebase services break after re-signing |
+
+## 2026-11-12 — issue #5 (part 2): the integrity throw is not limited to `d()`
+
+The 2026-11-07 fix contained the `SecurityException` at the session-opening
+wrapper `B1e6ad…->d(ZZZZFZ)[J`. That is correct but not sufficient: the native
+check in `libunnamed_raw.so` is a **per-call** verdict, so every other public
+wrapper on the same bridge class can throw the identical exception the moment
+real frames flow — which is exactly why the app still died "as soon as the
+preview appears". Issue #5 counted **~20 of the 49 public wrappers** on
+`B1e6ad8077f6880e309d8da4b` as validating native output and able to throw.
+
+The patch now works in two stages.
+
+**Stage 1 — pinned session wrapper (unchanged).** `d(ZZZZFZ)[J` is still routed
+through `MereframeIntegrityHook.openSessionWithFallback`, which calls the native
+method reflectively, validates the verdict's domain (length 2, element 1 in
+(0,4)) and degrades to `{0L, 1L}` on any throw or mismatch.
+
+**Stage 2 — wrapper sweep (new).** Every other public wrapper that invokes one
+of the bridge's native methods gets a **real try/catch in its own code item**:
+
+```text
+try { <original body, untouched> } catch (Throwable t) {
+    return MereframeIntegrityHook.failOpen<Kind>(t);
+}
+```
+
+The handler is appended as real instructions and registered with
+`MutableMethodImplementation.addCatch(...)` — i.e. it lands in the code item's
+exception table, which is precisely what the inline-smali `.catch` of the first
+attempt could not do (`addInstructions` splices back only the instruction
+list). The hooked handler then decides:
+
+* integrity failure (`SecurityException`, or a message containing
+  "integrity", anywhere in the first 5 cause links) → log once and return a
+  well-formed fail-open value of the wrapper's own return type;
+* anything else → **re-throw the original `Throwable` unchanged**, so an
+  unrelated bug keeps its original stack and behaviour. The sweep must never
+  turn a real failure into a silently wrong camera result.
+
+**What is guarded**
+
+| Condition | Result |
+|---|---|
+| Public, non-native, has a body, body invokes a native method declared under `Lapp/unnamed/rawrecording/` | **Guarded** (bridge class and sibling bridge classes alike) |
+| `d(ZZZZFZ)[J` on the pinned bridge class | **Already guarded** by stage 1 — skipped to avoid double-patching |
+| Method already has its own try/catch | **Left alone** — an overlapping try range produces a VerifyError ("bad exception entry") |
+| Body contains a switch/array payload pseudo-instruction | **Left alone** — a whole-body try range would cover payload data |
+| Return type is an unknown reference/array-of-reference shape | **Guarded, returns null** (no way to invent a well-formed instance) |
+| Return type is `J`/`D` and the method has fewer than 2 registers | **Left alone** — `move-result-wide` needs a register pair |
+| Non-public, native, abstract or a constructor | **Left alone** (never a public wrapper entry point) |
+
+Fail-open values: `V` → return; `Z`/`B`/`S`/`C`/`I`/`F`/`J`/`D` → `0`
+(`Z` → `false`); `String` → `""`; arrays → a two-element array with
+`element[1] == 1` (`long[]{0,1}` for `[J`), matching the shape the pinned
+session path already uses; unknown reference types → `null`.
+
+**Fail-closed on drift.** Stage 1 stays pinned to the 0.8.4 (vc 118) shape and
+fails loudly if it moves. Stage 2 is drift-tolerant by design: every wrapper is
+a separate best-effort injection, so a wrapper that cannot be guarded is logged
+and left on the native verdict instead of half-patching or failing the build.
+
+**The wrapper inventory is resolved at patch time and printed.** The wrapper
+names and parameter descriptors are R8 output — build-shape specific, and not
+something a Java helper can accept positionally without one overload per
+signature. The patch therefore discovers them from the APK being patched and
+logs the resolved inventory, one line per bridge class:
+
+```text
+Bypass native integrity: guarded 21 native-calling wrapper(s) in
+  Lapp/unnamed/rawrecording/b/B1e6ad8077f6880e309d8da4b;: a(IZ)[J, b(F)V, …
+Bypass native integrity: left 2 wrapper(s) on the native verdict: … (reason)
+Bypass native integrity: sweep complete — 21 wrapper(s) guarded across
+  1 bridge class(es), 2 left unguarded. …
+```
+
+Paste those lines into this page to pin the inventory for a build (and to see
+which wrappers still need a per-wrapper fallback value tuned).
+
+**Known limits**
+
+* Only `d()` gets shape-aware domain validation of the native verdict. The
+  swept wrappers keep the app's own validation code and only get a generic
+  fail-open value when the native call throws; a wrapper that *returns* a
+  malformed value is not corrected yet.
+* **On-device behaviour is unverified.** Compilation and the injection logic are
+  the only things checked so far; the preview/capture path still needs one run
+  on a re-signed 0.8.4 (vc 118) install.
 
 ## 2026-11-10 — issue #5: Pro paywall still appears (FIXED, patch-application verified)
 
@@ -113,7 +201,10 @@ This is **precisely the frame "Bypass native integrity checks" wraps**
 (`Lapp/unnamed/rawrecording/b/B1e6ad8077f6880e309d8da4b;->d(ZZZZFZ)[J`). With the
 bypass compiled in, the `SecurityException` is caught *inside* `d` and the
 substitution result (`long[]{0L, 1L}`) is returned — the JVM never unwinds, the
-log file never gets written. **The existence of any such log file therefore
+log file never gets written. Since 2026-11-12 the same containment is planted in
+every other native-calling public wrapper on that class, so a trace that names
+a *different* `B1e6ad…` wrapper above `nd2ccc…(Native Method)` means the sweep
+did not cover it — check the sweep log line for that build. **The existence of any such log file therefore
 proves the bypass was not effective in the crashing build.**
 
 So the field outcome says one of these happened:
@@ -143,8 +234,11 @@ So the field outcome says one of these happened:
 3. Patches checked: **Allow re-signed/sideloaded installs** + **Bypass
    native integrity checks** + (only if this is a diagnostic run) **Diagnostic
    crash log**. **Unlock Pro features stays OFF.**
-4. Check the patching log contains: `Bypass native integrity: session-wrapper
-   catch planted…`.
+4. Check the patching log contains `Bypass native integrity: session wrapper
+   routed through MereframeIntegrityHook` **and** the new
+   `Bypass native integrity: sweep complete — N wrapper(s) guarded across …`
+   line. If the sweep line says `no native methods found under
+   Lapp/unnamed/rawrecording/`, the sweep did not run — send the app version.
 5. If it still crashes: attach the newest `Downloads/mereframe-crash-*.txt`
    (it now contains `app: versionName=… versionCode=…`) — that header tells
    us which build actually ran and which patches were in it.
