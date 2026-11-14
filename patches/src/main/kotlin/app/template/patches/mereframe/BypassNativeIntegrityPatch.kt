@@ -260,7 +260,7 @@ private fun Method.guardSkipReason(natives: Set<String>, bridgeClass: String): S
 
     val implementation = implementation ?: return "no code"
     if (!implementation.tryBlocks.isNullOrEmpty()) return "already has a try/catch"
-    if (implementation.instructions.any { it.opcode.name.endsWith("_PAYLOAD") }) {
+    if (implementation.instructions.any { it.opcode.name.endsWith("payload", ignoreCase = true) }) {
         return "switch/array payload in body"
     }
 
@@ -279,7 +279,7 @@ private fun Method.guardSkipReason(natives: Set<String>, bridgeClass: String): S
 private fun Method.invokesBridgeNative(natives: Set<String>, bridgeClass: String): Boolean {
     val implementation = implementation ?: return false
     return implementation.instructions.any { instruction ->
-        if (!instruction.opcode.name.startsWith("INVOKE")) return@any false
+        if (!instruction.opcode.name.startsWith("invoke", ignoreCase = true)) return@any false
         val reference = (instruction as? ReferenceInstruction)?.reference as? MethodReference
             ?: return@any false
         reference.definingClass == bridgeClass && natives.contains(reference.nativeKey())
