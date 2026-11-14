@@ -9,7 +9,6 @@ import app.template.patches.shared.clearBody
 import app.template.patches.shared.logUniversal
 import com.android.tools.smali.dexlib2.AccessFlags
 import com.android.tools.smali.dexlib2.builder.MutableMethodImplementation
-import com.android.tools.smali.dexlib2.iface.ClassDef
 import com.android.tools.smali.dexlib2.iface.Method
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 import com.android.tools.smali.dexlib2.iface.reference.MethodReference
@@ -43,9 +42,9 @@ import com.android.tools.smali.dexlib2.iface.reference.MethodReference
  * method reflectively, validates the verdict's domain (length 2, element 1 in
  * (0,4)) and degrades to {0L, 1L} on ANY throw or mismatch.
  *
- * Stage 2 (sweep): every OTHER public wrapper on the bridge class — and on any
- * sibling bridge class in the same app package — whose body invokes a native
- * method gets a REAL try/catch installed in its own code item:
+ * Stage 2 (sweep): every OTHER public wrapper on the SAME bridge class — the
+ * exact class Stage 1's fingerprint resolves — whose body invokes one of that
+ * class's native methods gets a REAL try/catch installed in its own code item:
  *
  *     try { <the original body, untouched> } catch (Throwable t) {
  *         return MereframeIntegrityHook.failOpen<Kind>(t);
@@ -65,20 +64,39 @@ import com.android.tools.smali.dexlib2.iface.reference.MethodReference
  * parameter descriptors differ per method, so a Java helper cannot accept them
  * positionally without one overload per signature. The sweep therefore
  * discovers them from the APK being patched (public, non-native, no existing
- * try blocks, body invokes a native method declared in the app's own bridge
- * package) and emits the resolved inventory — class, method name, parameter
- * descriptor and return type — into the patching log on every run. That log
- * line is the authoritative enumeration for the build being patched.
+ * try blocks, body invokes a native method declared by the bridge class) and
+ * emits the resolved inventory — method name, parameter descriptor and return
+ * enumeration for the build being patched.
+ *
+ * STAGE 2 USES THE CLASS STAGE 1 ALREADY FOUND
+ *
+ * An earlier revision re-searched the whole app package for "bridge classes"
+ * and joined a wrapper's native call against a set of descriptor strings. Both
+ * sides of that join called `parameterTypes.joinToString("")`, but a DEX-backed
+ * Method and an invoke-side MethodReference do not stringify parameterTypes the
+ * same way, so the keys never matched: the sweep reported
+ * "0 wrapper(s) guarded across 0 bridge class(es)" while the on-device crash
+ * kept naming unguarded wrappers (q(IJID)D). Stage 2 therefore:
+ *
+ * - takes the class directly with mutableClassDefBy(BRIDGE_CLASS) — the same
+ * type Stage 1's fingerprint matched, so it cannot "match nothing" while
+ * Stage 1 succeeds, and it marks the class mutable so the handlers are
+ * written out;
+ * - identifies the class's native methods by name + parameter count + return
+ * type, never by a descriptor string;
+ * - logs the class it operated on, the native count, the guarded count and every
+ * skipped wrapper with its reason, so a zero count is always explainable.
  *
  * FINGERPRINT DRIFT
  *
- * Stage 1 is pinned to the 0.8.4 (vc 118) shape and fails loudly if it drifts
- * (the manager reports the patch, which is how issue #5 was diagnosed in the
- * first place). Stage 2 is drift-tolerant by design: each wrapper is a separate
- * best-effort injection wrapped in runCatching — a wrapper that cannot be
- * guarded (unsupported return type, too few registers, pre-existing try/catch)
- * is logged and left running the native verdict, never half-patched and never
- * a hard failure.
+ * Stage 1 is pinned to the 0.8.4 (vc 118) shape; on drift it aborts that one
+ * injection, logs PINNED SESSION WRAPPER NOT FOUND and lets the sweep cover the
+ * session wrapper generically, so the build degrades to the native verdict
+ * instead of failing hard. Stage 2 is drift-tolerant per method: each wrapper is
+ * a separate best-effort injection wrapped in runCatching — a wrapper that
+ * cannot be guarded (unsupported return type, too few registers, pre-existing
+ * try/catch) is logged and left running the native verdict, never half-patched
+ * and never a hard failure.
  *
  * REGISTER-FORM REQUIREMENT: the ZZZZFZ call has six parameters. `invoke-static`
  * without `/range` is limited to five registers (instruct35c) — the regular
@@ -94,8 +112,8 @@ val bypassNativeIntegrityPatch = bytecodePatch(
     description = "libunnamed_raw.so JNI-throws 'app integrity check failed' on re-signed builds, " +
         "killing camera session start (preview) - observed via diagnostic crash log. This patch " +
         "calls the session-opening wrapper inside a real JVM try/catch (extension), and plants the " +
-        "same real try/catch in every other public bridge wrapper that calls the native engine, " +
-        "substituting a well-formed result on failure. Required together with " +
+        "same real try/catch in every other public wrapper of that bridge class that calls the " +
+        "native engine, substituting a well-formed result on failure. Required together with " +
         "'Allow re-signed/sideloaded installs'.",
     default = true,
 ) {
@@ -128,92 +146,79 @@ val bypassNativeIntegrityPatch = bytecodePatch(
                 addInstructions(
                     0,
                     """
-                    invoke-static/range {p0 .. p5}, $HOOK_CLASS->openSessionWithFallback(ZZZZFZ)[J
-                    move-result-object p0
-                    return-object p0
+                        invoke-static/range {p0 .. p5}, $HOOK_CLASS->openSessionWithFallback(ZZZZFZ)[J
+                        move-result-object p0
+                        return-object p0
                     """.trimIndent(),
                 )
             }
+
             logUniversal(
                 "Bypass native integrity: session wrapper routed through MereframeIntegrityHook " +
                     "(JVM try/catch) in ${BRIDGE_CLASS}->$PINNED_METHOD_NAME(ZZZZFZ)[J — " +
-                    "if the crash reappears at this exact frame, this patch is not present in the crashing build.",
+                    "if the crash reappears at this exact frame, this patch is not present in the " +
+                    "crashing build.",
             )
         }
 
-        // ── Stage 2: sweep every other native-calling public wrapper ───────
-        val nativeMethods = HashSet<String>()
-        classDefForEach { classDef ->
-            if (!classDef.type.startsWith(BRIDGE_PACKAGE_PREFIX)) return@classDefForEach
-            classDef.methods.forEach { method ->
-                if (AccessFlags.NATIVE.isSet(method.accessFlags)) {
-                    nativeMethods += "${method.definingClass}->${method.signature()}"
-                }
-            }
-        }
-
-        if (nativeMethods.isEmpty()) {
+        // ── Stage 2: sweep the bridge class Stage 1 resolved ──────────────
+        // The same class Stage 1's fingerprint matched — no second search that
+        // can silently match nothing. mutableClassDefBy also upgrades the class
+        // to mutable, so the injected handlers are written out.
+        val bridgeClass = runCatching { mutableClassDefBy(BRIDGE_CLASS) }.getOrNull()
+        if (bridgeClass == null) {
             logUniversal(
-                "Bypass native integrity: no native methods found under $BRIDGE_PACKAGE_PREFIX — " +
-                    "wrapper sweep skipped (stage 1 still applied). Send the app version + patching log.",
+                "Bypass native integrity: bridge class $BRIDGE_CLASS not found — wrapper sweep skipped " +
+                    "(stage 1 still applied). Send the app version + patching log.",
             )
         } else {
-            // Discover first (immutable view), mutate second. mutableClassDefBy
-            // upgrades a whole class to mutable, so it is only called for the
-            // bridge classes that actually carry wrappers.
-            val bridges = LinkedHashMap<String, Pair<ClassDef, List<Method>>>()
-            classDefForEach { classDef ->
-                if (!classDef.type.startsWith(BRIDGE_PACKAGE_PREFIX)) return@classDefForEach
-                val wrappers = classDef.methods.filter { method ->
-                    method.isGuardableWrapper(nativeMethods)
-                }
-                if (wrappers.isNotEmpty()) bridges[classDef.type] = classDef to wrappers
-            }
-
-            val guarded = ArrayList<String>()
-            val skipped = ArrayList<String>()
-
-            bridges.forEach { (classType, entry) ->
-                val (classDef, wrappers) = entry
-                val mutableClass = runCatching { mutableClassDefBy(classDef) }.getOrNull()
-                if (mutableClass == null) {
-                    wrappers.forEach { method ->
-                        skipped += "$classType->${method.signature()} (class not mutable)"
-                    }
-                    return@forEach
-                }
-                val mutableMethods = mutableClass.methods.associateBy { it.signature() }
-                wrappers.forEach { wrapper ->
-                    val key = "$classType->${wrapper.signature()}"
-                    val target = mutableMethods[wrapper.signature()]
-                    if (target == null) {
-                        skipped += "$key (no mutable method)"
-                        return@forEach
-                    }
-                    runCatching { plantIntegrityHandler(target, wrapper.returnType) }
-                        .onSuccess { guarded += key }
-                        .onFailure { skipped += "$key (${it.message})" }
+            // Native methods declared by the bridge class itself. The key is
+            // name + parameter count + return type: a DEX-backed Method and an
+            // invoke-side MethodReference stringify parameterTypes differently,
+            // so a descriptor-string key never matched (that was the no-op bug).
+            val natives = HashSet<String>()
+            bridgeClass.methods.forEach { method ->
+                if (AccessFlags.NATIVE.isSet(method.accessFlags)) {
+                    natives += "${method.name}#${method.parameterTypes.size}#${method.returnType}"
                 }
             }
 
-            guarded.groupBy { it.substringBefore("->") }.forEach { (classType, methods) ->
+            if (natives.isEmpty()) {
                 logUniversal(
-                    "Bypass native integrity: guarded ${methods.size} native-calling wrapper(s) in $classType: " +
-                        methods.joinToString(", ") { method -> method.substringAfter("->") },
+                    "Bypass native integrity: $BRIDGE_CLASS declares no native methods — wrapper sweep skipped.",
                 )
-            }
-            if (skipped.isNotEmpty()) {
+            } else {
+                val guarded = ArrayList<String>()
+                val skipped = ArrayList<String>()
+
+                bridgeClass.methods.toList().forEach { method ->
+                    val descriptor = method.descriptor()
+                    val reason = method.guardSkipReason(natives, BRIDGE_CLASS)
+                    if (reason != null) {
+                        skipped += "$descriptor ($reason)"
+                    } else {
+                        runCatching { plantIntegrityHandler(method, method.returnType) }
+                            .onSuccess { guarded += descriptor }
+                            .onFailure { skipped += "$descriptor (${it.message})" }
+                    }
+                }
+
                 logUniversal(
-                    "Bypass native integrity: left ${skipped.size} wrapper(s) on the native verdict: " +
-                        skipped.joinToString(", "),
+                    "Bypass native integrity: bridge $BRIDGE_CLASS declares ${natives.size} native " +
+                        "method(s) — ${guarded.size} wrapper(s) guarded, ${skipped.size} left on the " +
+                        "native verdict.",
                 )
+                if (guarded.isNotEmpty()) {
+                    logUniversal(
+                        "Bypass native integrity: guarded in $BRIDGE_CLASS: ${guarded.joinToString(", ")}",
+                    )
+                }
+                if (skipped.isNotEmpty()) {
+                    logUniversal(
+                        "Bypass native integrity: left in $BRIDGE_CLASS: ${skipped.joinToString(", ")}",
+                    )
+                }
             }
-            logUniversal(
-                "Bypass native integrity: sweep complete — ${guarded.size} wrapper(s) guarded across " +
-                    "${bridges.size} bridge class(es), ${skipped.size} left unguarded. " +
-                    "Guarded wrappers now fail open on SecurityException(\"app integrity check failed\"); " +
-                    "every other Throwable is re-thrown unchanged.",
-            )
         }
     }
 }
@@ -221,8 +226,6 @@ val bypassNativeIntegrityPatch = bytecodePatch(
 // ─────────────────────────────────────────────────────────────────────────
 // Fingerprint pins (Mereframe 0.8.4 / vc 118)
 // ─────────────────────────────────────────────────────────────────────────
-
-private const val BRIDGE_PACKAGE_PREFIX = "Lapp/unnamed/rawrecording/"
 
 private const val BRIDGE_CLASS = "Lapp/unnamed/rawrecording/b/B1e6ad8077f6880e309d8da4b;"
 
@@ -238,45 +241,48 @@ private const val THROWABLE = "Ljava/lang/Throwable;"
 // ─────────────────────────────────────────────────────────────────────────
 
 /** `name(ParameterDescriptors)ReturnType`, e.g. `d(ZZZZFZ)[J`. */
-private fun Method.signature(): String = "$name(${parameterTypes.joinToString("")})$returnType"
+private fun Method.descriptor(): String =
+    "$name(${parameters.joinToString("") { it.type }})$returnType"
 
-private fun MethodReference.referenceKey(): String = "$name(${parameterTypes.joinToString("")})$returnType"
+/** Identity of a native method: name + parameter count + return type. */
+private fun MethodReference.nativeKey(): String = "$name#${parameterTypes.size}#$returnType"
 
 /**
- * A method is guardable when it is a thin public wrapper around one of the
- * bridge's native methods and can take a whole-body try/catch:
- *
- * - public, not native, not abstract, has a body, is not a constructor;
- * - its body invokes a native method declared in the bridge package;
- * - it has no try/catch of its own — an overlapping range would produce a
- *   partially overlapping try block and a VerifyError ("bad exception entry"),
- *   so such methods are left alone rather than half-patched;
- * - its body contains no switch/array payload pseudo-instruction — a whole-body
- *   try range would stretch over the payload data, which ART refuses to verify;
- * - it is not the pinned session wrapper, which stage 1 already replaced.
+ * @return `null` when the method must be guarded, otherwise the reason it is
+ * left running the native verdict. Every reason is logged verbatim, so a zero
+ * guarded count is always explainable from the patching log.
  */
-private fun Method.isGuardableWrapper(nativeMethods: Set<String>): Boolean {
-    if (name.startsWith("<")) return false
-    if (!AccessFlags.PUBLIC.isSet(accessFlags)) return false
-    if (AccessFlags.NATIVE.isSet(accessFlags)) return false
-    if (AccessFlags.ABSTRACT.isSet(accessFlags)) return false
+private fun Method.guardSkipReason(natives: Set<String>, bridgeClass: String): String? {
+    if (name.startsWith("<")) return "constructor/initializer"
+    if (AccessFlags.NATIVE.isSet(accessFlags)) return "native method"
+    if (AccessFlags.ABSTRACT.isSet(accessFlags)) return "abstract"
+    if (!AccessFlags.PUBLIC.isSet(accessFlags)) return "not public"
 
-    val implementation = implementation ?: return false
-    if (!implementation.tryBlocks.isNullOrEmpty()) return false
-    if (implementation.instructions.any { it.opcode.name.endsWith("_PAYLOAD") }) return false
-
-    if (definingClass == BRIDGE_CLASS &&
-        name == PINNED_METHOD_NAME &&
-        signature() == "$PINNED_METHOD_NAME(${PINNED_PARAMETERS.joinToString("")})$PINNED_RETURN_TYPE"
-    ) {
-        return false
+    val implementation = implementation ?: return "no code"
+    if (!implementation.tryBlocks.isNullOrEmpty()) return "already has a try/catch"
+    if (implementation.instructions.any { it.opcode.name.endsWith("_PAYLOAD") }) {
+        return "switch/array payload in body"
     }
 
+    if (definingClass == bridgeClass &&
+        name == PINNED_METHOD_NAME &&
+        returnType == PINNED_RETURN_TYPE &&
+        parameterTypes.size == PINNED_PARAMETERS.size
+    ) {
+        return "already guarded by stage 1"
+    }
+    if (!invokesBridgeNative(natives, bridgeClass)) return "body does not call a bridge native"
+    return null
+}
+
+/** True when the body directly invokes a native method declared by [bridgeClass]. */
+private fun Method.invokesBridgeNative(natives: Set<String>, bridgeClass: String): Boolean {
+    val implementation = implementation ?: return false
     return implementation.instructions.any { instruction ->
         if (!instruction.opcode.name.startsWith("INVOKE")) return@any false
         val reference = (instruction as? ReferenceInstruction)?.reference as? MethodReference
             ?: return@any false
-        nativeMethods.contains("${reference.definingClass}->${reference.referenceKey()}")
+        reference.definingClass == bridgeClass && natives.contains(reference.nativeKey())
     }
 }
 
@@ -347,10 +353,10 @@ private fun handlerSmali(returnType: String): String? = when (returnType) {
     // well-formed instance of it, so hand back null instead of crashing.
     else -> if (returnType.startsWith("L") || returnType.startsWith("[")) {
         """
-        move-exception v0
-        invoke-static {v0}, $HOOK_CLASS->failOpenNull($THROWABLE)V
-        const/4 v0, 0x0
-        return-object v0
+            move-exception v0
+            invoke-static {v0}, $HOOK_CLASS->failOpenNull($THROWABLE)V
+            const/4 v0, 0x0
+            return-object v0
         """.trimIndent()
     } else {
         null
